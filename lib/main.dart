@@ -3,8 +3,9 @@ import 'package:provider/provider.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
 import 'package:red_teso/features/auth/presentation/pages/login_page.dart';
 import 'package:red_teso/features/auth/presentation/providers/auth_provider.dart';
-import 'package:red_teso/features/student/presentation/pages/student_home_page.dart';
-import 'package:red_teso/features/company/presentation/pages/company_home_page.dart';
+import 'package:red_teso/features/student/presentation/pages/student_dashboard_page.dart';
+import 'package:red_teso/features/company/presentation/pages/company_dashboard_page.dart';
+import 'package:red_teso/features/admin/presentation/pages/admin_dashboard_page.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,9 +43,11 @@ class AuthWrapper extends StatelessWidget {
 
     if (authProvider.isLoggedIn) {
       if (authProvider.userType == UserType.alumno) {
-        return const StudentHomePage();
+        return const StudentDashboardPage();
       } else if (authProvider.userType == UserType.empresa) {
-        return const CompanyHomePage();
+        return const CompanyDashboardPage();
+      } else if (authProvider.userType == UserType.admin) {
+        return const AdminDashboardPage();
       }
     }
     

@@ -1,0 +1,34 @@
+name: Build iOS IPA
+
+on:
+  push:
+    branches: [ main ] # Se ejecuta al hacer push a la rama principal
+  workflow_dispatch: # Permite ejecutarlo manualmente desde GitHub
+
+jobs:
+  build-ios:
+    name: Build iOS App
+    runs-on: macos-latest # Usa un servidor macOS de GitHub
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.22.0' # Versión de Flutter de tu proyecto
+          channel: 'stable'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build iOS (Unsigned IPA)
+        run: flutter build ipa --release --no-codesign
+
+      - name: Upload IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-ipa
+          path: build/ios/ipa/*.ipa
+          retention-days: 7

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum UserType { alumno, empresa, none }
+enum UserType { alumno, empresa, admin, none }
 
 class AuthProvider extends ChangeNotifier {
   bool _isLoggedIn = false;
@@ -30,10 +30,16 @@ class AuthProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
       return null;
+    } else if (email == 'admin' && password == '123') {
+      _isLoggedIn = true;
+      _userType = UserType.admin;
+      _isLoading = false;
+      notifyListeners();
+      return null;
     } else {
       _isLoading = false;
       notifyListeners();
-      return "Credenciales incorrectas (Prueba con alumno/123)";
+      return "Credenciales incorrectas (Prueba con alumno/123, empresa/123 o admin/123)";
     }
   }
 
