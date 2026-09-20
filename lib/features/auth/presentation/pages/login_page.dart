@@ -48,22 +48,13 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Integra tu escudo real de Sistemas Computacionales en lugar del icono genérico
+                // Contenedor del logotipo modificado para que sea transparente y no tenga recuadro negro
                 Container(
                   width: 180,
                   height: 180,
-                  decoration: BoxDecoration(
-                    color: Colors.black,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
-                        blurRadius: 10,
-                        offset: const Offset(0, 5),
-                      )
-                    ],
+                  decoration: const BoxDecoration(
+                    color: Colors.transparent,
                   ),
-                  padding: const EdgeInsets.all(8),
                   child: Image.asset(
                     'web/icons/logo_sis_color.png',
                     fit: BoxFit.contain,

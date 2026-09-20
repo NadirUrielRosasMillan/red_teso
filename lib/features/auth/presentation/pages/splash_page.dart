@@ -47,7 +47,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black, // Cambiado a negro para hacer match con el fondo del escudo oficial
+      backgroundColor: Colors.white,
       body: Stack(
         children: [
           Positioned(
@@ -55,7 +55,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
             right: -100,
             child: CircleAvatar(
               radius: 150,
-              backgroundColor: AppTheme.primaryGreen.withOpacity(0.1),
+              backgroundColor: AppTheme.primaryGreen.withOpacity(0.04),
             ),
           ),
           Positioned(
@@ -63,7 +63,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
             left: -50,
             child: CircleAvatar(
               radius: 120,
-              backgroundColor: AppTheme.primaryGreen.withOpacity(0.08),
+              backgroundColor: AppTheme.primaryGreen.withOpacity(0.03),
             ),
           ),
           
@@ -71,15 +71,13 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Integramos tu imagen real logo_sis_color.png con animación Hero
                 ScaleTransition(
                   scale: _scaleAnimation,
                   child: Container(
-                    width: 280,
-                    height: 280,
-                    decoration: BoxDecoration(
-                      color: Colors.black,
-                      borderRadius: BorderRadius.circular(24),
+                    width: 250,
+                    height: 250,
+                    decoration: const BoxDecoration(
+                      color: Colors.transparent, // Cambiado a totalmente transparente
                     ),
                     child: Image.asset(
                       'web/icons/logo_sis_color.png',
@@ -87,7 +85,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 32),
                 
                 FadeTransition(
                   opacity: _opacityAnimation,
