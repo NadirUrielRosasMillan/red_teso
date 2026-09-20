@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
 import 'package:red_teso/features/auth/presentation/providers/auth_provider.dart';
 import 'package:red_teso/features/student/presentation/pages/vacancy_detail_page.dart';
+import 'package:red_teso/features/notifications/presentation/pages/notifications_page.dart';
+import 'package:red_teso/core/widgets/notification_bell.dart';
 
 class StudentHomePage extends StatefulWidget {
   const StudentHomePage({super.key});
@@ -14,6 +16,10 @@ class StudentHomePage extends StatefulWidget {
 class _StudentHomePageState extends State<StudentHomePage> {
   String _selectedCategory = 'Todos';
   final _searchController = TextEditingController();
+  
+  // Estados para Filtros Avanzados
+  double _minSalary = 0;
+  String _selectedLocation = 'Todas';
 
   final List<Map<String, dynamic>> _vacancies = [
     {
@@ -22,49 +28,106 @@ class _StudentHomePageState extends State<StudentHomePage> {
       'empresa': 'Tech Solutions TESOEM',
       'tipo': 'Residencias',
       'gpa': 8.5,
-      'descripcion': 'Buscamos un estudiante de Ingeniería en Sistemas Computacionales de los últimos semestres entusiasta por el desarrollo móvil para integrarse a nuestro equipo de desarrollo interno mediante residencias profesionales. Aprenderás buenas prácticas de Clean Architecture y testing.',
-      'requisitos': ['Flutter & Dart', 'Git / GitHub', 'Conocimientos de bases de datos', 'Promedio mínimo 8.5']
+      'ubicacion': 'Remoto',
+      'apoyo': 4500,
+      'descripcion': 'Buscamos un estudiante de Ingeniería en Sistemas Computacionales entusiasta por el desarrollo móvil.',
+      'requisitos': ['Flutter & Dart', 'Git', 'Promedio mínimo 8.5']
     },
     {
       'id': 'vac-2',
-      'puesto': 'Soporte Técnico e Infraestructura',
-      'empresa': 'Innovación Digital S.A.',
+      'puesto': 'Soporte Técnico',
+      'empresa': 'Innovación Digital',
       'tipo': 'Servicio Social',
       'gpa': 7.5,
-      'descripcion': 'Únete para liberar tu servicio social apoyando en el mantenimiento preventivo y correctivo del equipo de cómputo, servidores y redes de la empresa.',
-      'requisitos': ['Redes básicas', 'Mantenimiento de Hardware', 'Proactivo', 'Estudiante activo de Sistemas']
+      'ubicacion': 'Chalco',
+      'apoyo': 0,
+      'descripcion': 'Apoyo en mantenimiento preventivo y correctivo de hardware.',
+      'requisitos': ['Redes básicas', 'Hardware']
     },
     {
       'id': 'vac-3',
-      'puesto': 'Full Stack Developer (Node.js & React)',
-      'empresa': 'Global Software Systems',
+      'puesto': 'Full Stack Developer',
+      'empresa': 'Global Software',
       'tipo': 'Empleo Egresados',
       'gpa': 8.0,
-      'descripcion': 'Oportunidad de contratación inmediata para recién egresados de Sistemas Computacionales del TESOEM. Trabajarás en proyectos internacionales con metodologías ágiles.',
-      'requisitos': ['JavaScript / TypeScript', 'Inglés intermedio (Leído/Hablado)', 'React o Angular', 'Node.js']
+      'ubicacion': 'CDMX',
+      'apoyo': 12000,
+      'descripcion': 'Contratación inmediata para egresados con conocimientos en Node.js.',
+      'requisitos': ['JavaScript', 'React', 'Node.js']
     },
   ];
+
+  void _showFilterSheet() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setSheetState) => Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Filtros Avanzados', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 20),
+              Text('Ubicación: $_selectedLocation', style: const TextStyle(fontWeight: FontWeight.w500)),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                children: ['Todas', 'Remoto', 'Chalco', 'CDMX', 'Ixtapaluca'].map((loc) {
+                  return ChoiceChip(
+                    label: Text(loc),
+                    selected: _selectedLocation == loc,
+                    onSelected: (val) {
+                      setSheetState(() => _selectedLocation = loc);
+                      setState(() => _selectedLocation = loc);
+                    },
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 24),
+              Text('Apoyo Económico Mínimo: \$${_minSalary.toInt()}', style: const TextStyle(fontWeight: FontWeight.w500)),
+              Slider(
+                value: _minSalary,
+                min: 0,
+                max: 15000,
+                divisions: 15,
+                label: '\$${_minSalary.toInt()}',
+                activeColor: AppTheme.primaryGreen,
+                onChanged: (val) {
+                  setSheetState(() => _minSalary = val);
+                  setState(() => _minSalary = val);
+                },
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('APLICAR FILTROS'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
   void _clearSearchAndFilters() {
     setState(() {
       _searchController.clear();
       _selectedCategory = 'Todos';
+      _minSalary = 0;
+      _selectedLocation = 'Todas';
     });
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final filteredVacancies = _vacancies.where((v) {
       final matchesCategory = _selectedCategory == 'Todos' || v['tipo'] == _selectedCategory;
-      final matchesSearch = v['puesto'].toString().toLowerCase().contains(_searchController.text.toLowerCase()) ||
-          v['empresa'].toString().toLowerCase().contains(_searchController.text.toLowerCase());
-      return matchesCategory && matchesSearch;
+      final matchesSearch = v['puesto'].toString().toLowerCase().contains(_searchController.text.toLowerCase());
+      final matchesSalary = (v['apoyo'] as int) >= _minSalary;
+      final matchesLocation = _selectedLocation == 'Todas' || v['ubicacion'] == _selectedLocation;
+      return matchesCategory && matchesSearch && matchesSalary && matchesLocation;
     }).toList();
 
     return Scaffold(
@@ -75,6 +138,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
         foregroundColor: AppTheme.primaryGreen,
         elevation: 0,
         actions: [
+          const NotificationBell(color: AppTheme.primaryGreen),
           IconButton(
             icon: const Icon(Icons.logout_outlined),
             onPressed: () => context.read<AuthProvider>().logout(),
@@ -86,25 +150,31 @@ class _StudentHomePageState extends State<StudentHomePage> {
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: TextField(
-              controller: _searchController,
-              onChanged: (_) => setState(() {}),
-              decoration: InputDecoration(
-                hintText: 'Buscar vacantes, puestos o empresas...',
-                prefixIcon: const Icon(Icons.search, color: AppTheme.primaryGreen),
-                suffixIcon: _searchController.text.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: () {
-                          _searchController.clear();
-                          setState(() {});
-                        },
-                      )
-                    : null,
-              ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _searchController,
+                    onChanged: (_) => setState(() {}),
+                    decoration: InputDecoration(
+                      hintText: 'Buscar puesto o empresa...',
+                      prefixIcon: const Icon(Icons.search, color: AppTheme.primaryGreen),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Container(
+                  decoration: BoxDecoration(color: AppTheme.primaryGreen, borderRadius: BorderRadius.circular(12)),
+                  child: IconButton(
+                    icon: const Icon(Icons.tune, color: Colors.white),
+                    onPressed: _showFilterSheet,
+                  ),
+                ),
+              ],
             ),
           ),
 
+          // Categorías rápidas
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 12.0),
             child: SizedBox(
@@ -122,80 +192,16 @@ class _StudentHomePageState extends State<StudentHomePage> {
             ),
           ),
 
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: Text(
-              'Vacantes Disponibles para Sistemas',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
-            ),
-          ),
-
           Expanded(
             child: filteredVacancies.isEmpty
                 ? _buildPremiumEmptyState()
                 : ListView.builder(
                     itemCount: filteredVacancies.length,
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    itemBuilder: (context, index) {
-                      final vacancy = filteredVacancies[index];
-                      return _buildVacancyCard(vacancy);
-                    },
+                    itemBuilder: (context, index) => _buildVacancyCard(filteredVacancies[index]),
                   ),
           ),
         ],
-      ),
-    );
-  }
-
-  // Estado vacío Premium con diseño vectorial nativo y acción directa (RF Consulta Vacantes)
-  Widget _buildPremiumEmptyState() {
-    return Center(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: Colors.grey[50],
-                shape: BoxShape.circle,
-              ),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Icon(Icons.work_off_outlined, size: 80, color: Colors.grey[400]),
-                  Positioned(
-                    right: 4,
-                    top: 4,
-                    child: Icon(Icons.search_off, size: 28, color: Colors.orange[400]),
-                  )
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-            const Text(
-              'Sin vacantes coincidentes',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black87),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'No encontramos ofertas que coincidan con "${_searchController.text}". Prueba usando términos más generales o cambiando la categoría seleccionada.',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14, color: Colors.grey[600], height: 1.4),
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton.icon(
-              onPressed: _clearSearchAndFilters,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.primaryGreen,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              ),
-              icon: const Icon(Icons.refresh, color: Colors.white),
-              label: const Text('LIMPIAR BÚSQUEDA', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -209,20 +215,8 @@ class _StudentHomePageState extends State<StudentHomePage> {
         selected: isSelected,
         selectedColor: AppTheme.primaryGreen,
         checkmarkColor: Colors.white,
-        labelStyle: TextStyle(
-          color: isSelected ? Colors.white : AppTheme.primaryGreen,
-          fontWeight: FontWeight.bold,
-        ),
-        backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(
-          side: const BorderSide(color: AppTheme.primaryGreen),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        onSelected: (bool selected) {
-          setState(() {
-            _selectedCategory = category;
-          });
-        },
+        labelStyle: TextStyle(color: isSelected ? Colors.white : AppTheme.primaryGreen, fontWeight: FontWeight.bold),
+        onSelected: (bool selected) => setState(() => _selectedCategory = category),
       ),
     );
   }
@@ -236,59 +230,42 @@ class _StudentHomePageState extends State<StudentHomePage> {
         contentPadding: const EdgeInsets.all(16),
         leading: Hero(
           tag: 'logo-${vacancy['id']}',
-          child: Material(
-            color: Colors.transparent,
-            child: Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: AppTheme.primaryGreen.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Icon(Icons.business, color: AppTheme.primaryGreen, size: 28),
-            ),
+          child: Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(color: AppTheme.primaryGreen.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+            child: const Icon(Icons.business, color: AppTheme.primaryGreen, size: 28),
           ),
         ),
-        title: Text(
-          vacancy['puesto'] as String,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-        ),
+        title: Text(vacancy['puesto'], style: const TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 4),
-            Text(vacancy['empresa'] as String, style: TextStyle(color: Colors.grey[700])),
+            Text(vacancy['empresa']),
             const SizedBox(height: 8),
             Row(
               children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: AppTheme.primaryGreen,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    vacancy['tipo'] as String,
-                    style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  'Promedio: ${vacancy['gpa']}',
-                  style: TextStyle(fontSize: 12, color: Colors.orange[800], fontWeight: FontWeight.bold),
-                ),
+                Icon(Icons.location_on_outlined, size: 14, color: Colors.grey[600]),
+                Text(' ${vacancy['ubicacion']}  • ', style: const TextStyle(fontSize: 12)),
+                Text('\$${vacancy['apoyo']}', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppTheme.primaryGreen)),
               ],
             )
           ],
         ),
-        trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => VacancyDetailPage(vacancy: vacancy),
-            ),
-          );
-        },
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => VacancyDetailPage(vacancy: vacancy))),
+      ),
+    );
+  }
+
+  Widget _buildPremiumEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.search_off, size: 80, color: Colors.grey),
+          const SizedBox(height: 16),
+          const Text('Sin resultados', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          TextButton(onPressed: _clearSearchAndFilters, child: const Text('Limpiar todos los filtros')),
+        ],
       ),
     );
   }

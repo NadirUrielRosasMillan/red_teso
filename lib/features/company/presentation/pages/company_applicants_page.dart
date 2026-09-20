@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
+import 'package:red_teso/features/company/presentation/pages/student_evaluation_page.dart';
 
 class CompanyApplicantsPage extends StatefulWidget {
   const CompanyApplicantsPage({super.key});
@@ -9,7 +10,6 @@ class CompanyApplicantsPage extends StatefulWidget {
 }
 
 class _CompanyApplicantsPageState extends State<CompanyApplicantsPage> {
-  // Lista simulada de postulantes a las vacantes de la empresa (Requisito 9.1.12)
   final List<Map<String, dynamic>> _applicants = [
     {
       'id': '1',
@@ -76,7 +76,7 @@ class _CompanyApplicantsPageState extends State<CompanyApplicantsPage> {
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const Text(
-              'Revisa y da seguimiento a los alumnos interesados en tus vacantes:',
+              'Revisa, acepta o evalúa a los alumnos del TESOEM:',
               style: TextStyle(color: Colors.grey),
             ),
             const SizedBox(height: 20),
@@ -134,26 +134,45 @@ class _CompanyApplicantsPageState extends State<CompanyApplicantsPage> {
                           ],
                         ),
                         const Divider(height: 24),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            TextButton.icon(
-                              onPressed: () => _updateStatus(a['id'] as String, 'Rechazado'),
-                              icon: const Icon(Icons.close, color: Colors.red, size: 18),
-                              label: const Text('Descartar', style: TextStyle(color: Colors.red)),
-                            ),
-                            const SizedBox(width: 8),
-                            ElevatedButton.icon(
-                              onPressed: () => _updateStatus(a['id'] as String, 'Aceptado'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppTheme.primaryGreen,
-                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                                minimumSize: Size.zero,
+                        
+                        // Fila de acciones expandida (Aceptar, Descartar, Evaluar)
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              // Botón de Evaluación (Módulo Nuevo)
+                              TextButton.icon(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => StudentEvaluationPage(student: a),
+                                    ),
+                                  );
+                                },
+                                icon: const Icon(Icons.star_outline, color: Colors.amber, size: 18),
+                                label: const Text('Evaluar', style: TextStyle(color: Colors.amber)),
                               ),
-                              icon: const Icon(Icons.check, color: Colors.white, size: 18),
-                              label: const Text('Aceptar Perfil', style: TextStyle(color: Colors.white)),
-                            ),
-                          ],
+                              const SizedBox(width: 4),
+                              TextButton.icon(
+                                onPressed: () => _updateStatus(a['id'] as String, 'Rechazado'),
+                                icon: const Icon(Icons.close, color: Colors.red, size: 18),
+                                label: const Text('Descartar', style: TextStyle(color: Colors.red)),
+                              ),
+                              const SizedBox(width: 4),
+                              ElevatedButton.icon(
+                                onPressed: () => _updateStatus(a['id'] as String, 'Aceptado'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppTheme.primaryGreen,
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                  minimumSize: Size.zero,
+                                ),
+                                icon: const Icon(Icons.check, color: Colors.white, size: 16),
+                                label: const Text('Aceptar', style: TextStyle(color: Colors.white, fontSize: 13)),
+                              ),
+                            ],
+                          ),
                         )
                       ],
                     ),

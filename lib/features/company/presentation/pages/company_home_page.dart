@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
 import 'package:red_teso/features/auth/presentation/providers/auth_provider.dart';
 import 'package:red_teso/features/company/presentation/pages/student_detail_view_page.dart';
+import 'package:red_teso/core/widgets/notification_bell.dart';
 
 class CompanyHomePage extends StatefulWidget {
   const CompanyHomePage({super.key});
@@ -37,7 +38,6 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
       {'nombre': 'Juan Pérez Gómez', 'gpa': 7.9, 'sexo': 'Masculino', 'ingles': true, 'mod': 'Residencias', 'correo': 'juan.perez@tesoem.edu.mx', 'habilidades': ['Node.js', 'React', 'MongoDB']},
     ];
 
-    // Aplicar filtros en base a los criterios interactivos
     final filteredStudents = allStudents.where((s) {
       final matchesGpa = (s['gpa'] as double) >= _minGpa;
       final matchesGender = _filterGender == 'Todos' || s['sexo'] == _filterGender;
@@ -54,6 +54,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
         foregroundColor: AppTheme.primaryGreen,
         elevation: 0,
         actions: [
+          const NotificationBell(color: AppTheme.primaryGreen),
           IconButton(
             icon: const Icon(Icons.logout_outlined),
             onPressed: () => context.read<AuthProvider>().logout(),
@@ -75,7 +76,6 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
             ),
             const SizedBox(height: 20),
 
-            // Contenedor del Sistema de Filtros Avanzados (Paso 7 / Requisito Filtros)
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -102,7 +102,6 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                   ),
                   const Divider(height: 24),
 
-                  // Filtro Promedio Mínimo
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -123,7 +122,6 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                     onChanged: (val) => setState(() => _minGpa = val),
                   ),
 
-                  // Filtro por Estado / Modalidad Académica
                   Text('Estado Académico / Modalidad:', style: TextStyle(color: Colors.grey[700])),
                   const SizedBox(height: 6),
                   DropdownButtonFormField<String>(
@@ -142,7 +140,6 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                   ),
                   const SizedBox(height: 16),
 
-                  // Chips de inclusión y habilidades de prioridad
                   Text('Criterios adicionales prioritarios:', style: TextStyle(color: Colors.grey[700])),
                   const SizedBox(height: 8),
                   Wrap(
@@ -183,7 +180,6 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
             ),
             const SizedBox(height: 12),
 
-            // Lista de resultados filtrados / Estado vacío Premium
             filteredStudents.isEmpty
                 ? _buildPremiumCompanyEmptyState()
                 : ListView.builder(
@@ -255,7 +251,6 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
     );
   }
 
-  // Estado vacío Premium para el reclutador (Buscador de Alumnos)
   Widget _buildPremiumCompanyEmptyState() {
     return Center(
       child: Padding(

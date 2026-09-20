@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
+import 'package:red_teso/features/company/presentation/pages/company_profile_view_page.dart';
 
 class VacancyDetailPage extends StatefulWidget {
   final Map<String, dynamic> vacancy;
@@ -40,40 +41,60 @@ class _VacancyDetailPageState extends State<VacancyDetailPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Encabezado principal con animación Hero en el logo de la empresa
-            Row(
-              children: [
-                Hero(
-                  tag: 'logo-${v['id']}',
-                  child: Material(
-                    color: Colors.transparent,
-                    child: Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: AppTheme.primaryGreen.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
+            // Encabezado principal interactivo para ver el perfil de la empresa
+            InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CompanyProfileViewPage(companyName: v['empresa']),
+                  ),
+                );
+              },
+              borderRadius: BorderRadius.circular(12),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Row(
+                  children: [
+                    Hero(
+                      tag: 'logo-${v['id']}',
+                      child: Material(
+                        color: Colors.transparent,
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: AppTheme.primaryGreen.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(Icons.business, size: 48, color: AppTheme.primaryGreen),
+                        ),
                       ),
-                      child: const Icon(Icons.business, size: 48, color: AppTheme.primaryGreen),
                     ),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        v['puesto'] as String,
-                        style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            v['puesto'] as String,
+                            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                          ),
+                          Row(
+                            children: [
+                              Text(
+                                v['empresa'] as String,
+                                style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+                              ),
+                              const SizedBox(width: 4),
+                              const Icon(Icons.info_outline, size: 14, color: AppTheme.primaryGreen),
+                            ],
+                          ),
+                        ],
                       ),
-                      Text(
-                        v['empresa'] as String,
-                        style: TextStyle(fontSize: 16, color: Colors.grey[700]),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
             const SizedBox(height: 24),
             

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
 import 'package:red_teso/features/auth/presentation/providers/auth_provider.dart';
+import 'package:red_teso/core/widgets/notification_bell.dart';
 
 class AdminDashboardPage extends StatefulWidget {
   const AdminDashboardPage({super.key});
@@ -13,7 +14,6 @@ class AdminDashboardPage extends StatefulWidget {
 class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
-  // Datos simulados globales de Alumnos (Características completas)
   final List<Map<String, dynamic>> _students = [
     {
       'nombre': 'Ana García Solís',
@@ -44,14 +44,12 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
     },
   ];
 
-  // Datos simulados globales de Empresas
   final List<Map<String, dynamic>> _companies = [
     {'nombre': 'Intellect Systems México', 'rfc': 'ISM120423AA1', 'rubro': 'Desarrollo de Software', 'ubicacion': 'CDMX / Remoto', 'estado': 'Pendiente'},
     {'nombre': 'Consultoría Oriente S.A.', 'rfc': 'COR090815B23', 'rubro': 'Infraestructura y Redes', 'ubicacion': 'Chalco, EdoMex', 'estado': 'Pendiente'},
     {'nombre': 'Tech Solutions TESOEM', 'rfc': 'TST180512XYZ', 'rubro': 'Innovación Tecnológica', 'ubicacion': 'La Paz, EdoMex', 'estado': 'Aprobada'},
   ];
 
-  // Reportes de vacantes
   final List<Map<String, dynamic>> _reportedVacancies = [
     {
       'id': 'v1',
@@ -105,11 +103,12 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Panel de Control Admin', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text('Admin RedTESO', style: TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: Colors.white,
         foregroundColor: AppTheme.primaryGreen,
         elevation: 0,
         actions: [
+          const NotificationBell(color: AppTheme.primaryGreen), // Campana integrada
           IconButton(
             icon: const Icon(Icons.logout_outlined),
             onPressed: () => context.read<AuthProvider>().logout(),
@@ -138,7 +137,6 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
     );
   }
 
-  // PESTAÑA 1: VISUALIZAR CARACTERÍSTICAS DE ALUMNOS (RF 9.1.13)
   Widget _buildStudentsTab() {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
@@ -181,15 +179,12 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
                 const SizedBox(height: 6),
                 Text('Idioma Inglés: ${s['ingles'] ? "✅ Fluido / Acreditado" : "❌ Básico"}', style: TextStyle(color: s['ingles'] ? AppTheme.primaryGreen : Colors.grey)),
                 const SizedBox(height: 8),
-                const Text('Habilidades declaradas:', style: TextStyle(fontSize: 12, color: Colors.grey)),
-                const SizedBox(height: 4),
                 Wrap(
                   spacing: 6,
                   children: (s['habilidades'] as List<String>).map((h) {
                     return Chip(
                       label: Text(h, style: const TextStyle(fontSize: 11)),
                       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      padding: EdgeInsets.zero,
                     );
                   }).toList(),
                 )
@@ -201,7 +196,6 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
     );
   }
 
-  // PESTAÑA 2: VISUALIZAR Y VALIDAR CARACTERÍSTICAS DE EMPRESAS (RF 9.1.13)
   Widget _buildCompaniesTab() {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
@@ -250,7 +244,6 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppTheme.primaryGreen,
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        minimumSize: Size.zero,
                       ),
                       icon: const Icon(Icons.verified, size: 16, color: Colors.white),
                       label: const Text('Validar y Dar de Alta', style: TextStyle(fontSize: 13, color: Colors.white)),
@@ -265,7 +258,6 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
     );
   }
 
-  // PESTAÑA 3: MODERACIÓN DE PUBLICACIONES (RF 9.1.14)
   Widget _buildModerationTab() {
     return _reportedVacancies.isEmpty
         ? const Center(child: Text('No hay publicaciones reportadas.'))

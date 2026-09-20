@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
 import 'package:red_teso/features/auth/presentation/pages/login_page.dart';
+import 'package:red_teso/features/auth/presentation/pages/onboarding_page.dart';
 import 'package:red_teso/features/auth/presentation/pages/splash_page.dart';
 import 'package:red_teso/features/auth/presentation/providers/auth_provider.dart';
 import 'package:red_teso/features/student/presentation/pages/student_dashboard_page.dart';
@@ -10,7 +11,6 @@ import 'package:red_teso/features/admin/presentation/pages/admin_dashboard_page.
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-
   runApp(
     MultiProvider(
       providers: [
@@ -29,7 +29,7 @@ class RedTESOApp extends StatefulWidget {
 }
 
 class _RedTESOAppState extends State<RedTESOApp> {
-  bool _showSplash = true;
+  String _currentStep = 'splash';
 
   @override
   Widget build(BuildContext context) {
@@ -37,16 +37,29 @@ class _RedTESOAppState extends State<RedTESOApp> {
       title: 'RedTESO',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      home: _showSplash
-          ? SplashPage(
-              onInitializationComplete: () {
-                setState(() {
-                  _showSplash = false;
-                });
-              },
-            )
-          : const AuthWrapper(),
+      // Usamos AnimatedSwitcher para evitar el error de hitTestChildren en Web
+      home: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 500),
+        child: _buildCurrentScreen(),
+      ),
     );
+  }
+
+  Widget _buildCurrentScreen() {
+    switch (_currentStep) {
+      case 'splash':
+        return SplashPage(
+          key: const ValueKey('splash'),
+          onInitializationComplete: () => setState(() => _currentStep = 'onboarding'),
+        );
+      case 'onboarding':
+        return OnboardingPage(
+          key: const ValueKey('onboarding'),
+          onFinish: () => setState(() => _currentStep = 'auth'),
+        );
+      default:
+        return const AuthWrapper(key: ValueKey('auth'));
+    }
   }
 }
 

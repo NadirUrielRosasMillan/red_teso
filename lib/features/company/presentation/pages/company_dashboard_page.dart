@@ -3,6 +3,7 @@ import 'package:red_teso/core/theme/app_theme.dart';
 import 'package:red_teso/features/company/presentation/pages/company_home_page.dart';
 import 'package:red_teso/features/company/presentation/pages/create_vacancy_page.dart';
 import 'package:red_teso/features/company/presentation/pages/company_applicants_page.dart';
+import 'package:red_teso/features/company/presentation/pages/manage_vacancies_page.dart';
 
 class CompanyDashboardPage extends StatefulWidget {
   const CompanyDashboardPage({super.key});
@@ -16,6 +17,7 @@ class _CompanyDashboardPageState extends State<CompanyDashboardPage> {
 
   final List<Widget> _pages = [
     const CompanyHomePage(),
+    const ManageVacanciesPage(), // Nueva página integrada
     const CreateVacancyPage(),
     const CompanyApplicantsPage(),
   ];
@@ -41,12 +43,17 @@ class _CompanyDashboardPageState extends State<CompanyDashboardPage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.search_outlined),
             activeIcon: Icon(Icons.search),
-            label: 'Buscar Talento',
+            label: 'Talento',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list_alt_outlined),
+            activeIcon: Icon(Icons.list_alt),
+            label: 'Mis Vacantes',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.add_box_outlined),
             activeIcon: Icon(Icons.add_box),
-            label: 'Nueva Vacante',
+            label: 'Publicar',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.people_outline),
