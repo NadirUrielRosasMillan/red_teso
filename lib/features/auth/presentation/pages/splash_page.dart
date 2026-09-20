@@ -20,7 +20,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
     super.initState();
     _animationController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1800), // Animación un poco más pausada y elegante
+      duration: const Duration(milliseconds: 1800),
     );
 
     _scaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
@@ -33,7 +33,6 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
 
     _animationController.forward();
 
-    // Aumentamos el tiempo de espera a 4 segundos completos para que se aprecie el diseño y las animaciones
     Future.delayed(const Duration(seconds: 4), () {
       widget.onInitializationComplete();
     });
@@ -48,16 +47,15 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.black, // Cambiado a negro para hacer match con el fondo del escudo oficial
       body: Stack(
         children: [
-          // Fondo decorativo sutil con círculos difuminados de la red
           Positioned(
             top: -100,
             right: -100,
             child: CircleAvatar(
               radius: 150,
-              backgroundColor: AppTheme.primaryGreen.withOpacity(0.04),
+              backgroundColor: AppTheme.primaryGreen.withOpacity(0.1),
             ),
           ),
           Positioned(
@@ -65,48 +63,32 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
             left: -50,
             child: CircleAvatar(
               radius: 120,
-              backgroundColor: AppTheme.primaryGreen.withOpacity(0.03),
+              backgroundColor: AppTheme.primaryGreen.withOpacity(0.08),
             ),
           ),
           
-          // Contenido principal animado
           Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Icono/Logo Conceptual de RedTESO con animación de escala
+                // Integramos tu imagen real logo_sis_color.png con animación Hero
                 ScaleTransition(
                   scale: _scaleAnimation,
                   child: Container(
-                    padding: const EdgeInsets.all(24),
+                    width: 280,
+                    height: 280,
                     decoration: BoxDecoration(
-                      color: AppTheme.primaryGreen.withOpacity(0.08),
-                      shape: BoxShape.circle,
+                      color: Colors.black,
+                      borderRadius: BorderRadius.circular(24),
                     ),
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        const Icon(
-                          Icons.school,
-                          size: 80,
-                          color: AppTheme.primaryGreen,
-                        ),
-                        Positioned(
-                          right: 0,
-                          bottom: 0,
-                          child: CircleAvatar(
-                            radius: 12,
-                            backgroundColor: Colors.white,
-                            child: Icon(Icons.hub, size: 16, color: Colors.green[700]),
-                          ),
-                        )
-                      ],
+                    child: Image.asset(
+                      'web/icons/logo_sis_color.png',
+                      fit: BoxFit.contain,
                     ),
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
                 
-                // Textos animados con Opacidad fluida
                 FadeTransition(
                   opacity: _opacityAnimation,
                   child: const Column(
@@ -114,7 +96,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
                       Text(
                         'RedTESO',
                         style: TextStyle(
-                          fontSize: 36,
+                          fontSize: 38,
                           fontWeight: FontWeight.bold,
                           color: AppTheme.primaryGreen,
                           letterSpacing: 1.2,
@@ -136,7 +118,6 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
             ),
           ),
           
-          // Indicador de carga sutil abajo
           Positioned(
             bottom: 50,
             left: 0,
