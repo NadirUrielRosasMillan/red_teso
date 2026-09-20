@@ -40,16 +40,22 @@ class _VacancyDetailPageState extends State<VacancyDetailPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Encabezado principal
+            // Encabezado principal con animación Hero en el logo de la empresa
             Row(
               children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: AppTheme.primaryGreen.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
+                Hero(
+                  tag: 'logo-${v['id']}',
+                  child: Material(
+                    color: Colors.transparent,
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: AppTheme.primaryGreen.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(Icons.business, size: 48, color: AppTheme.primaryGreen),
+                    ),
                   ),
-                  child: const Icon(Icons.business, size: 48, color: AppTheme.primaryGreen),
                 ),
                 const SizedBox(width: 16),
                 Expanded(

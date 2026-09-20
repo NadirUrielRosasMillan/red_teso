@@ -18,6 +18,15 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
   bool _requireEnglish = false;
   String _filterModality = 'Todos';
 
+  void _resetFilters() {
+    setState(() {
+      _minGpa = 7.0;
+      _filterGender = 'Todos';
+      _requireEnglish = false;
+      _filterModality = 'Todos';
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     // Datos de ejemplo simulados
@@ -174,14 +183,9 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
             ),
             const SizedBox(height: 12),
 
-            // Lista de resultados filtrados en tiempo real
+            // Lista de resultados filtrados / Estado vacío Premium
             filteredStudents.isEmpty
-                ? const Center(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(vertical: 40.0),
-                      child: Text('Ningún alumno cumple con los filtros seleccionados.', style: TextStyle(color: Colors.grey)),
-                    ),
-                  )
+                ? _buildPremiumCompanyEmptyState()
                 : ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
@@ -234,7 +238,6 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                             ],
                           ),
                           onTap: () {
-                            // Navegar de forma interactiva al Paso 8 (Detalle del Alumno visto por la Empresa)
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -246,6 +249,46 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                       );
                     },
                   ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Estado vacío Premium para el reclutador (Buscador de Alumnos)
+  Widget _buildPremiumCompanyEmptyState() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 40.0, horizontal: 16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.orange[50],
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.person_search_outlined, size: 64, color: Colors.orange),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Sin coincidencias de talento',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Ningún estudiante cumple exactamente con los criterios actuales. Intenta suavizar el promedio mínimo o remover filtros adicionales.',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 14, color: Colors.grey, height: 1.4),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton.icon(
+              onPressed: _resetFilters,
+              style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryGreen),
+              icon: const Icon(Icons.refresh, color: Colors.white),
+              label: const Text('RESTABLECER FILTROS', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            ),
           ],
         ),
       ),
