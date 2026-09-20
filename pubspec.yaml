@@ -29,12 +29,12 @@ dev_dependencies:
   flutter_lints: ^3.0.0
   flutter_launcher_icons: ^0.13.1
 
-# Configuración del paquete generador apuntando a la ubicación real de tu imagen
+# Configuración corregida para reemplazar el icono por defecto de Android (ic_launcher)
 flutter_launcher_icons:
-  android: "launcher_icon"
+  android: true       # CAMBIADO DE "launcher_icon" A true PARA SOBREESCRIBIR EL ICONO POR DEFECTO
   ios: true
   image_path: "web/icons/logo_sis_color.png"
-  adaptive_icon_background: "#000000"
+  adaptive_icon_background: "#FFFFFF" # Fondo blanco para que combine limpio en el celular
   adaptive_icon_foreground: "web/icons/logo_sis_color.png"
 
 flutter:
