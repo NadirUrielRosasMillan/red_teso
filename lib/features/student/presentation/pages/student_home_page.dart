@@ -1,9 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
 import 'package:red_teso/features/auth/presentation/providers/auth_provider.dart';
 import 'package:red_teso/features/student/presentation/pages/vacancy_detail_page.dart';
-import 'package:red_teso/features/notifications/presentation/pages/notifications_page.dart';
 import 'package:red_teso/core/widgets/notification_bell.dart';
 
 class StudentHomePage extends StatefulWidget {
@@ -14,126 +15,19 @@ class StudentHomePage extends StatefulWidget {
 }
 
 class _StudentHomePageState extends State<StudentHomePage> {
-  String _selectedCategory = 'Todos';
   final _searchController = TextEditingController();
-  
-  // Estados para Filtros Avanzados
-  double _minSalary = 0;
-  String _selectedLocation = 'Todas';
-
-  final List<Map<String, dynamic>> _vacancies = [
-    {
-      'id': 'vac-1',
-      'puesto': 'Desarrollador Flutter Junior',
-      'empresa': 'Tech Solutions TESOEM',
-      'tipo': 'Residencias',
-      'gpa': 8.5,
-      'ubicacion': 'Remoto',
-      'apoyo': 4500,
-      'descripcion': 'Buscamos un estudiante de Ingeniería en Sistemas Computacionales entusiasta por el desarrollo móvil.',
-      'requisitos': ['Flutter & Dart', 'Git', 'Promedio mínimo 8.5']
-    },
-    {
-      'id': 'vac-2',
-      'puesto': 'Soporte Técnico',
-      'empresa': 'Innovación Digital',
-      'tipo': 'Servicio Social',
-      'gpa': 7.5,
-      'ubicacion': 'Chalco',
-      'apoyo': 0,
-      'descripcion': 'Apoyo en mantenimiento preventivo y correctivo de hardware.',
-      'requisitos': ['Redes básicas', 'Hardware']
-    },
-    {
-      'id': 'vac-3',
-      'puesto': 'Full Stack Developer',
-      'empresa': 'Global Software',
-      'tipo': 'Empleo Egresados',
-      'gpa': 8.0,
-      'ubicacion': 'CDMX',
-      'apoyo': 12000,
-      'descripcion': 'Contratación inmediata para egresados con conocimientos en Node.js.',
-      'requisitos': ['JavaScript', 'React', 'Node.js']
-    },
-  ];
-
-  void _showFilterSheet() {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
-      builder: (context) => StatefulBuilder(
-        builder: (context, setSheetState) => Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text('Filtros Avanzados', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 20),
-              Text('Ubicación: $_selectedLocation', style: const TextStyle(fontWeight: FontWeight.w500)),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                children: ['Todas', 'Remoto', 'Chalco', 'CDMX', 'Ixtapaluca'].map((loc) {
-                  return ChoiceChip(
-                    label: Text(loc),
-                    selected: _selectedLocation == loc,
-                    onSelected: (val) {
-                      setSheetState(() => _selectedLocation = loc);
-                      setState(() => _selectedLocation = loc);
-                    },
-                  );
-                }).toList(),
-              ),
-              const SizedBox(height: 24),
-              Text('Apoyo Económico Mínimo: \$${_minSalary.toInt()}', style: const TextStyle(fontWeight: FontWeight.w500)),
-              Slider(
-                value: _minSalary,
-                min: 0,
-                max: 15000,
-                divisions: 15,
-                label: '\$${_minSalary.toInt()}',
-                activeColor: AppTheme.primaryGreen,
-                onChanged: (val) {
-                  setSheetState(() => _minSalary = val);
-                  setState(() => _minSalary = val);
-                },
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('APLICAR FILTROS'),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _clearSearchAndFilters() {
-    setState(() {
-      _searchController.clear();
-      _selectedCategory = 'Todos';
-      _minSalary = 0;
-      _selectedLocation = 'Todas';
-    });
-  }
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final _auth = FirebaseAuth.instance;
+  String _selectedCategory = 'Todos';
 
   @override
   Widget build(BuildContext context) {
-    final filteredVacancies = _vacancies.where((v) {
-      final matchesCategory = _selectedCategory == 'Todos' || v['tipo'] == _selectedCategory;
-      final matchesSearch = v['puesto'].toString().toLowerCase().contains(_searchController.text.toLowerCase());
-      final matchesSalary = (v['apoyo'] as int) >= _minSalary;
-      final matchesLocation = _selectedLocation == 'Todas' || v['ubicacion'] == _selectedLocation;
-      return matchesCategory && matchesSearch && matchesSalary && matchesLocation;
-    }).toList();
+    final user = _auth.currentUser;
 
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('RedTESO Oportunidades', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text('RedTESO Estudiante', style: TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: Colors.white,
         foregroundColor: AppTheme.primaryGreen,
         elevation: 0,
@@ -146,126 +40,172 @@ class _StudentHomePageState extends State<StudentHomePage> {
         ],
       ),
       body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _searchController,
-                    onChanged: (_) => setState(() {}),
-                    decoration: InputDecoration(
-                      hintText: 'Buscar puesto o empresa...',
-                      prefixIcon: const Icon(Icons.search, color: AppTheme.primaryGreen),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Container(
-                  decoration: BoxDecoration(color: AppTheme.primaryGreen, borderRadius: BorderRadius.circular(12)),
-                  child: IconButton(
-                    icon: const Icon(Icons.tune, color: Colors.white),
-                    onPressed: _showFilterSheet,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          _buildStudentHeader(user?.uid),
 
-          // Categorías rápidas
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12.0),
-            child: SizedBox(
-              height: 40,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                children: [
-                  _buildCategoryChip('Todos'),
-                  _buildCategoryChip('Servicio Social'),
-                  _buildCategoryChip('Residencias'),
-                  _buildCategoryChip('Empleo Egresados'),
-                ],
+            padding: const EdgeInsets.all(16.0),
+            child: TextField(
+              controller: _searchController,
+              onChanged: (_) => setState(() {}),
+              decoration: InputDecoration(
+                hintText: 'Buscar vacantes o empresas...',
+                prefixIcon: const Icon(Icons.search, color: AppTheme.primaryGreen),
+                filled: true,
+                fillColor: Colors.grey[100],
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
               ),
             ),
           ),
 
+          SizedBox(
+            height: 40,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              children: ['Todos', 'Servicio Social', 'Residencias', 'Empleo Egresados']
+                  .map((cat) => _buildCategoryChip(cat))
+                  .toList(),
+            ),
+          ),
+
+          const SizedBox(height: 16),
+
           Expanded(
-            child: filteredVacancies.isEmpty
-                ? _buildPremiumEmptyState()
-                : ListView.builder(
-                    itemCount: filteredVacancies.length,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    itemBuilder: (context, index) => _buildVacancyCard(filteredVacancies[index]),
-                  ),
+            child: StreamBuilder<QuerySnapshot>(
+              stream: _db.collection('vacancies').orderBy('createdAt', descending: true).snapshots(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+                
+                final vacancies = snapshot.data!.docs.where((doc) {
+                  final data = doc.data() as Map<String, dynamic>;
+                  final matchesCat = _selectedCategory == 'Todos' || data['tipo'] == _selectedCategory;
+                  final matchesSearch = data['puesto'].toString().toLowerCase().contains(_searchController.text.toLowerCase());
+                  return matchesCat && matchesSearch;
+                }).toList();
+
+                return ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount: vacancies.length,
+                  itemBuilder: (context, index) {
+                    final data = vacancies[index].data() as Map<String, dynamic>;
+                    return _buildVacancyCard({...data, 'id': vacancies[index].id});
+                  },
+                );
+              },
+            ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildStudentHeader(String? uid) {
+    return StreamBuilder<DocumentSnapshot>(
+      stream: _db.collection('users').doc(uid).snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData || !snapshot.data!.exists) return const SizedBox(height: 100);
+        final data = snapshot.data!.data() as Map<String, dynamic>;
+
+        return Container(
+          margin: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [AppTheme.primaryGreen, Color(0xFF1B5E20)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [BoxShadow(color: AppTheme.primaryGreen.withOpacity(0.3), blurRadius: 10, offset: const Offset(0, 5))],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  CircleAvatar(
+                    radius: 30,
+                    backgroundColor: Colors.white24,
+                    child: Text(data['name']?[0] ?? 'U', style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(data['name'] ?? 'Usuario', style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                        const Text('Ing. Sistemas Computacionales', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(color: Colors.white12, borderRadius: BorderRadius.circular(12)),
+                    child: Column(
+                      children: [
+                        Text(data['gpa']?.toString() ?? '0.0', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                        const Text('Promedio', style: TextStyle(color: Colors.white60, fontSize: 8)),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+              const SizedBox(height: 20),
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Progreso Académico', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w500)),
+                  Text('75%', style: TextStyle(color: Colors.white, fontSize: 13)),
+                ],
+              ),
+              const SizedBox(height: 8),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: LinearProgressIndicator(
+                  value: 0.75,
+                  backgroundColor: Colors.white24,
+                  valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+                  minHeight: 6,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
   Widget _buildCategoryChip(String category) {
     final isSelected = _selectedCategory == category;
     return Padding(
-      padding: const EdgeInsets.only(right: 8.0),
+      padding: const EdgeInsets.only(right: 8),
       child: FilterChip(
-        label: Text(category),
+        label: Text(category, style: TextStyle(color: isSelected ? Colors.white : AppTheme.primaryGreen, fontSize: 12)),
         selected: isSelected,
+        onSelected: (val) => setState(() => _selectedCategory = category),
+        backgroundColor: Colors.white,
         selectedColor: AppTheme.primaryGreen,
-        checkmarkColor: Colors.white,
-        labelStyle: TextStyle(color: isSelected ? Colors.white : AppTheme.primaryGreen, fontWeight: FontWeight.bold),
-        onSelected: (bool selected) => setState(() => _selectedCategory = category),
+        shape: StadiumBorder(side: BorderSide(color: AppTheme.primaryGreen.withOpacity(0.2))),
       ),
     );
   }
 
-  Widget _buildVacancyCard(Map<String, dynamic> vacancy) {
+  Widget _buildVacancyCard(Map<String, dynamic> v) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 14),
-      elevation: 2,
+      margin: const EdgeInsets.only(bottom: 12),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: ListTile(
-        contentPadding: const EdgeInsets.all(16),
-        leading: Hero(
-          tag: 'logo-${vacancy['id']}',
-          child: Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(color: AppTheme.primaryGreen.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
-            child: const Icon(Icons.business, color: AppTheme.primaryGreen, size: 28),
-          ),
+        contentPadding: const EdgeInsets.all(12),
+        leading: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(color: AppTheme.primaryGreen.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+          child: const Icon(Icons.business, color: AppTheme.primaryGreen),
         ),
-        title: Text(vacancy['puesto'], style: const TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(vacancy['empresa']),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Icon(Icons.location_on_outlined, size: 14, color: Colors.grey[600]),
-                Text(' ${vacancy['ubicacion']}  • ', style: const TextStyle(fontSize: 12)),
-                Text('\$${vacancy['apoyo']}', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppTheme.primaryGreen)),
-              ],
-            )
-          ],
-        ),
-        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => VacancyDetailPage(vacancy: vacancy))),
-      ),
-    );
-  }
-
-  Widget _buildPremiumEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.search_off, size: 80, color: Colors.grey),
-          const SizedBox(height: 16),
-          const Text('Sin resultados', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          TextButton(onPressed: _clearSearchAndFilters, child: const Text('Limpiar todos los filtros')),
-        ],
+        title: Text(v['puesto'] ?? 'Vacante', style: const TextStyle(fontWeight: FontWeight.bold)),
+        subtitle: Text('${v['empresa'] ?? 'Empresa'} • ${v['ubicacion'] ?? 'Remoto'}'),
+        trailing: const Icon(Icons.arrow_forward_ios, size: 14),
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => VacancyDetailPage(vacancy: v))),
       ),
     );
   }

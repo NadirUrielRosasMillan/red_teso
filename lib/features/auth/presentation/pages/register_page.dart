@@ -15,7 +15,6 @@ class _RegisterPageState extends State<RegisterPage> {
   final _passwordController = TextEditingController();
   final _nameController = TextEditingController();
 
-  // Campos específicos de Alumno
   String _userType = 'Alumno';
   String _modality = 'Servicio Social';
   String _gender = 'Femenino';
@@ -31,12 +30,26 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   void _register() async {
+    // CORRECCIÓN: Usamos AppAuthProvider para evitar conflicto con Firebase
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
-    // En un caso real, pasaríamos todos estos datos al provider
+    Map<String, dynamic> extraData = {};
+    if (_userType == 'Alumno') {
+      extraData = {
+        'modality': _modality,
+        'gender': _gender,
+        'speaksEnglish': _speaksEnglish,
+        'gpa': _gpa,
+        'career': 'Ingeniería en Sistemas Computacionales',
+      };
+    }
+
     final error = await authProvider.signUp(
-      _emailController.text.trim(),
-      _passwordController.text.trim(),
+      email: _emailController.text.trim(),
+      password: _passwordController.text.trim(),
+      name: _nameController.text.trim(),
+      type: _userType.toLowerCase(),
+      extraData: extraData,
     );
 
     if (error != null && mounted) {
@@ -64,7 +77,6 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
             const SizedBox(height: 20),
 
-            // Selector de tipo de usuario principal
             SegmentedButton<String>(
               segments: const [
                 ButtonSegment(value: 'Alumno', label: Text('Alumno'), icon: Icon(Icons.school)),
@@ -144,6 +156,7 @@ class _RegisterPageState extends State<RegisterPage> {
             ],
 
             const SizedBox(height: 40),
+            // CORRECCIÓN: Consumer de AppAuthProvider
             Consumer<AuthProvider>(
               builder: (context, auth, _) {
                 return auth.isLoading

@@ -16,12 +16,14 @@ dependencies:
   firebase_core: ^3.1.1
   firebase_auth: ^5.1.2
   cloud_firestore: ^5.0.2
-  firebase_storage: ^12.0.1
   
   # State Management & Utils
   provider: ^6.1.1
   google_fonts: ^6.1.0
   intl: ^0.19.0
+  file_picker: ^13.1.0
+  url_launcher: ^6.3.2
+  shared_preferences: ^2.2.3
 
 dev_dependencies:
   flutter_test:
@@ -29,12 +31,11 @@ dev_dependencies:
   flutter_lints: ^3.0.0
   flutter_launcher_icons: ^0.13.1
 
-# Configuración corregida para reemplazar el icono por defecto de Android (ic_launcher)
 flutter_launcher_icons:
-  android: true       # CAMBIADO DE "launcher_icon" A true PARA SOBREESCRIBIR EL ICONO POR DEFECTO
+  android: true
   ios: true
   image_path: "web/icons/logo_sis_color.png"
-  adaptive_icon_background: "#FFFFFF" # Fondo blanco para que combine limpio en el celular
+  adaptive_icon_background: "#FFFFFF"
   adaptive_icon_foreground: "web/icons/logo_sis_color.png"
 
 flutter:

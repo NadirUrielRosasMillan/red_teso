@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
 import 'package:flutter/material.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
+import 'package:red_teso/features/auth/presentation/providers/auth_provider.dart';
 
 class CreateVacancyPage extends StatefulWidget {
   final Map<String, dynamic>? vacancyToEdit;
@@ -12,7 +15,9 @@ class CreateVacancyPage extends StatefulWidget {
 
 class _CreateVacancyPageState extends State<CreateVacancyPage> {
   final _formKey = GlobalKey<FormState>();
-  
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
   late TextEditingController _titleController;
   late TextEditingController _descriptionController;
   late TextEditingController _locationController;
@@ -21,7 +26,8 @@ class _CreateVacancyPageState extends State<CreateVacancyPage> {
   String _opportunityType = 'Residencias';
   double _requiredGpa = 8.0;
   bool _requiresEnglish = false;
-  
+  bool _isPublishing = false;
+
   final List<String> _requirementsList = ['Proactivo', 'Trabajo en equipo'];
   final _newRequirementController = TextEditingController();
 
@@ -30,22 +36,14 @@ class _CreateVacancyPageState extends State<CreateVacancyPage> {
     super.initState();
     final isEditing = widget.vacancyToEdit != null;
     
-    _titleController = TextEditingController(
-      text: isEditing ? widget.vacancyToEdit!['puesto'] : '',
-    );
-    _descriptionController = TextEditingController(
-      text: isEditing ? widget.vacancyToEdit!['descripcion'] : '',
-    );
-    _locationController = TextEditingController(
-      text: isEditing ? widget.vacancyToEdit!['ubicacion'] ?? 'Remoto / Edo de México' : '',
-    );
-    _supportController = TextEditingController(
-      text: isEditing ? widget.vacancyToEdit!['apoyo'] ?? '\$4,000 Mensual' : '',
-    );
+    _titleController = TextEditingController(text: isEditing ? widget.vacancyToEdit!['puesto'] : '');
+    _descriptionController = TextEditingController(text: isEditing ? widget.vacancyToEdit!['descripcion'] : '');
+    _locationController = TextEditingController(text: isEditing ? widget.vacancyToEdit!['ubicacion'] ?? 'Remoto' : '');
+    _supportController = TextEditingController(text: isEditing ? widget.vacancyToEdit!['apoyo'].toString() : '');
 
     if (isEditing) {
       _opportunityType = widget.vacancyToEdit!['tipo'] ?? 'Residencias';
-      _requiredGpa = widget.vacancyToEdit!['gpa'] ?? 8.0;
+      _requiredGpa = (widget.vacancyToEdit!['gpa'] ?? 8.0).toDouble();
       _requiresEnglish = widget.vacancyToEdit!['ingles'] ?? false;
       if (widget.vacancyToEdit!['requisitos'] != null) {
         _requirementsList.clear();
@@ -54,219 +52,105 @@ class _CreateVacancyPageState extends State<CreateVacancyPage> {
     }
   }
 
-  @override
-  void dispose() {
-    _titleController.dispose();
-    _descriptionController.dispose();
-    _locationController.dispose();
-    _supportController.dispose();
-    _newRequirementController.dispose();
-    super.dispose();
-  }
-
-  void _addRequirement() {
-    final text = _newRequirementController.text.trim();
-    if (text.isNotEmpty && !_requirementsList.contains(text)) {
-      setState(() {
-        _requirementsList.add(text);
-        _newRequirementController.clear();
-      });
-    }
-  }
-
-  void _submitVacancy() {
+  void _submitVacancy() async {
     if (_formKey.currentState!.validate()) {
-      final isEditing = widget.vacancyToEdit != null;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(isEditing 
-            ? '¡Vacante modificada con éxito visualmente!' 
-            : '¡Nueva vacante publicada con éxito en RedTESO!'),
-          backgroundColor: AppTheme.primaryGreen,
-        ),
-      );
-      if (isEditing) {
-        Navigator.pop(context);
+      setState(() => _isPublishing = true);
+      try {
+        final userId = _auth.currentUser?.uid;
+        final vacancyData = {
+          'puesto': _titleController.text.trim(),
+          'tipo': _opportunityType,
+          'ubicacion': _locationController.text.trim(),
+          'apoyo': int.tryParse(_supportController.text) ?? 0,
+          'descripcion': _descriptionController.text.trim(),
+          'gpa': _requiredGpa,
+          'ingles': _requiresEnglish,
+          'requisitos': _requirementsList,
+          'companyId': userId,
+          'empresa': 'Empresa Registrada', 
+          'createdAt': FieldValue.serverTimestamp(),
+        };
+
+        if (widget.vacancyToEdit != null) {
+          await _db.collection('vacancies').doc(widget.vacancyToEdit!['id']).update(vacancyData);
+        } else {
+          await _db.collection('vacancies').add(vacancyData);
+        }
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('¡Vacante publicada en la nube!'), backgroundColor: AppTheme.primaryGreen),
+          );
+          _titleController.clear();
+          _descriptionController.clear();
+          _supportController.clear();
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+        );
+      } finally {
+        if (mounted) setState(() => _isPublishing = false);
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final isEditing = widget.vacancyToEdit != null;
-
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: isEditing 
-          ? AppBar(
-              title: const Text('Modificar Vacante'),
-              foregroundColor: AppTheme.primaryGreen,
-              backgroundColor: Colors.white,
-              elevation: 0,
-            )
-          : null,
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (!isEditing) ...[
-                const Text(
-                  'Publicar Vacante',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black87),
-                ),
-                const Text(
-                  'Atrae el mejor talento de ingeniería rellenando el formulario:',
-                  style: TextStyle(color: Colors.grey, fontSize: 14),
-                ),
-                const SizedBox(height: 24),
-              ],
-              
-              TextFormField(
-                controller: _titleController,
-                decoration: const InputDecoration(
-                  labelText: 'Título del Puesto (ej: Desarrollador Backend)',
-                  prefixIcon: Icon(Icons.badge_outlined),
-                ),
-                validator: (val) => val == null || val.isEmpty ? 'Por favor ingresa el título' : null,
-              ),
-              const SizedBox(height: 16),
-
-              DropdownButtonFormField<String>(
-                value: _opportunityType,
-                decoration: const InputDecoration(
-                  labelText: 'Tipo de Oportunidad',
-                  prefixIcon: Icon(Icons.layers_outlined),
-                ),
-                items: ['Servicio Social', 'Residencias', 'Empleo Egresados']
-                    .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                    .toList(),
-                onChanged: (val) => setState(() => _opportunityType = val!),
-              ),
-              const SizedBox(height: 16),
-
-              Row(
+      body: _isPublishing
+        ? const Center(child: CircularProgressIndicator())
+        : SingleChildScrollView(
+            padding: const EdgeInsets.all(24.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: TextFormField(
-                      controller: _locationController,
-                      decoration: const InputDecoration(
-                        labelText: 'Ubicación',
-                        prefixIcon: Icon(Icons.location_on_outlined),
-                      ),
+                  const Text('Publicar Oportunidad', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 24),
+                  TextFormField(
+                    controller: _titleController,
+                    decoration: const InputDecoration(labelText: 'Puesto', prefixIcon: Icon(Icons.badge)),
+                    validator: (val) => val!.isEmpty ? 'Campo obligatorio' : null,
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _supportController,
+                    decoration: const InputDecoration(
+                      labelText: r'Apoyo Económico ($)', // FIXED: Raw string escaping $
+                      prefixIcon: Icon(Icons.monetization_on),
                     ),
+                    keyboardType: TextInputType.number,
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: TextFormField(
-                      controller: _supportController,
-                      decoration: const InputDecoration(
-                        labelText: 'Apoyo / Salario',
-                        prefixIcon: Icon(Icons.monetization_on),
-                      ),
-                    ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _descriptionController,
+                    maxLines: 3,
+                    decoration: const InputDecoration(labelText: 'Descripción'),
                   ),
-                ],
-              ),
-              const SizedBox(height: 16),
-
-              TextFormField(
-                controller: _descriptionController,
-                maxLines: 4,
-                decoration: const InputDecoration(
-                  labelText: 'Descripción de las actividades y responsabilidades',
-                  alignLabelWithHint: true,
-                ),
-                validator: (val) => val == null || val.isEmpty ? 'Por favor ingresa la descripción' : null,
-              ),
-              const SizedBox(height: 24),
-
-              const Divider(),
-              const SizedBox(height: 12),
-              const Text('Criterios de Filtro Solicitados', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-              const SizedBox(height: 16),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Promedio mínimo exigido:', style: TextStyle(color: Colors.grey[700])),
-                  Text(
-                    _requiredGpa.toStringAsFixed(1),
-                    style: const TextStyle(fontWeight: FontWeight.bold, color: AppTheme.primaryGreen, fontSize: 16),
+                  const SizedBox(height: 24),
+                  const Text('Promedio Mínimo'),
+                  Slider(
+                    value: _requiredGpa,
+                    min: 7.0, max: 10.0, divisions: 30,
+                    onChanged: (val) => setState(() => _requiredGpa = val),
                   ),
-                ],
-              ),
-              Slider(
-                value: _requiredGpa,
-                min: 7.0,
-                max: 10.0,
-                divisions: 30,
-                activeColor: AppTheme.primaryGreen,
-                onChanged: (val) => setState(() => _requiredGpa = val),
-              ),
-
-              SwitchListTile(
-                title: const Text('¿Es obligatorio el idioma Inglés?'),
-                subtitle: const Text('Filtrará perfiles con inglés básico'),
-                value: _requiresEnglish,
-                activeColor: AppTheme.primaryGreen,
-                contentPadding: EdgeInsets.zero,
-                onChanged: (val) => setState(() => _requiresEnglish = val),
-              ),
-              const SizedBox(height: 16),
-
-              const Text('Habilidades deseadas (Tags):', style: TextStyle(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _newRequirementController,
-                      decoration: const InputDecoration(
-                        hintText: 'ej: React, Linux, Scrum',
-                      ),
-                    ),
+                  SwitchListTile(
+                    title: const Text('Inglés Obligatorio'),
+                    value: _requiresEnglish,
+                    onChanged: (val) => setState(() => _requiresEnglish = val),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(height: 32),
                   ElevatedButton(
-                    onPressed: _addRequirement,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.primaryGreen,
-                      minimumSize: const Size(54, 50),
-                    ),
-                    child: const Icon(Icons.add, color: Colors.white),
+                    onPressed: _submitVacancy,
+                    child: Text(widget.vacancyToEdit != null ? 'ACTUALIZAR' : 'PUBLICAR EN REDTESO'),
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
-              Wrap(
-                spacing: 8,
-                runSpacing: 4,
-                children: _requirementsList.map((req) {
-                  return Chip(
-                    label: Text(req),
-                    onDeleted: () {
-                      setState(() {
-                        _requirementsList.remove(req);
-                      });
-                    },
-                    deleteIconColor: Colors.red,
-                  );
-                }).toList(),
-              ),
-
-              const SizedBox(height: 40),
-
-              ElevatedButton(
-                onPressed: _submitVacancy,
-                child: Text(isEditing ? 'GUARDAR MODIFICACIONES' : 'PUBLICAR OFERTA'),
-              ),
-            ],
+            ),
           ),
-        ),
-      ),
     );
   }
 }

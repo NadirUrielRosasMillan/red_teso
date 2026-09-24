@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
 import 'package:red_teso/features/company/presentation/pages/student_evaluation_page.dart';
@@ -10,54 +12,38 @@ class CompanyApplicantsPage extends StatefulWidget {
 }
 
 class _CompanyApplicantsPageState extends State<CompanyApplicantsPage> {
-  final List<Map<String, dynamic>> _applicants = [
-    {
-      'id': '1',
-      'nombre': 'Ana García Solís',
-      'puesto': 'Desarrollador Flutter Junior',
-      'gpa': 9.8,
-      'ingles': true,
-      'mod': 'Residencias',
-      'estado': 'Pendiente',
-    },
-    {
-      'id': '2',
-      'nombre': 'Carlos Ruiz Mendoza',
-      'puesto': 'Soporte Técnico e Infraestructura',
-      'gpa': 8.5,
-      'ingles': false,
-      'mod': 'Servicio Social',
-      'estado': 'Aceptado',
-    },
-    {
-      'id': '3',
-      'nombre': 'Juan Pérez Gómez',
-      'puesto': 'Desarrollador Flutter Junior',
-      'gpa': 7.9,
-      'ingles': true,
-      'mod': 'Residencias',
-      'estado': 'Rechazado',
-    },
-  ];
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  void _updateStatus(String id, String newStatus) {
-    setState(() {
-      final index = _applicants.indexWhere((element) => element['id'] == id);
-      if (index != -1) {
-        _applicants[index]['estado'] = newStatus;
+  // Actualiza el estado de la postulación en la nube (Sincronización total)
+  Future<void> _updateStatus(String docId, String newStatus, String studentId) async {
+    try {
+      await _db.collection('applications').doc(docId).update({'status': newStatus});
+
+      // Enviamos una notificación automática al alumno
+      await _db.collection('notifications').add({
+        'toUserId': studentId,
+        'title': 'Actualización de Postulación',
+        'message': 'Tu postulación ha cambiado a estado: $newStatus',
+        'createdAt': FieldValue.serverTimestamp(),
+        'read': false,
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Estado actualizado a $newStatus'), backgroundColor: AppTheme.primaryGreen),
+        );
       }
-    });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Estado actualizado a $newStatus visualmente.'),
-        backgroundColor: newStatus == 'Aceptado' ? AppTheme.primaryGreen : Colors.red,
-      ),
-    );
+    } catch (e) {
+      debugPrint('Error: $e');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final user = _auth.currentUser;
+    if (user == null) return const Center(child: Text('Inicia sesión'));
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -66,123 +52,99 @@ class _CompanyApplicantsPageState extends State<CompanyApplicantsPage> {
         foregroundColor: AppTheme.primaryGreen,
         elevation: 0,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Gestión de Candidatos',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const Text(
-              'Revisa, acepta o evalúa a los alumnos del TESOEM:',
-              style: TextStyle(color: Colors.grey),
-            ),
-            const SizedBox(height: 20),
-            
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: _applicants.length,
-              itemBuilder: (context, index) {
-                final a = _applicants[index];
-                Color statusColor = Colors.orange;
-                if (a['estado'] == 'Aceptado') statusColor = AppTheme.primaryGreen;
-                if (a['estado'] == 'Rechazado') statusColor = Colors.red;
+      body: StreamBuilder<QuerySnapshot>(
+        // Escuchamos solo las postulaciones dirigidas a esta empresa
+        stream: _db.collection('applications')
+            .where('companyId', isEqualTo: user.uid)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) return const Center(child: Text('Error al cargar datos'));
+          if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator());
 
-                return Card(
-                  margin: const EdgeInsets.only(bottom: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  elevation: 2,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            CircleAvatar(
-                              backgroundColor: AppTheme.primaryGreen.withOpacity(0.1),
-                              child: Text(a['nombre'][0], style: const TextStyle(color: AppTheme.primaryGreen, fontWeight: FontWeight.bold)),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(a['nombre'] as String, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                                  Text('Vacante: ${a['puesto']}', style: TextStyle(color: Colors.grey[700], fontSize: 14)),
-                                  const SizedBox(height: 4),
-                                  Text('${a['mod']} | Promedio: ${a['gpa']}', style: const TextStyle(fontSize: 13)),
-                                ],
-                              ),
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: statusColor.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: statusColor),
-                              ),
-                              child: Text(
-                                a['estado'] as String,
-                                style: TextStyle(color: statusColor, fontWeight: FontWeight.bold, fontSize: 11),
-                              ),
-                            )
-                          ],
-                        ),
-                        const Divider(height: 24),
-                        
-                        // Fila de acciones expandida (Aceptar, Descartar, Evaluar)
-                        SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              // Botón de Evaluación (Módulo Nuevo)
-                              TextButton.icon(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => StudentEvaluationPage(student: a),
-                                    ),
-                                  );
-                                },
-                                icon: const Icon(Icons.star_outline, color: Colors.amber, size: 18),
-                                label: const Text('Evaluar', style: TextStyle(color: Colors.amber)),
-                              ),
-                              const SizedBox(width: 4),
-                              TextButton.icon(
-                                onPressed: () => _updateStatus(a['id'] as String, 'Rechazado'),
-                                icon: const Icon(Icons.close, color: Colors.red, size: 18),
-                                label: const Text('Descartar', style: TextStyle(color: Colors.red)),
-                              ),
-                              const SizedBox(width: 4),
-                              ElevatedButton.icon(
-                                onPressed: () => _updateStatus(a['id'] as String, 'Aceptado'),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppTheme.primaryGreen,
-                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                  minimumSize: Size.zero,
-                                ),
-                                icon: const Icon(Icons.check, color: Colors.white, size: 16),
-                                label: const Text('Aceptar', style: TextStyle(color: Colors.white, fontSize: 13)),
-                              ),
-                            ],
+          final docs = snapshot.data!.docs;
+
+          if (docs.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.people_outline, size: 80, color: Colors.grey[300]),
+                  const Text('Aún no tienes candidatos postulados.', style: TextStyle(color: Colors.grey)),
+                ],
+              ),
+            );
+          }
+
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: docs.length,
+            itemBuilder: (context, index) {
+              final app = docs[index].data() as Map<String, dynamic>;
+              final id = docs[index].id;
+              final status = app['status'] ?? 'Enviado';
+
+              return Card(
+                margin: const EdgeInsets.only(bottom: 16),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(app['studentName'] ?? 'Alumno', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                          _buildStatusBadge(status),
+                        ],
+                      ),
+                      Text('Vacante: ${app['vacancyName']}', style: TextStyle(color: Colors.grey[600])),
+                      const Divider(height: 32),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            onPressed: () => _updateStatus(id, 'Rechazado', app['studentId']),
+                            child: const Text('DESCARTAR', style: TextStyle(color: Colors.red)),
                           ),
-                        )
-                      ],
-                    ),
+                          const SizedBox(width: 8),
+                          ElevatedButton(
+                            onPressed: () => _updateStatus(id, 'Aceptado', app['studentId']),
+                            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryGreen, minimumSize: const Size(100, 36)),
+                            child: const Text('ACEPTAR', style: TextStyle(color: Colors.white)),
+                          ),
+                          const SizedBox(width: 8),
+                          IconButton(
+                            icon: const Icon(Icons.star_outline, color: Colors.amber),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => StudentEvaluationPage(student: app)),
+                              );
+                            },
+                          )
+                        ],
+                      )
+                    ],
                   ),
-                );
-              },
-            ),
-          ],
-        ),
+                ),
+              );
+            },
+          );
+        },
       ),
+    );
+  }
+
+  Widget _buildStatusBadge(String status) {
+    Color color = Colors.orange;
+    if (status == 'Aceptado') color = AppTheme.primaryGreen;
+    if (status == 'Rechazado') color = Colors.red;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+      child: Text(status, style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 10)),
     );
   }
 }

@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
 import 'package:red_teso/features/company/presentation/pages/company_profile_view_page.dart';
@@ -12,18 +14,68 @@ class VacancyDetailPage extends StatefulWidget {
 }
 
 class _VacancyDetailPageState extends State<VacancyDetailPage> {
+  bool _isApplying = false;
   bool _hasApplied = false;
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  void _apply() {
-    setState(() {
-      _hasApplied = true;
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('¡Te has postulado con éxito a ${widget.vacancy['puesto']}!'),
-        backgroundColor: AppTheme.primaryGreen,
-      ),
-    );
+  @override
+  void initState() {
+    super.initState();
+    _checkIfAlreadyApplied();
+  }
+
+  // Verifica si el alumno ya se postuló anteriormente a esta vacante
+  Future<void> _checkIfAlreadyApplied() async {
+    final user = _auth.currentUser;
+    if (user == null) return;
+
+    final doc = await _db
+        .collection('applications')
+        .where('studentId', isEqualTo: user.uid)
+        .where('vacancyId', isEqualTo: widget.vacancy['id'])
+        .get();
+
+    if (doc.docs.isNotEmpty && mounted) {
+      setState(() => _hasApplied = true);
+    }
+  }
+
+  void _apply() async {
+    final user = _auth.currentUser;
+    if (user == null) return;
+
+    setState(() => _isApplying = true);
+
+    try {
+      // Guardar la postulación real en Firestore
+      await _db.collection('applications').add({
+        'studentId': user.uid,
+        'studentName': user.displayName ?? 'Alumno TESOEM',
+        'studentEmail': user.email,
+        'vacancyId': widget.vacancy['id'],
+        'vacancyName': widget.vacancy['puesto'],
+        'companyId': widget.vacancy['companyId'],
+        'companyName': widget.vacancy['empresa'],
+        'status': 'Enviado', // Estados: Enviado, En Revisión, Aceptado, Rechazado
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      if (mounted) {
+        setState(() {
+          _hasApplied = true;
+          _isApplying = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('¡Postulación enviada exitosamente!'), backgroundColor: AppTheme.primaryGreen),
+        );
+      }
+    } catch (e) {
+      if (mounted) setState(() => _isApplying = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al postularse: $e'), backgroundColor: Colors.red),
+      );
+    }
   }
 
   @override
@@ -41,143 +93,72 @@ class _VacancyDetailPageState extends State<VacancyDetailPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Encabezado principal interactivo para ver el perfil de la empresa
+            // Encabezado principal interactivo
             InkWell(
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => CompanyProfileViewPage(companyName: v['empresa']),
-                  ),
+                  MaterialPageRoute(builder: (context) => CompanyProfileViewPage(companyName: v['empresa'])),
                 );
               },
-              borderRadius: BorderRadius.circular(12),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Row(
-                  children: [
-                    Hero(
-                      tag: 'logo-${v['id']}',
-                      child: Material(
-                        color: Colors.transparent,
-                        child: Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: AppTheme.primaryGreen.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Icon(Icons.business, size: 48, color: AppTheme.primaryGreen),
-                        ),
+              child: Row(
+                children: [
+                  Hero(
+                    tag: 'logo-${v['id']}',
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: AppTheme.primaryGreen.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
                       ),
+                      child: const Icon(Icons.business, size: 48, color: AppTheme.primaryGreen),
                     ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            v['puesto'] as String,
-                            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                          ),
-                          Row(
-                            children: [
-                              Text(
-                                v['empresa'] as String,
-                                style: TextStyle(fontSize: 16, color: Colors.grey[700]),
-                              ),
-                              const SizedBox(width: 4),
-                              const Icon(Icons.info_outline, size: 14, color: AppTheme.primaryGreen),
-                            ],
-                          ),
-                        ],
-                      ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(v['puesto'], style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                        Text(v['empresa'], style: TextStyle(fontSize: 16, color: Colors.grey[700])),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 24),
-            
-            // Chips identificadores
-            Row(
-              children: [
-                Chip(
-                  label: Text(v['tipo'] as String),
-                  backgroundColor: AppTheme.primaryGreen.withOpacity(0.1),
-                  labelStyle: const TextStyle(color: AppTheme.primaryGreen, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(width: 8),
-                Chip(
-                  label: Text('Promedio ≥ ${v['gpa']}'),
-                  backgroundColor: Colors.orange[50],
-                  labelStyle: const TextStyle(color: Colors.orange, fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-
-            const Text(
-              'Descripción de la Vacante',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
+            Text('Descripción', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
-            Text(
-              v['descripcion'] as String,
-              style: const TextStyle(fontSize: 15, height: 1.5, color: Colors.black87),
-            ),
-            const SizedBox(height: 24),
-
-            const Text(
-              'Requisitos Técnicos',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: (v['requisitos'] as List<String>).map((req) {
-                return Chip(
-                  avatar: const Icon(Icons.check, size: 16, color: AppTheme.primaryGreen),
-                  label: Text(req),
-                  backgroundColor: Colors.grey[100],
-                );
-              }).toList(),
-            ),
+            Text(v['descripcion'] ?? 'Sin descripción disponible.', style: const TextStyle(height: 1.5)),
             const SizedBox(height: 40),
 
-            // Botón de Postulación
-            _hasApplied
-                ? Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.green[50],
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: AppTheme.primaryGreen),
-                    ),
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.check_circle, color: AppTheme.primaryGreen),
-                        SizedBox(width: 8),
-                        Text(
-                          '¡Ya estás postulado a esta vacante!',
-                          style: TextStyle(color: AppTheme.primaryGreen, fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                  )
-                : ElevatedButton(
-                    onPressed: _apply,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.primaryGreen,
-                      minimumSize: const Size(double.infinity, 54),
-                    ),
-                    child: const Text(
-                      'POSTULARME AHORA',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 1.1),
-                    ),
-                  ),
+            if (_hasApplied)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.green[50],
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppTheme.primaryGreen),
+                ),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.check_circle, color: AppTheme.primaryGreen),
+                    SizedBox(width: 8),
+                    Text('Ya estás postulado a esta vacante', style: TextStyle(color: AppTheme.primaryGreen, fontWeight: FontWeight.bold)),
+                  ],
+                ),
+              )
+            else if (_isApplying)
+              const Center(child: CircularProgressIndicator())
+            else
+              ElevatedButton(
+                onPressed: _apply,
+                style: ElevatedButton.styleFrom(minimumSize: const Size(double.infinity, 54)),
+                child: const Text('POSTULARME AHORA', style: TextStyle(fontWeight: FontWeight.bold)),
+              ),
           ],
         ),
       ),

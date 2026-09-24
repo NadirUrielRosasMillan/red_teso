@@ -48,7 +48,6 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Contenedor del logotipo modificado para que sea transparente y no tenga recuadro negro
                 Container(
                   width: 180,
                   height: 180,
