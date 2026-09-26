@@ -55,7 +55,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
             right: -100,
             child: CircleAvatar(
               radius: 150,
-              backgroundColor: AppTheme.primaryGreen.withOpacity(0.04),
+              backgroundColor: AppTheme.primaryGreen.withValues(alpha: 0.04),
             ),
           ),
           Positioned(
@@ -63,7 +63,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
             left: -50,
             child: CircleAvatar(
               radius: 120,
-              backgroundColor: AppTheme.primaryGreen.withOpacity(0.03),
+              backgroundColor: AppTheme.primaryGreen.withValues(alpha: 0.03),
             ),
           ),
           

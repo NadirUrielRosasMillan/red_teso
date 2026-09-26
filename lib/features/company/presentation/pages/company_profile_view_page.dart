@@ -26,7 +26,7 @@ class CompanyProfileViewPage extends StatelessWidget {
                   ),
                 ),
                 child: Center(
-                  child: Icon(Icons.business, size: 80, color: Colors.white.withOpacity(0.5)),
+                  child: Icon(Icons.business, size: 80, color: Colors.white.withValues(alpha: 0.5)),
                 ),
               ),
             ),
@@ -48,7 +48,7 @@ class CompanyProfileViewPage extends StatelessWidget {
                           color: Colors.black,
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(color: Colors.white, width: 4),
-                          boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10)],
+                          boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 10)],
                         ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(12),

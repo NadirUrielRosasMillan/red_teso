@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
+import 'package:red_teso/features/courses/presentation/pages/course_catalog_page.dart';
 import 'package:red_teso/features/company/presentation/pages/company_home_page.dart';
-import 'package:red_teso/features/company/presentation/pages/create_vacancy_page.dart';
 import 'package:red_teso/features/company/presentation/pages/company_applicants_page.dart';
 import 'package:red_teso/features/company/presentation/pages/manage_vacancies_page.dart';
 import 'package:red_teso/features/company/presentation/pages/company_profile_edit_page.dart';
@@ -17,11 +17,11 @@ class _CompanyDashboardPageState extends State<CompanyDashboardPage> {
   int _currentIndex = 0;
 
   final List<Widget> _pages = [
-    const CompanyHomePage(),
+    const CourseCatalogPage(), // Nueva sección principal de Cursos & Cortos TikTok
+    const CompanyHomePage(), // Buscador de Talento
     const ManageVacanciesPage(),
-    const CreateVacancyPage(),
     const CompanyApplicantsPage(),
-    const CompanyProfileEditPage(), // Nueva página integrada
+    const CompanyProfileEditPage(),
   ];
 
   @override
@@ -33,7 +33,7 @@ class _CompanyDashboardPageState extends State<CompanyDashboardPage> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
-        selectedItemColor: AppTheme.primaryGreen,
+        selectedItemColor: AppTheme.primaryColor,
         unselectedItemColor: Colors.grey,
         type: BottomNavigationBarType.fixed,
         onTap: (index) {
@@ -43,19 +43,19 @@ class _CompanyDashboardPageState extends State<CompanyDashboardPage> {
         },
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.search_outlined),
-            activeIcon: Icon(Icons.search),
+            icon: Icon(Icons.school_outlined),
+            activeIcon: Icon(Icons.school),
+            label: 'Cursos',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_search_outlined),
+            activeIcon: Icon(Icons.person_search),
             label: 'Talento',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.list_alt_outlined),
             activeIcon: Icon(Icons.list_alt),
             label: 'Vacantes',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add_box_outlined),
-            activeIcon: Icon(Icons.add_box),
-            label: 'Publicar',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.people_outline),
@@ -65,7 +65,7 @@ class _CompanyDashboardPageState extends State<CompanyDashboardPage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.business_outlined),
             activeIcon: Icon(Icons.business),
-            label: 'Mi Perfil',
+            label: 'Perfil',
           ),
         ],
       ),

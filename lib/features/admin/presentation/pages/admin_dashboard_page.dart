@@ -158,7 +158,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               child: ListTile(
                 leading: CircleAvatar(
-                  backgroundColor: AppTheme.primaryGreen.withOpacity(0.1),
+                  backgroundColor: AppTheme.primaryGreen.withValues(alpha: 0.1),
                   child: Text(data['name']?[0] ?? '?', style: const TextStyle(color: AppTheme.primaryGreen, fontWeight: FontWeight.bold)),
                 ),
                 title: Text(data['name'] ?? 'Usuario', style: const TextStyle(fontWeight: FontWeight.bold)),

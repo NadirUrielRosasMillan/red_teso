@@ -156,7 +156,7 @@ class OnboardingContent extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(40),
               decoration: BoxDecoration(
-                color: AppTheme.primaryGreen.withOpacity(0.05),
+                color: AppTheme.primaryGreen.withValues(alpha: 0.05),
                 shape: BoxShape.circle,
               ),
               child: Icon(

@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
-import 'package:intl/intl.dart';
 
 class NotificationsPage extends StatelessWidget {
   const NotificationsPage({super.key});
@@ -55,15 +54,15 @@ class NotificationsPage extends StatelessWidget {
 
               return Card(
                 elevation: isRead ? 0 : 2,
-                color: isRead ? Colors.grey[50] : Colors.green[50]?.withOpacity(0.3),
+                color: isRead ? Colors.grey[50] : Colors.green[50]?.withValues(alpha: 0.3),
                 margin: const EdgeInsets.only(bottom: 12),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
-                  side: BorderSide(color: isRead ? Colors.grey[200]! : AppTheme.primaryGreen.withOpacity(0.2)),
+                  side: BorderSide(color: isRead ? Colors.grey[200]! : AppTheme.primaryGreen.withValues(alpha: 0.2)),
                 ),
                 child: ListTile(
                   leading: CircleAvatar(
-                    backgroundColor: AppTheme.primaryGreen.withOpacity(0.1),
+                    backgroundColor: AppTheme.primaryGreen.withValues(alpha: 0.1),
                     child: const Icon(Icons.info_outline, color: AppTheme.primaryGreen),
                   ),
                   title: Text(n['title'] ?? 'Aviso', style: const TextStyle(fontWeight: FontWeight.bold)),

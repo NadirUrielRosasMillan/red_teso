@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
 import 'package:flutter/material.dart';
@@ -11,16 +12,19 @@ class AuthProvider extends ChangeNotifier {
   bool _isLoading = false;
   UserType _userType = UserType.none;
   User? _user;
+  Timer? _timer;
 
   bool get isLoading => _isLoading;
   UserType get userType => _userType;
-  bool get isLoggedIn => _user != null;
+  
+  // Requisito: Solo está logueado si el correo está verificado
+  bool get isLoggedIn => _user != null && _user!.emailVerified;
   User? get user => _user;
 
   AuthProvider() {
     _auth.authStateChanges().listen((User? user) async {
       _user = user;
-      if (user != null) {
+      if (user != null && user.emailVerified) {
         await _fetchUserType(user.uid);
       } else {
         _userType = UserType.none;
@@ -49,7 +53,23 @@ class AuthProvider extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     try {
-      await _auth.signInWithEmailAndPassword(email: email, password: password);
+      // SOLUCCIÓN AL PROBLEMA DE CARGA: Al registrarse, Firebase inicia sesión automáticamente
+      // dejando un estado "no verificado" en caché. Cerramos sesión antes para obligar un inicio limpio.
+      if (_auth.currentUser != null) {
+        await _auth.signOut();
+      }
+
+      final credential = await _auth.signInWithEmailAndPassword(email: email, password: password);
+      
+      if (!credential.user!.emailVerified) {
+        _isLoading = false;
+        notifyListeners();
+        return "Tu correo electrónico no ha sido verificado. Por favor revisa tu bandeja de entrada.";
+      }
+
+      _user = credential.user; // Asignamos la instancia fresca con la verificación actualizada
+      await _fetchUserType(credential.user!.uid);
+      
       _isLoading = false;
       notifyListeners();
       return null;
@@ -75,44 +95,27 @@ class AuthProvider extends ChangeNotifier {
         password: password,
       );
 
-      // 👇 FIX 1: Fijamos el usuario y el tipo INMEDIATAMENTE
-      //    para que el AuthWrapper reaccione al instante,
-      //    sin esperar a la escritura de Firestore.
-      _user = credential.user;
-      _userType = UserType.values.firstWhere(
-            (e) => e.toString().split('.').last == type,
-        orElse: () => UserType.none,
-      );
+      // Enviar correo de verificación
+      await credential.user!.sendEmailVerification();
 
-      // 👇 FIX 2: Damos tiempo a que el token de Auth
-      //    se propague al SDK de Firestore antes de escribir.
-      await Future.delayed(const Duration(milliseconds: 500));
+      // Guardar datos en Firestore
+      await _db.collection('users').doc(credential.user!.uid).set({
+        'uid': credential.user!.uid,
+        'name': name,
+        'email': email,
+        'type': type,
+        'createdAt': FieldValue.serverTimestamp(),
+        'status': 'Pendiente',
+        'emailVerified': false,
+        ...?extraData,
+      });
 
-      // 👇 FIX 3: Escritura con timeout para no quedar colgado
-      //    si Firestore no responde.
-      try {
-        await _db
-            .collection('users')
-            .doc(credential.user!.uid)
-            .set({
-          'uid': credential.user!.uid,
-          'name': name,
-          'email': email,
-          'type': type,
-          'createdAt': FieldValue.serverTimestamp(),
-          'status': 'Pendiente',
-          ...?extraData,
-        })
-            .timeout(const Duration(seconds: 10));
-      } catch (e) {
-        debugPrint('Error al escribir en Firestore: $e');
-        // Aun si falla la escritura, dejamos pasar al usuario.
-        // Puedes reintentar la escritura más tarde o mostrarlo en logs.
-      }
+      // Cerramos la sesión automática del registro para que al volver al login esté limpio
+      await _auth.signOut();
 
       _isLoading = false;
       notifyListeners();
-      return null;
+      return null; 
     } on FirebaseAuthException catch (e) {
       _isLoading = false;
       notifyListeners();
@@ -124,9 +127,21 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  // Método para checar manualmente la verificación (útil para la UI)
+  Future<void> checkVerificationStatus() async {
+    await _auth.currentUser?.reload();
+    _user = _auth.currentUser;
+    if (_user?.emailVerified ?? false) {
+      await _fetchUserType(_user!.uid);
+      await _db.collection('users').doc(_user!.uid).update({'emailVerified': true});
+    }
+    notifyListeners();
+  }
+
   Future<void> logout() async {
     _isLoading = false;
     _userType = UserType.none;
+    _timer?.cancel();
     await _auth.signOut();
     notifyListeners();
   }
