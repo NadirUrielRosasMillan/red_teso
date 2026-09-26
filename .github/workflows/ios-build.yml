@@ -8,33 +8,28 @@ on:
 jobs:
   build-ios:
     name: Build iOS App
-    # Es mejor fijar una versión de macOS en lugar de 'latest' 
-    # para evitar que una actualización de Xcode rompa tu build de repente.
-    runs-on: macos-14 
+    # ✅ Usamos macos-15 para obtener Xcode 16 (soluciona la advertencia de Flutter)
+    runs-on: macos-15 
 
     steps:
       - name: Checkout repository
-        # v4.2.0 soluciona la advertencia de Node.js 20 que viste en la captura
-        uses: actions/checkout@v4.2.0 
+        # ✅ Actualizado a v5 para eliminar la advertencia de Node.js 20
+        uses: actions/checkout@v5 
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          cache: true # Añadido para acelerar compilaciones futuras
+          cache: true
 
-      - name: Flutter Doctor (Opcional pero útil)
+      - name: Flutter Doctor
         run: flutter doctor -v
 
       - name: Install dependencies
         run: flutter pub get
 
-      # Añadido: Instalar Pods manualmente. Muchos fallos en CI vienen de aquí.
-      - name: Install CocoaPods dependencies
-        run: |
-          cd ios
-          pod install
-          cd ..
+      # ❌ ELIMINADO: El paso de "Install CocoaPods dependencies" 
+      # Flutter lo hará automáticamente durante el build.
 
       - name: Build iOS (Unsigned)
         run: flutter build ios --release --no-codesign
@@ -42,7 +37,7 @@ jobs:
       - name: Create IPA
         run: |
           cd build/ios/iphoneos
-          rm -rf Payload # Limpia por si acaso hay restos de una build anterior
+          rm -rf Payload
           mkdir -p Payload
           mv Runner.app Payload/
           zip -r -y Runner.ipa Payload
@@ -53,3 +48,4 @@ jobs:
           name: ios-ipa
           path: build/ios/iphoneos/Runner.ipa
           retention-days: 7
+          include-hidden-files: true
