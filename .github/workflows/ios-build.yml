@@ -8,12 +8,10 @@ on:
 jobs:
   build-ios:
     name: Build iOS App
-    # ✅ Usamos macos-15 para obtener Xcode 16 (soluciona la advertencia de Flutter)
     runs-on: macos-15 
 
     steps:
       - name: Checkout repository
-        # ✅ Actualizado a v5 para eliminar la advertencia de Node.js 20
         uses: actions/checkout@v5 
 
       - name: Setup Flutter
@@ -25,11 +23,17 @@ jobs:
       - name: Flutter Doctor
         run: flutter doctor -v
 
+      - name: Clean project
+        run: flutter clean
+
       - name: Install dependencies
         run: flutter pub get
 
-      # ❌ ELIMINADO: El paso de "Install CocoaPods dependencies" 
-      # Flutter lo hará automáticamente durante el build.
+      # ✅ NUEVO PASO: Parchear Xcode para evitar el error de Development Team
+      - name: Patch Xcode project
+        run: |
+          sed -i '' 's/DEVELOPMENT_TEAM = "";/DEVELOPMENT_TEAM = "XXXXXXXXXX";/g' ios/Runner.xcodeproj/project.pbxproj
+          sed -i '' 's/DEVELOPMENT_TEAM = "";/DEVELOPMENT_TEAM = "XXXXXXXXXX";/g' ios/Runner.xcodeproj/project.pbxproj
 
       - name: Build iOS (Unsigned)
         run: flutter build ios --release --no-codesign
