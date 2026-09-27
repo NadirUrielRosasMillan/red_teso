@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
 import 'package:red_teso/features/company/presentation/pages/create_vacancy_page.dart';
+import 'package:red_teso/features/student/presentation/pages/vacancy_detail_page.dart';
 
 class ManageVacanciesPage extends StatefulWidget {
   const ManageVacanciesPage({super.key});
@@ -69,6 +70,34 @@ class _ManageVacanciesPageState extends State<ManageVacanciesPage> {
         backgroundColor: Colors.white,
         foregroundColor: const Color(0xFF0F172A),
         elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add_rounded, color: AppTheme.primaryColor, size: 28),
+            tooltip: 'Publicar nueva vacante',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const CreateVacancyPage()),
+              );
+            },
+          ),
+          const SizedBox(width: 8),
+        ],
+      ),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 90), // Por encima del dock flotante Liquid Glass
+        child: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const CreateVacancyPage()),
+            );
+          },
+          backgroundColor: AppTheme.primaryColor,
+          elevation: 6,
+          tooltip: 'Publicar nueva vacante',
+          child: const Icon(Icons.add_rounded, color: Colors.white, size: 28),
+        ),
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: _db
@@ -111,6 +140,22 @@ class _ManageVacanciesPageState extends State<ManageVacanciesPage> {
                       textAlign: TextAlign.center,
                       style: GoogleFonts.inter(fontSize: 13.5, color: const Color(0xFF64748B)),
                     ),
+                    const SizedBox(height: 24),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const CreateVacancyPage()),
+                        );
+                      },
+                      icon: const Icon(Icons.add_rounded, color: Colors.white),
+                      label: Text('PUBLICAR VACANTE', style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.primaryColor,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -118,7 +163,7 @@ class _ManageVacanciesPageState extends State<ManageVacanciesPage> {
           }
 
           return ListView.builder(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
             itemCount: docs.length,
             itemBuilder: (context, index) {
               final v = docs[index].data() as Map<String, dynamic>;
@@ -232,9 +277,33 @@ class _ManageVacanciesPageState extends State<ManageVacanciesPage> {
                               ),
                             ],
                           ),
-                          Text(
-                            'GPA Mínimo: $gpa',
-                            style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)),
+                          InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => VacancyDetailPage(vacancy: {...v, 'id': id}),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(color: AppTheme.primaryColor.withValues(alpha: 0.3)),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.map_rounded, size: 14, color: AppTheme.primaryColor),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'Ver Mapa 📍',
+                                    style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: AppTheme.primaryColor),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                         ],
                       ),

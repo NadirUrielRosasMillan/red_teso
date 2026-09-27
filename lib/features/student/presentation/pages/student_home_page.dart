@@ -73,14 +73,31 @@ class _StudentHomePageState extends State<StudentHomePage> {
 
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
-              stream: _db.collection('vacancies').orderBy('createdAt', descending: true).snapshots(),
+              stream: _db.collection('vacancies').snapshots(),
               builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return const Center(child: Text('Error al cargar vacantes'));
+                }
                 if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
-                
-                final vacancies = snapshot.data!.docs.where((doc) {
+
+                final docs = snapshot.data!.docs.toList();
+                docs.sort((a, b) {
+                  final aData = a.data() as Map<String, dynamic>;
+                  final bData = b.data() as Map<String, dynamic>;
+                  final aTime = aData['createdAt'] as Timestamp?;
+                  final bTime = bData['createdAt'] as Timestamp?;
+                  if (aTime == null && bTime == null) return 0;
+                  if (aTime == null) return -1;
+                  if (bTime == null) return 1;
+                  return bTime.compareTo(aTime);
+                });
+
+                final vacancies = docs.where((doc) {
                   final data = doc.data() as Map<String, dynamic>;
                   final matchesCat = _selectedCategory == 'Todos' || data['tipo'] == _selectedCategory;
-                  final matchesSearch = data['puesto'].toString().toLowerCase().contains(_searchController.text.toLowerCase());
+                  final searchLower = _searchController.text.toLowerCase();
+                  final matchesSearch = (data['puesto'] ?? '').toString().toLowerCase().contains(searchLower) ||
+                      (data['empresa'] ?? '').toString().toLowerCase().contains(searchLower);
                   return matchesCat && matchesSearch;
                 }).toList();
 

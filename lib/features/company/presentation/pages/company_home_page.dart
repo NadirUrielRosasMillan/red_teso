@@ -7,6 +7,7 @@ import 'package:red_teso/core/widgets/notification_bell.dart';
 import 'package:red_teso/features/auth/presentation/providers/auth_provider.dart';
 import 'package:red_teso/features/company/presentation/pages/student_detail_view_page.dart';
 import 'package:red_teso/features/company/presentation/widgets/contact_student_modal.dart';
+import 'package:red_teso/features/company/presentation/widgets/ai_talent_assistant_modal.dart';
 
 class CompanyHomePage extends StatefulWidget {
   const CompanyHomePage({super.key});
@@ -17,26 +18,48 @@ class CompanyHomePage extends StatefulWidget {
 
 class _CompanyHomePageState extends State<CompanyHomePage> {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
-  final TextEditingController _searchController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
 
   String _searchQuery = '';
   String _selectedModality = 'Todos';
   bool _requireHighGpa = false;
   bool _requireEnglish = false;
+  bool _isScrolled = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(() {
+      if (_scrollController.offset > 70 && !_isScrolled) {
+        setState(() => _isScrolled = true);
+      } else if (_scrollController.offset <= 70 && _isScrolled) {
+        setState(() => _isScrolled = false);
+      }
+    });
+  }
 
   @override
   void dispose() {
-    _searchController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
   void _resetFilters() {
     setState(() {
-      _searchController.clear();
       _searchQuery = '';
       _selectedModality = 'Todos';
       _requireHighGpa = false;
       _requireEnglish = false;
+    });
+  }
+
+  void _applyTechFilter(String tech) {
+    setState(() {
+      if (_searchQuery.toLowerCase() == tech.toLowerCase()) {
+        _searchQuery = '';
+      } else {
+        _searchQuery = tech;
+      }
     });
   }
 
@@ -61,114 +84,138 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
           ),
         ],
       ),
+
+      // Botón de Acción Flotante Inteligente cuando se hace scroll
+      floatingActionButton: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 300),
+        transitionBuilder: (child, animation) => ScaleTransition(scale: animation, child: child),
+        child: _isScrolled
+            ? Padding(
+                padding: const EdgeInsets.only(bottom: 100), // Por encima del dock flotante Liquid Glass
+                child: FloatingActionButton(
+                  key: const ValueKey('floating_ai_talent_btn'),
+                  onPressed: () => AiTalentAssistantModal.show(context, students: _sampleStudents),
+                  backgroundColor: const Color(0xFF0F172A),
+                  elevation: 6,
+                  tooltip: 'IA REDTESO 🤖',
+                  child: const Icon(Icons.psychology_rounded, color: AppTheme.accentColor, size: 24),
+                ),
+              )
+            : const SizedBox.shrink(key: ValueKey('empty_ai_talent_btn')),
+      ),
+
       body: CustomScrollView(
+        controller: _scrollController,
         physics: const BouncingScrollPhysics(),
         slivers: [
           SliverToBoxAdapter(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // 1. ENCABEZADO EJECUTIVO "TALENTO DE EXCELENCIA TESOEM"
-                Container(
-                  width: double.infinity,
-                  margin: const EdgeInsets.fromLTRB(16, 16, 16, 12),
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [
-                        AppTheme.primaryColor, // Guinda 0xFF691C32
-                        Color(0xFF4A1022),
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(24),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppTheme.primaryColor.withOpacity(0.3),
-                        blurRadius: 16,
-                        offset: const Offset(0, 8),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(10),
+                const SizedBox(height: 12),
+
+                // 1. BOTÓN DE BÚSQUEDA SEMÁNTICA CON IA REDTESO 🤖✨
+                AnimatedOpacity(
+                  duration: const Duration(milliseconds: 250),
+                  opacity: _isScrolled ? 0.3 : 1.0,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+                    child: GestureDetector(
+                      onTap: () {
+                        AiTalentAssistantModal.show(context, students: _sampleStudents);
+                      },
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(Icons.stars_rounded, color: AppTheme.accentColor, size: 28),
-                      ),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Directorio Ejecutivo de Talento',
-                              style: GoogleFonts.outfit(
-                                color: Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text(
-                              'Ingenieros en Sistemas Computacionales capacitados para residencias y empleo.',
-                              style: GoogleFonts.inter(
-                                color: Colors.white.withOpacity(0.85),
-                                fontSize: 12.5,
-                              ),
+                          gradient: const LinearGradient(
+                            colors: [
+                              Color(0xFF0F172A),
+                              Color(0xFF1E293B),
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: AppTheme.accentColor.withOpacity(0.5), width: 1.2),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppTheme.accentColor.withOpacity(0.2),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
                             ),
                           ],
                         ),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: const BoxDecoration(
+                                gradient: LinearGradient(colors: [AppTheme.primaryColor, AppTheme.accentColor]),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(Icons.psychology_rounded, color: Colors.white, size: 22),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Búsqueda Semántica con IA RedTESO 🤖✨',
+                                    style: GoogleFonts.outfit(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                                  ),
+                                  Text(
+                                    'Ej. "Busco alumno en bases de datos cerca de Chalco"',
+                                    style: GoogleFonts.inter(color: Colors.white70, fontSize: 11.5),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const Icon(Icons.arrow_forward_ios_rounded, color: AppTheme.accentColor, size: 14),
+                          ],
+                        ),
                       ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 10),
+
+                // 2. CHIPS DE TECNOLOGÍAS RÁPIDAS
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  child: Row(
+                    children: [
+                      Text('Tecnologías: ', style: GoogleFonts.inter(fontSize: 11.5, fontWeight: FontWeight.bold, color: const Color(0xFF64748B))),
+                      ...['Python', 'Flutter', 'AWS', 'Java', 'React', 'Ciberseguridad', 'SQL'].map((tech) {
+                        final isSelected = _searchQuery.toLowerCase() == tech.toLowerCase();
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 6.0),
+                          child: ActionChip(
+                            label: Text(tech),
+                            backgroundColor: isSelected ? AppTheme.primaryColor : const Color(0xFFF1F5F9),
+                            labelStyle: GoogleFonts.inter(
+                              color: isSelected ? Colors.white : const Color(0xFF334155),
+                              fontSize: 11.5,
+                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              side: BorderSide(
+                                color: isSelected ? AppTheme.primaryColor : const Color(0xFFE2E8F0),
+                              ),
+                            ),
+                            onPressed: () => _applyTechFilter(tech),
+                          ),
+                        );
+                      }).toList(),
                     ],
                   ),
                 ),
 
-                // 2. BARRA DE BÚSQUEDA INTELIGENTE
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.04),
-                          blurRadius: 12,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                      border: Border.all(color: const Color(0xFFE2E8F0)),
-                    ),
-                    child: TextField(
-                      controller: _searchController,
-                      style: GoogleFonts.inter(fontSize: 14.5),
-                      onChanged: (val) => setState(() => _searchQuery = val),
-                      decoration: InputDecoration(
-                        hintText: 'Buscar por nombre o tecnología (ej. Python, Flutter, AWS...)',
-                        hintStyle: GoogleFonts.inter(color: const Color(0xFF94A3B8), fontSize: 13.5),
-                        prefixIcon: const Icon(Icons.person_search_rounded, color: AppTheme.primaryColor),
-                        suffixIcon: _searchQuery.isNotEmpty
-                            ? IconButton(
-                                icon: const Icon(Icons.clear_rounded, color: Colors.grey),
-                                onPressed: () {
-                                  _searchController.clear();
-                                  setState(() => _searchQuery = '');
-                                },
-                              )
-                            : null,
-                        border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                      ),
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 8),
+                const SizedBox(height: 6),
 
                 // 3. CHIPS DE FILTRO RÁPIDO (Modalidad, GPA, Inglés)
                 SingleChildScrollView(
@@ -256,7 +303,8 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                   'gender': data['gender'] ?? 'Femenino',
                   'speaksEnglish': data['speaksEnglish'] ?? false,
                   'career': data['career'] ?? 'Ing. en Sistemas Computacionales',
-                  'skills': data['skills'] ?? ['Flutter', 'Python', 'AWS', 'SQL'],
+                  'skills': data['skills'] ?? ['Java', 'Python', 'React', 'Ciberseguridad', 'Flutter', 'AWS', 'SQL'],
+                  'location': data['location'] ?? 'Chalco',
                 };
               }).toList();
 
@@ -265,7 +313,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                 studentsList = _sampleStudents;
               }
 
-              // Aplicación de Filtros
+              // Aplicación de Filtros Inteligentes
               final filtered = studentsList.where((s) {
                 final name = s['name'].toString().toLowerCase();
                 final career = s['career'].toString().toLowerCase();
@@ -319,7 +367,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
     final gpa = (student['gpa'] ?? 8.5).toStringAsFixed(1);
     final modality = student['modality'] ?? 'Residencias';
     final speaksEnglish = student['speaksEnglish'] ?? false;
-    final skills = List<String>.from(student['skills'] ?? ['Flutter', 'AWS', 'Python', 'SQL']);
+    final skills = List<String>.from(student['skills'] ?? ['Java', 'Python', 'React', 'Flutter', 'AWS', 'SQL']);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
@@ -455,7 +503,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
 
             const SizedBox(height: 16),
 
-            // 2. SKILLS & TECNOLOGÍAS DEL ALUMNO
+            // 2. SKILLS & TECNOLOGÍAS DEL ALUMNO (Highlight si coincide con la búsqueda)
             Text(
               'Habilidades Tecnológicas:',
               style: GoogleFonts.inter(
@@ -471,19 +519,24 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
               runSpacing: 6,
               children: [
                 ...skills.map((skill) {
+                  final isMatched = _searchQuery.isNotEmpty &&
+                      skill.toLowerCase().contains(_searchQuery.toLowerCase().trim());
+
                   return Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF1F5F9),
+                      color: isMatched ? AppTheme.primaryColor : const Color(0xFFF1F5F9),
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: const Color(0xFFE2E8F0)),
+                      border: Border.all(
+                        color: isMatched ? AppTheme.primaryColor : const Color(0xFFE2E8F0),
+                      ),
                     ),
                     child: Text(
                       skill,
                       style: GoogleFonts.inter(
                         fontSize: 11.5,
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xFF1E293B),
+                        fontWeight: isMatched ? FontWeight.bold : FontWeight.w600,
+                        color: isMatched ? Colors.white : const Color(0xFF1E293B),
                       ),
                     ),
                   );
@@ -582,12 +635,12 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
           const Icon(Icons.person_search_rounded, size: 64, color: Colors.grey),
           const SizedBox(height: 16),
           Text(
-            'No hay candidatos coincidentes',
+            'No se encontraron alumnos',
             style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A)),
           ),
           const SizedBox(height: 6),
           Text(
-            'Ajusta la búsqueda o los filtros seleccionados para encontrar talento disponible.',
+            'No hay candidatos que coincidan con "$_searchQuery" o con los filtros aplicados.',
             textAlign: TextAlign.center,
             style: GoogleFonts.inter(fontSize: 13, color: const Color(0xFF64748B)),
           ),
@@ -607,7 +660,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
     );
   }
 
-  // Lista de alumnos de demostración para pruebas
+  // Lista de alumnos de demostración con tecnologías específicas y ubicación
   static final List<Map<String, dynamic>> _sampleStudents = [
     {
       'uid': 'student_demo_1',
@@ -618,7 +671,8 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
       'gender': 'Masculino',
       'speaksEnglish': true,
       'career': 'Ing. en Sistemas Computacionales',
-      'skills': ['Kubernetes', 'AWS', 'Docker', 'Python', 'CI/CD'],
+      'skills': ['Bases de Datos', 'SQL', 'Kubernetes', 'AWS', 'Docker', 'Python'],
+      'location': 'Chalco',
     },
     {
       'uid': 'student_demo_2',
@@ -629,7 +683,8 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
       'gender': 'Femenino',
       'speaksEnglish': true,
       'career': 'Ing. en Sistemas Computacionales',
-      'skills': ['Flutter', 'Firebase', 'Terraform', 'SQL', 'Git'],
+      'skills': ['Flutter', 'React', 'Firebase', 'Terraform', 'SQL', 'Git'],
+      'location': 'Ixtapaluca',
     },
     {
       'uid': 'student_demo_3',
@@ -640,7 +695,8 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
       'gender': 'Masculino',
       'speaksEnglish': true,
       'career': 'Ing. en Sistemas Computacionales',
-      'skills': ['Machine Learning', 'Python', 'OpenCV', 'PyTorch', 'C++'],
+      'skills': ['Python', 'Ciberseguridad', 'Machine Learning', 'OpenCV', 'React', 'Java'],
+      'location': 'Valle de Chalco',
     },
   ];
 }

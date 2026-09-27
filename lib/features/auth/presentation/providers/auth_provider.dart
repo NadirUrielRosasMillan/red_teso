@@ -10,11 +10,13 @@ class AuthProvider extends ChangeNotifier {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
   bool _isLoading = false;
+  bool _isInitializing = true;
   UserType _userType = UserType.none;
   User? _user;
   Timer? _timer;
 
   bool get isLoading => _isLoading;
+  bool get isInitializing => _isInitializing;
   UserType get userType => _userType;
   
   // Requisito: Solo está logueado si el correo está verificado
@@ -30,6 +32,7 @@ class AuthProvider extends ChangeNotifier {
         _userType = UserType.none;
         _isLoading = false;
       }
+      _isInitializing = false;
       notifyListeners();
     });
   }

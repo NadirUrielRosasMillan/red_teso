@@ -6,11 +6,12 @@ import 'package:red_teso/features/courses/domain/models/course_model.dart';
 import 'package:red_teso/features/courses/presentation/pages/course_clips_feed_page.dart';
 import 'package:red_teso/features/courses/presentation/pages/course_detail_page.dart';
 import 'package:red_teso/features/courses/presentation/pages/course_xray_player_page.dart';
+import 'package:red_teso/features/courses/presentation/widgets/ai_course_assistant_modal.dart';
 import 'package:red_teso/features/courses/presentation/widgets/course_quote_modal.dart';
 import 'package:red_teso/features/company/presentation/pages/student_detail_view_page.dart';
 
 /// Catálogo Oficial de Cursos Universitaros TESOEM para Empresas
-/// Incluye Buscador Inteligente, Filtros por Nivel, solicitudes de cotización y acceso al Feed de Cortos (TikTok style)
+/// Incluye Buscador Semántico por IA, Filtros por Nivel, solicitudes de cotización y acceso al Feed de Cortos (TikTok style)
 class CourseCatalogPage extends StatefulWidget {
   const CourseCatalogPage({super.key});
 
@@ -20,45 +21,45 @@ class CourseCatalogPage extends StatefulWidget {
 
 class _CourseCatalogPageState extends State<CourseCatalogPage> {
   final List<CourseModel> _courses = MockCoursesData.sampleCourses;
-  final TextEditingController _searchController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
 
   String _selectedCategory = 'Todos';
   String _selectedLevel = 'Todos';
-  String _searchQuery = '';
+  bool _isScrolled = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(() {
+      if (_scrollController.offset > 70 && !_isScrolled) {
+        setState(() => _isScrolled = true);
+      } else if (_scrollController.offset <= 70 && _isScrolled) {
+        setState(() => _isScrolled = false);
+      }
+    });
+  }
 
   @override
   void dispose() {
-    _searchController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
-  /// Búsqueda y filtrado inteligente combinado por palabra clave, categoría y nivel
+  /// Búsqueda y filtrado inteligente combinado por categoría y nivel
   List<CourseModel> get _filteredCourses {
     return _courses.where((course) {
-      // 1. Filtro por categoría
       final matchesCategory = _selectedCategory == 'Todos' ||
           course.category.toLowerCase().contains(_selectedCategory.toLowerCase());
 
-      // 2. Filtro por nivel (Básico, Intermedio, Avanzado)
       final matchesLevel = _selectedLevel == 'Todos' ||
           course.level.toLowerCase().contains(_selectedLevel.toLowerCase());
 
-      // 3. Filtro por palabra clave (AWS, Python, Kubernetes, Pentesting, Flutter, etc.)
-      final query = _searchQuery.trim().toLowerCase();
-      final matchesQuery = query.isEmpty ||
-          course.title.toLowerCase().contains(query) ||
-          course.description.toLowerCase().contains(query) ||
-          course.category.toLowerCase().contains(query) ||
-          course.level.toLowerCase().contains(query);
-
-      return matchesCategory && matchesLevel && matchesQuery;
+      return matchesCategory && matchesLevel;
     }).toList();
   }
 
   void _clearFilters() {
     setState(() {
-      _searchController.clear();
-      _searchQuery = '';
       _selectedCategory = 'Todos';
       _selectedLevel = 'Todos';
     });
@@ -130,118 +131,103 @@ class _CourseCatalogPageState extends State<CourseCatalogPage> {
           ),
         ],
       ),
+
+      // Botón de Acción Flotante Inteligente cuando hace scroll
+      floatingActionButton: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 300),
+        transitionBuilder: (child, animation) => ScaleTransition(scale: animation, child: child),
+        child: _isScrolled
+            ? Padding(
+                padding: const EdgeInsets.only(bottom: 100), // Para quedar por encima del dock flotante Liquid Glass
+                child: FloatingActionButton(
+                  key: const ValueKey('floating_ai_btn'),
+                  onPressed: () => AiCourseAssistantModal.show(context, courses: _courses),
+                  backgroundColor: const Color(0xFF0F172A),
+      elevation: 6,
+                  tooltip: 'IA REDTESO 🤖',
+                  child: const Icon(Icons.psychology_rounded, color: AppTheme.accentColor, size: 24),
+                ),
+              )
+            : const SizedBox.shrink(key: ValueKey('empty_ai_btn')),
+      ),
+
       body: CustomScrollView(
+        controller: _scrollController,
         physics: const BouncingScrollPhysics(),
         slivers: [
           SliverToBoxAdapter(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Banner Informativo TESOEM
-                Container(
-                  width: double.infinity,
-                  margin: const EdgeInsets.fromLTRB(16, 16, 16, 12),
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: const [
-                        AppTheme.primaryColor, // Guinda 0xFF691C32
-                        Color(0xFF4A1022),
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(24),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppTheme.primaryColor.withOpacity(0.3),
-                        blurRadius: 16,
-                        offset: const Offset(0, 8),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
+                const SizedBox(height: 12),
+
+                // 1. TARJETA ENCABEZADO DE BÚSQUEDA SEMÁNTICA CON IA REDTESO 🤖✨
+                AnimatedOpacity(
+                  duration: const Duration(milliseconds: 250),
+                  opacity: _isScrolled ? 0.3 : 1.0,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+                    child: GestureDetector(
+                      onTap: () {
+                        AiCourseAssistantModal.show(context, courses: _courses);
+                      },
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(Icons.workspace_premium_rounded, color: Colors.white, size: 24),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Capacitación Corporativa TESOEM',
-                              style: GoogleFonts.outfit(
-                                color: Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text(
-                              'Cursos impartidos oficialmente por la Universidad TESOEM para la capacitación ejecutiva de tu empresa.',
-                              style: GoogleFonts.inter(
-                                color: Colors.white.withOpacity(0.85),
-                                fontSize: 12.5,
-                              ),
+                          gradient: const LinearGradient(
+                            colors: [
+                              Color(0xFF0F172A),
+                              Color(0xFF1E293B),
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: AppTheme.accentColor.withOpacity(0.5), width: 1.2),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppTheme.accentColor.withOpacity(0.2),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
                             ),
                           ],
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // 1. BARRA DE BÚSQUEDA INTELIGENTE POR PALABRAS CLAVE
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.04),
-                          blurRadius: 12,
-                          offset: const Offset(0, 4),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: const BoxDecoration(
+                                gradient: LinearGradient(colors: [AppTheme.primaryColor, AppTheme.accentColor]),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(Icons.psychology_rounded, color: Colors.white, size: 22),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Asistente IA para Cursos 🤖✨',
+                                    style: GoogleFonts.outfit(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                                  ),
+                                  Text(
+                                    'Escribe en lenguaje cotidiano: "Quiero un curso de AWS o Ciberseguridad"',
+                                    style: GoogleFonts.inter(color: Colors.white70, fontSize: 11.5),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const Icon(Icons.arrow_forward_ios_rounded, color: AppTheme.accentColor, size: 14),
+                          ],
                         ),
-                      ],
-                      border: Border.all(color: const Color(0xFFE2E8F0)),
-                    ),
-                    child: TextField(
-                      controller: _searchController,
-                      style: GoogleFonts.inter(fontSize: 14.5),
-                      onChanged: (val) {
-                        setState(() {
-                          _searchQuery = val;
-                        });
-                      },
-                      decoration: InputDecoration(
-                        hintText: 'Buscar tecnología (ej. AWS, Python, Kubernetes...)',
-                        hintStyle: GoogleFonts.inter(color: const Color(0xFF94A3B8), fontSize: 13.5),
-                        prefixIcon: const Icon(Icons.search_rounded, color: AppTheme.primaryColor),
-                        suffixIcon: _searchQuery.isNotEmpty
-                            ? IconButton(
-                                icon: const Icon(Icons.clear_rounded, color: Colors.grey),
-                                onPressed: () {
-                                  _searchController.clear();
-                                  setState(() => _searchQuery = '');
-                                },
-                              )
-                            : null,
-                        border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                       ),
                     ),
                   ),
                 ),
 
-                const SizedBox(height: 8),
+                const SizedBox(height: 10),
 
                 // 2. FILTROS POR CATEGORÍA
                 SingleChildScrollView(
@@ -333,7 +319,7 @@ class _CourseCatalogPageState extends State<CourseCatalogPage> {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      'No hay cursos que coincidan con "$_searchQuery" o con los filtros seleccionados.',
+                      'No hay cursos que coincidan con los filtros seleccionados.',
                       textAlign: TextAlign.center,
                       style: GoogleFonts.inter(fontSize: 13, color: const Color(0xFF64748B)),
                     ),
@@ -367,7 +353,7 @@ class _CourseCatalogPageState extends State<CourseCatalogPage> {
             ),
 
           const SliverToBoxAdapter(
-            child: SizedBox(height: 32),
+            child: SizedBox(height: 100), // Espacio para el dock flotante Liquid Glass
           ),
         ],
       ),
@@ -420,9 +406,9 @@ class _CourseCatalogPageState extends State<CourseCatalogPage> {
                         return Container(
                           height: 160,
                           width: double.infinity,
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             gradient: LinearGradient(
-                              colors: const [AppTheme.primaryColor, Color(0xFF4A1022)],
+                              colors: [AppTheme.primaryColor, Color(0xFF4A1022)],
                             ),
                           ),
                           child: const Center(

@@ -65,6 +65,19 @@ class AuthWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
+
+    if (authProvider.isInitializing) {
+      return const Scaffold(
+        backgroundColor: Colors.white,
+        body: Center(
+          child: CircularProgressIndicator(
+            color: AppTheme.primaryGreen,
+            strokeWidth: 2.5,
+          ),
+        ),
+      );
+    }
+
     if (authProvider.isLoggedIn) {
       switch (authProvider.userType) {
         case UserType.alumno: return const StudentDashboardPage();

@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
+import 'package:red_teso/features/company/presentation/widgets/vacancy_location_map_widget.dart';
 
 class CreateVacancyPage extends StatefulWidget {
   final Map<String, dynamic>? vacancyToEdit;
@@ -28,6 +29,12 @@ class _CreateVacancyPageState extends State<CreateVacancyPage> {
   bool _requiresEnglish = false;
   bool _isPublishing = false;
 
+  double _distanceKm = 5.2;
+  int _commuteMinutes = 15;
+  String _transportTip = 'Combi directa desde TESOEM o Metro Santa Marta';
+  double _lat = 19.3621;
+  double _lng = -98.9806;
+
   final List<String> _requirementsList = ['Proactivo', 'Trabajo en equipo'];
   final TextEditingController _newRequirementController = TextEditingController();
 
@@ -38,13 +45,16 @@ class _CreateVacancyPageState extends State<CreateVacancyPage> {
 
     _titleController = TextEditingController(text: isEditing ? widget.vacancyToEdit!['puesto'] : '');
     _descriptionController = TextEditingController(text: isEditing ? widget.vacancyToEdit!['descripcion'] : '');
-    _locationController = TextEditingController(text: isEditing ? widget.vacancyToEdit!['ubicacion'] ?? 'Remoto' : 'Híbrido');
+    _locationController = TextEditingController(text: isEditing ? widget.vacancyToEdit!['ubicacion'] ?? 'Cerca de TESOEM / Los Reyes La Paz' : 'Cerca de TESOEM / Los Reyes La Paz');
     _supportController = TextEditingController(text: isEditing ? widget.vacancyToEdit!['apoyo']?.toString() : '5000');
 
     if (isEditing) {
       _opportunityType = widget.vacancyToEdit!['tipo'] ?? 'Residencias';
       _requiredGpa = (widget.vacancyToEdit!['gpa'] ?? 8.0).toDouble();
       _requiresEnglish = widget.vacancyToEdit!['ingles'] ?? false;
+      _distanceKm = (widget.vacancyToEdit!['distanceKm'] ?? 5.2).toDouble();
+      _commuteMinutes = (widget.vacancyToEdit!['commuteMinutes'] ?? 15).toInt();
+      _transportTip = widget.vacancyToEdit!['transportTip'] ?? 'Combi directa desde TESOEM o Metro Santa Marta';
       if (widget.vacancyToEdit!['requisitos'] != null) {
         _requirementsList.clear();
         _requirementsList.addAll(List<String>.from(widget.vacancyToEdit!['requisitos']));
@@ -67,16 +77,28 @@ class _CreateVacancyPageState extends State<CreateVacancyPage> {
       setState(() => _isPublishing = true);
       try {
         final userId = _auth.currentUser?.uid;
-        if (userId == null) throw Exception('Sesión no iniciada');
+        if (userId == null) throw Exception('Sesión no iniciada. Por favor inicie sesión nuevamente.');
 
         // Obtener el nombre real registrado de la empresa desde Firestore
         String companyName = 'Empresa Colaboradora';
-        final companyDoc = await _db.collection('users').doc(userId).get();
-        if (companyDoc.exists) {
-          companyName = companyDoc.data()?['name'] ?? 'Empresa Colaboradora';
+        try {
+          final companyDoc = await _db.collection('users').doc(userId).get();
+          if (companyDoc.exists) {
+            final data = companyDoc.data();
+            final fetchedName = data?['name'] ?? data?['companyName'] ?? data?['empresa'];
+            if (fetchedName != null && fetchedName.toString().trim().isNotEmpty) {
+              companyName = fetchedName.toString().trim();
+            }
+          }
+        } catch (e) {
+          debugPrint('Error obteniendo nombre de la empresa: $e');
         }
 
-        final vacancyData = {
+        if (companyName == 'Empresa Colaboradora' && _auth.currentUser?.displayName != null && _auth.currentUser!.displayName!.isNotEmpty) {
+          companyName = _auth.currentUser!.displayName!;
+        }
+
+        final vacancyData = <String, dynamic>{
           'puesto': _titleController.text.trim(),
           'tipo': _opportunityType,
           'ubicacion': _locationController.text.trim(),
@@ -87,12 +109,18 @@ class _CreateVacancyPageState extends State<CreateVacancyPage> {
           'requisitos': _requirementsList,
           'companyId': userId,
           'empresa': companyName,
-          'createdAt': FieldValue.serverTimestamp(),
+          'distanceKm': _distanceKm,
+          'commuteMinutes': _commuteMinutes,
+          'transportTip': _transportTip,
+          'lat': _lat,
+          'lng': _lng,
+          'updatedAt': FieldValue.serverTimestamp(),
         };
 
         if (widget.vacancyToEdit != null) {
           await _db.collection('vacancies').doc(widget.vacancyToEdit!['id']).update(vacancyData);
         } else {
+          vacancyData['createdAt'] = FieldValue.serverTimestamp();
           await _db.collection('vacancies').add(vacancyData);
         }
 
@@ -104,9 +132,11 @@ class _CreateVacancyPageState extends State<CreateVacancyPage> {
               children: [
                 const Icon(Icons.check_circle_outline_rounded, color: Colors.white),
                 const SizedBox(width: 10),
-                Text(
-                  widget.vacancyToEdit != null ? '¡Vacante actualizada!' : '¡Vacante publicada en RedTESO!',
-                  style: GoogleFonts.inter(),
+                Expanded(
+                  child: Text(
+                    widget.vacancyToEdit != null ? '¡Vacante actualizada!' : '¡Vacante publicada exitosamente en RedTESO!',
+                    style: GoogleFonts.inter(),
+                  ),
                 ),
               ],
             ),
@@ -115,21 +145,33 @@ class _CreateVacancyPageState extends State<CreateVacancyPage> {
           ),
         );
 
-        if (widget.vacancyToEdit != null) {
-          Navigator.pop(context);
-        } else {
-          _titleController.clear();
-          _descriptionController.clear();
-          _supportController.clear();
-        }
+        Navigator.pop(context);
       } catch (e) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text('Error al guardar vacante: $e'),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+          ),
         );
       } finally {
         if (mounted) setState(() => _isPublishing = false);
       }
+    }
+  }
+
+  void _openLocationPicker() async {
+    final selected = await LocationPickerModal.show(context, current: _locationController.text);
+    if (selected != null) {
+      setState(() {
+        _locationController.text = selected.title;
+        _distanceKm = selected.distanceKm;
+        _commuteMinutes = selected.commuteMinutes;
+        _transportTip = selected.transportTip;
+        _lat = selected.coordinates.latitude;
+        _lng = selected.coordinates.longitude;
+      });
     }
   }
 
@@ -212,8 +254,13 @@ class _CreateVacancyPageState extends State<CreateVacancyPage> {
                               controller: _locationController,
                               style: GoogleFonts.inter(fontSize: 14.5),
                               decoration: InputDecoration(
-                                labelText: 'Ubicación / Modalidad',
+                                labelText: 'Ubicación / Mapa 📍',
                                 prefixIcon: const Icon(Icons.place_outlined, color: AppTheme.primaryColor),
+                                suffixIcon: IconButton(
+                                  icon: const Icon(Icons.map_rounded, color: AppTheme.primaryColor),
+                                  tooltip: 'Seleccionar en Mapa',
+                                  onPressed: _openLocationPicker,
+                                ),
                                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
                               ),
                               validator: (val) => val == null || val.trim().isEmpty ? 'Ingresa la ubicación' : null,
@@ -233,6 +280,27 @@ class _CreateVacancyPageState extends State<CreateVacancyPage> {
                             ),
                           ),
                         ],
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      Text(
+                        'Vista Previa del Mapa de Ubicación (Toca para seleccionar 📍):',
+                        style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A)),
+                      ),
+                      const SizedBox(height: 8),
+
+                      InkWell(
+                        onTap: _openLocationPicker,
+                        borderRadius: BorderRadius.circular(24),
+                        child: IgnorePointer(
+                          child: VacancyLocationMapWidget(
+                            locationName: _locationController.text.isEmpty ? 'Cerca de TESOEM' : _locationController.text,
+                            distanceKm: _distanceKm,
+                            commuteMinutes: _commuteMinutes,
+                            transportTip: _transportTip,
+                          ),
+                        ),
                       ),
 
                       const SizedBox(height: 16),
