@@ -23,6 +23,7 @@ jobs:
       - name: Flutter Doctor
         run: flutter doctor -v
 
+      # ✅ NUEVO: Limpiar cualquier caché o compilación anterior
       - name: Clean project
         run: flutter clean
 
