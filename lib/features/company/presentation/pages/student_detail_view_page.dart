@@ -1,129 +1,144 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:red_teso/features/company/presentation/widgets/contact_student_modal.dart';
 
-class StudentDetailViewPage extends StatefulWidget {
+class StudentDetailViewPage extends StatelessWidget {
   final Map<String, dynamic> student;
 
   const StudentDetailViewPage({super.key, required this.student});
 
   @override
-  State<StudentDetailViewPage> createState() => _StudentDetailViewPageState();
-}
-
-class _StudentDetailViewPageState extends State<StudentDetailViewPage> {
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
-  bool _interestSent = false;
-
-  // FUNCIÓN PARA ENVIAR CORREO AUTOMÁTICO (Requisito del Proyecto)
-  Future<void> _sendAutomaticEmail() async {
-    final s = widget.student;
-    final String email = s['email'] ?? '';
-    final String studentName = s['name'] ?? 'Alumno';
-
-    // Cuerpo del mensaje pre-escrito profesional
-    final String subject = 'Interés en tu perfil profesional - RedTESO';
-    final String body = 'Hola $studentName,\n\n'
-        'Hemos visto tu perfil en la plataforma RedTESO y estamos muy interesados en tu trayectoria académica '
-        'en la carrera de Ingeniería en Sistemas Computacionales (Promedio: ${s['gpa']}).\n\n'
-        'Nos gustaría agendar una entrevista contigo para platicar sobre nuestras vacantes disponibles.\n\n'
-        'Saludos cordiales.';
-
-    final Uri emailLaunchUri = Uri(
-      scheme: 'mailto',
-      path: email,
-      query: 'subject=${Uri.encodeComponent(subject)}&body=${Uri.encodeComponent(body)}',
-    );
-
-    try {
-      if (await canLaunchUrl(emailLaunchUri)) {
-        await launchUrl(emailLaunchUri);
-
-        // Registrar la notificación en la nube
-        await _db.collection('notifications').add({
-          'toUserId': s['uid'],
-          'title': '¡Empresa interesada!',
-          'message': 'Una empresa ha revisado tu perfil y te ha enviado un correo de contacto.',
-          'createdAt': FieldValue.serverTimestamp(),
-          'read': false,
-        });
-
-        setState(() => _interestSent = true);
-      } else {
-        throw 'No se pudo abrir la app de correo';
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al abrir el correo: $e'), backgroundColor: Colors.red),
-      );
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final s = widget.student;
+    final s = student;
+    final name = s['name'] ?? 'Alumno Registrado';
+    final career = s['career'] ?? 'Ingeniería en Sistemas Computacionales';
+    final gpa = s['gpa']?.toString() ?? 'N/A';
+    final modality = s['modality'] ?? 'Residencias';
+    final speaksEnglish = s['speaksEnglish'] == true ? 'Sí (Avanzado)' : 'Básico';
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
-        title: const Text('Perfil del Candidato'),
-        foregroundColor: AppTheme.primaryGreen,
+        title: Text('Perfil del Candidato', style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
+        foregroundColor: const Color(0xFF0F172A),
         backgroundColor: Colors.white,
         elevation: 0,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
-            CircleAvatar(
-              radius: 50,
-              backgroundColor: AppTheme.primaryGreen.withOpacity(0.1),
-              child: Text(s['name']?[0] ?? 'A', style: const TextStyle(fontSize: 32, color: AppTheme.primaryGreen, fontWeight: FontWeight.bold)),
-            ),
-            const SizedBox(height: 16),
-            Text(s['name'] ?? 'Sin nombre', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-            const Text('Ingeniería en Sistemas Computacionales', style: TextStyle(color: Colors.grey)),
-            const SizedBox(height: 32),
-
-            // Info académica
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildInfo('Promedio', s['gpa']?.toString() ?? 'N/A'),
-                _buildInfo('Modalidad', s['modality'] ?? 'N/A'),
-                _buildInfo('Inglés', s['speaksEnglish'] == true ? 'Sí' : 'No'),
-              ],
-            ),
-
-            const SizedBox(height: 48),
-
-            _interestSent
-              ? Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(color: Colors.blue[50], borderRadius: BorderRadius.circular(12)),
-                  child: const Text('📧 Contacto iniciado por correo', style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold)),
-                )
-              : ElevatedButton.icon(
-                  onPressed: _sendAutomaticEmail,
-                  icon: const Icon(Icons.mail_outline, color: Colors.white),
-                  label: const Text('MANIFESTAR INTERÉS (ENVIAR CORREO)', style: TextStyle(color: Colors.white)),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.primaryGreen,
-                    minimumSize: const Size(double.infinity, 54),
+            // Tarjeta de Cabecera
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(28),
+                boxShadow: [
+                  BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 16, offset: const Offset(0, 6)),
+                ],
+                border: Border.all(color: const Color(0xFFE2E8F0)),
+              ),
+              child: Column(
+                children: [
+                  CircleAvatar(
+                    radius: 46,
+                    backgroundColor: AppTheme.primaryColor.withOpacity(0.12),
+                    child: Text(
+                      name[0],
+                      style: GoogleFonts.outfit(fontSize: 36, color: AppTheme.primaryColor, fontWeight: FontWeight.bold),
+                    ),
                   ),
+                  const SizedBox(height: 14),
+                  Text(
+                    name,
+                    style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A)),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    career,
+                    style: GoogleFonts.inter(fontSize: 13, color: const Color(0xFF64748B)),
+                    textAlign: TextAlign.center,
+                  ),
+                  if (s['role'] != null) ...[
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: AppTheme.primaryColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        s['role'],
+                        style: GoogleFonts.inter(color: AppTheme.primaryColor, fontWeight: FontWeight.bold, fontSize: 12),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            // Métricas académicas
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(color: const Color(0xFFE2E8F0)),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _buildMetricItem('Promedio', gpa, Icons.star_rounded),
+                  Container(height: 30, width: 1, color: Colors.grey[200]),
+                  _buildMetricItem('Modalidad', modality, Icons.school_rounded),
+                  Container(height: 30, width: 1, color: Colors.grey[200]),
+                  _buildMetricItem('Inglés', speaksEnglish, Icons.translate_rounded),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 36),
+
+            // Botón Principal para Contactar y Agendar Entrevista
+            SizedBox(
+              width: double.infinity,
+              height: 54,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  ContactStudentModal.show(context, student: s);
+                },
+                icon: const Icon(Icons.send_rounded, color: Colors.white, size: 20),
+                label: Text(
+                  'CONTACTAR ALUMNO / ENTREVISTA ✉️',
+                  style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 14, letterSpacing: 0.5),
                 ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.primaryColor,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                  elevation: 2,
+                ),
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildInfo(String label, String value) {
+  Widget _buildMetricItem(String label, String value, IconData icon) {
     return Column(
       children: [
-        Text(value, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.primaryGreen)),
-        Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+        Icon(icon, color: AppTheme.primaryColor, size: 22),
+        const SizedBox(height: 6),
+        Text(value, style: GoogleFonts.outfit(fontSize: 15, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A))),
+        Text(label, style: GoogleFonts.inter(fontSize: 11.5, color: const Color(0xFF64748B))),
       ],
     );
   }

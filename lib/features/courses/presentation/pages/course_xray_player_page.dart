@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
 import 'package:red_teso/features/courses/domain/models/course_model.dart';
+import 'package:red_teso/features/courses/presentation/widgets/course_quote_modal.dart';
 import 'package:red_teso/features/company/presentation/pages/student_detail_view_page.dart';
 
 /// Reproductor de Video Interactivo con interfaz X-Ray estilo Apple TV+
@@ -52,6 +53,14 @@ class _CourseXRayPlayerPageState extends State<CourseXRayPlayerPage> {
           ],
         ),
         actions: [
+          // Botón directo para solicitar cotización corporativa del curso
+          IconButton(
+            icon: const Icon(Icons.request_quote_rounded, color: AppTheme.accentColor),
+            tooltip: 'Solicitar Cotización',
+            onPressed: () {
+              CourseQuoteModal.show(context, course: widget.course);
+            },
+          ),
           // Botón directo para activar/desactivar X-Ray Apple TV+ Style
           IconButton(
             icon: Icon(

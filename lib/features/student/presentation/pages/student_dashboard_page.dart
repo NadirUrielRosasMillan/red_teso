@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:red_teso/core/theme/app_theme.dart';
+import 'package:red_teso/core/widgets/liquid_glass_floating_navbar.dart';
 import 'package:red_teso/features/student/presentation/pages/student_home_page.dart';
 import 'package:red_teso/features/student/presentation/pages/student_profile_page.dart';
 import 'package:red_teso/features/student/presentation/pages/student_applications_page.dart';
@@ -23,34 +23,32 @@ class _StudentDashboardPageState extends State<StudentDashboardPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBody: true, // Scroll traslúcido tras la barra estilo WhatsApp iOS Liquid Glass
       body: IndexedStack(
         index: _currentIndex,
         children: _pages,
       ),
-      bottomNavigationBar: BottomNavigationBar(
+      bottomNavigationBar: LiquidGlassFloatingNavBar(
         currentIndex: _currentIndex,
-        selectedItemColor: AppTheme.primaryGreen,
-        unselectedItemColor: Colors.grey,
-        type: BottomNavigationBarType.fixed,
         onTap: (index) {
           setState(() {
             _currentIndex = index;
           });
         },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.work_outline),
-            activeIcon: Icon(Icons.work),
+        items: [
+          LiquidGlassNavItem(
+            icon: Icons.work_outline_rounded,
+            activeIcon: Icons.work_rounded,
             label: 'Oportunidades',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.assignment_outlined),
-            activeIcon: Icon(Icons.assignment),
+          LiquidGlassNavItem(
+            icon: Icons.assignment_outlined,
+            activeIcon: Icons.assignment_rounded,
             label: 'Postulaciones',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            activeIcon: Icon(Icons.person),
+          LiquidGlassNavItem(
+            icon: Icons.person_outline_rounded,
+            activeIcon: Icons.person_rounded,
             label: 'Mi Perfil',
           ),
         ],
