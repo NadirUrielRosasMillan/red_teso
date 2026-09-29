@@ -8,19 +8,33 @@ on:
 jobs:
   build-ios:
     name: Build iOS App
-    runs-on: macos-latest
+    runs-on: macos-15 
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5 
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
+          cache: true
+
+      - name: Flutter Doctor
+        run: flutter doctor -v
+
+      # ✅ NUEVO: Limpiar cualquier caché o compilación anterior
+      - name: Clean project
+        run: flutter clean
 
       - name: Install dependencies
         run: flutter pub get
+
+      # ✅ NUEVO PASO: Parchear Xcode para evitar el error de Development Team
+      - name: Patch Xcode project
+        run: |
+          sed -i '' 's/DEVELOPMENT_TEAM = "";/DEVELOPMENT_TEAM = "XXXXXXXXXX";/g' ios/Runner.xcodeproj/project.pbxproj
+          sed -i '' 's/DEVELOPMENT_TEAM = "";/DEVELOPMENT_TEAM = "XXXXXXXXXX";/g' ios/Runner.xcodeproj/project.pbxproj
 
       - name: Build iOS (Unsigned)
         run: flutter build ios --release --no-codesign
@@ -28,6 +42,7 @@ jobs:
       - name: Create IPA
         run: |
           cd build/ios/iphoneos
+          rm -rf Payload
           mkdir -p Payload
           mv Runner.app Payload/
           zip -r -y Runner.ipa Payload
@@ -38,3 +53,4 @@ jobs:
           name: ios-ipa
           path: build/ios/iphoneos/Runner.ipa
           retention-days: 7
+          include-hidden-files: true
