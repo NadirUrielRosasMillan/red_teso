@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
 
 class OnboardingPage extends StatefulWidget {
@@ -77,8 +78,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     ),
                   ),
                   ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       if (_currentPage == _onboardingData.length - 1) {
+                        final prefs = await SharedPreferences.getInstance();
+                        await prefs.setBool('showOnboarding', false);
                         widget.onFinish();
                       } else {
                         _pageController.nextPage(

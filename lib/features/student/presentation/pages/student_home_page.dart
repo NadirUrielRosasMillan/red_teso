@@ -33,10 +33,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
         elevation: 0,
         actions: [
           const NotificationBell(color: AppTheme.primaryGreen),
-          IconButton(
-            icon: const Icon(Icons.logout_outlined),
-            onPressed: () => context.read<AuthProvider>().logout(),
-          ),
+          const SizedBox(width: 8),
         ],
       ),
       body: Column(

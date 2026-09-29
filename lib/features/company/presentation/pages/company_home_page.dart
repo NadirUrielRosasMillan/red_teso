@@ -8,6 +8,7 @@ import 'package:red_teso/features/auth/presentation/providers/auth_provider.dart
 import 'package:red_teso/features/company/presentation/pages/student_detail_view_page.dart';
 import 'package:red_teso/features/company/presentation/widgets/contact_student_modal.dart';
 import 'package:red_teso/features/company/presentation/widgets/ai_talent_assistant_modal.dart';
+import 'package:red_teso/features/company/presentation/widgets/invite_student_modal.dart';
 
 class CompanyHomePage extends StatefulWidget {
   const CompanyHomePage({super.key});
@@ -77,11 +78,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
         elevation: 0,
         actions: [
           const NotificationBell(color: AppTheme.primaryColor),
-          IconButton(
-            icon: const Icon(Icons.logout_rounded, color: AppTheme.primaryColor),
-            tooltip: 'Cerrar Sesión',
-            onPressed: () => context.read<AuthProvider>().logout(),
-          ),
+          const SizedBox(width: 8),
         ],
       ),
 
@@ -369,127 +366,77 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
     final speaksEnglish = student['speaksEnglish'] ?? false;
     final skills = List<String>.from(student['skills'] ?? ['Java', 'Python', 'React', 'Flutter', 'AWS', 'SQL']);
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => StudentDetailViewPage(student: student),
           ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // 1. FOTO/AVATAR DE PERFIL CON MARCO GUINDA Y BADGE DORADO DE PROMEDIO
-            Row(
-              children: [
-                Stack(
-                  alignment: Alignment.bottomRight,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(3),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(color: AppTheme.primaryColor, width: 2),
-                      ),
-                      child: CircleAvatar(
-                        radius: 28,
-                        backgroundColor: AppTheme.primaryColor.withOpacity(0.12),
-                        child: Text(
-                          name[0],
-                          style: GoogleFonts.outfit(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: AppTheme.primaryColor,
-                          ),
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: const Color(0xFFE2E8F0)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // 1. FOTO/AVATAR DE PERFIL CON MARCO GUINDA Y BADGE DORADO DE PROMEDIO
+              Row(
+                children: [
+                  Stack(
+                    alignment: Alignment.bottomRight,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(3),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(color: AppTheme.primaryColor, width: 2),
                         ),
-                      ),
-                    ),
-                    // Badge Dorado de Promedio GPA
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF0F172A),
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: AppTheme.accentColor, width: 1.2),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.star_rounded, color: Colors.amber, size: 12),
-                          const SizedBox(width: 2),
-                          Text(
-                            gpa,
-                            style: GoogleFonts.inter(
-                              color: Colors.white,
-                              fontSize: 10.5,
+                        child: CircleAvatar(
+                          radius: 28,
+                          backgroundColor: AppTheme.primaryColor.withOpacity(0.12),
+                          child: Text(
+                            name[0],
+                            style: GoogleFonts.outfit(
+                              fontSize: 22,
                               fontWeight: FontWeight.bold,
+                              color: AppTheme.primaryColor,
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(width: 14),
-
-                // NOMBRE Y DISPONIBILIDAD
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        name,
-                        style: GoogleFonts.outfit(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: const Color(0xFF0F172A),
                         ),
                       ),
-                      const SizedBox(height: 2),
-                      Text(
-                        'Ing. en Sistemas Computacionales',
-                        style: GoogleFonts.inter(
-                          fontSize: 12.5,
-                          color: const Color(0xFF64748B),
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-
-                      // INSIGNIA EN VIVO DE DISPONIBILIDAD
+                      // Badge Dorado de Promedio GPA
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFECFDF5), // Emerald light
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: const Color(0xFFA7F3D0)),
+                          color: const Color(0xFF0F172A),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: AppTheme.accentColor, width: 1.2),
                         ),
                         child: Row(
-                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            Container(
-                              width: 7,
-                              height: 7,
-                              decoration: const BoxDecoration(
-                                color: Color(0xFF10B981),
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                            const SizedBox(width: 6),
+                            const Icon(Icons.star_rounded, color: Colors.amber, size: 12),
+                            const SizedBox(width: 2),
                             Text(
-                              'Disponible para $modality',
+                              gpa,
                               style: GoogleFonts.inter(
-                                fontSize: 11.5,
+                                color: Colors.white,
+                                fontSize: 10.5,
                                 fontWeight: FontWeight.bold,
-                                color: const Color(0xFF047857),
                               ),
                             ),
                           ],
@@ -497,125 +444,160 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                       ),
                     ],
                   ),
-                ),
-              ],
-            ),
 
-            const SizedBox(height: 16),
+                  const SizedBox(width: 14),
 
-            // 2. SKILLS & TECNOLOGÍAS DEL ALUMNO (Highlight si coincide con la búsqueda)
-            Text(
-              'Habilidades Tecnológicas:',
-              style: GoogleFonts.inter(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: const Color(0xFF334155),
-              ),
-            ),
-            const SizedBox(height: 6),
-
-            Wrap(
-              spacing: 6,
-              runSpacing: 6,
-              children: [
-                ...skills.map((skill) {
-                  final isMatched = _searchQuery.isNotEmpty &&
-                      skill.toLowerCase().contains(_searchQuery.toLowerCase().trim());
-
-                  return Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: isMatched ? AppTheme.primaryColor : const Color(0xFFF1F5F9),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: isMatched ? AppTheme.primaryColor : const Color(0xFFE2E8F0),
-                      ),
-                    ),
-                    child: Text(
-                      skill,
-                      style: GoogleFonts.inter(
-                        fontSize: 11.5,
-                        fontWeight: isMatched ? FontWeight.bold : FontWeight.w600,
-                        color: isMatched ? Colors.white : const Color(0xFF1E293B),
-                      ),
-                    ),
-                  );
-                }),
-                if (speaksEnglish)
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: AppTheme.primaryColor.withOpacity(0.08),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: AppTheme.primaryColor.withOpacity(0.2)),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
+                  // NOMBRE Y DISPONIBILIDAD
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(Icons.g_translate_rounded, size: 12, color: AppTheme.primaryColor),
-                        const SizedBox(width: 4),
                         Text(
-                          'Inglés Avanzado',
-                          style: GoogleFonts.inter(
-                            fontSize: 11.5,
+                          name,
+                          style: GoogleFonts.outfit(
+                            fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: AppTheme.primaryColor,
+                            color: const Color(0xFF0F172A),
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          'Ing. en Sistemas Computacionales',
+                          style: GoogleFonts.inter(
+                            fontSize: 12.5,
+                            color: const Color(0xFF64748B),
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+
+                        // INSIGNIA EN VIVO DE DISPONIBILIDAD
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFECFDF5), // Emerald light
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: const Color(0xFFA7F3D0)),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                width: 7,
+                                height: 7,
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFF10B981),
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                'Disponible para $modality',
+                                style: GoogleFonts.inter(
+                                  fontSize: 11.5,
+                                  fontWeight: FontWeight.bold,
+                                  color: const Color(0xFF047857),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
                     ),
                   ),
-              ],
-            ),
+                ],
+              ),
 
-            const Divider(height: 28),
+              const SizedBox(height: 16),
 
-            // 3. ACCIONES RÁPIDAS: VER PERFIL & CONTACTAR EN 1 SOLO TAP
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => StudentDetailViewPage(student: student),
+              // 2. SKILLS & TECNOLOGÍAS DEL ALUMNO (Highlight si coincide con la búsqueda)
+              Text(
+                'Habilidades Tecnológicas:',
+                style: GoogleFonts.inter(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: const Color(0xFF334155),
+                ),
+              ),
+              const SizedBox(height: 6),
+
+              Wrap(
+                spacing: 6,
+                runSpacing: 6,
+                children: [
+                  ...skills.map((skill) {
+                    final isMatched = _searchQuery.isNotEmpty &&
+                        skill.toLowerCase().contains(_searchQuery.toLowerCase().trim());
+
+                    return Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: isMatched ? AppTheme.primaryColor : const Color(0xFFF1F5F9),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: isMatched ? AppTheme.primaryColor : const Color(0xFFE2E8F0),
                         ),
-                      );
-                    },
-                    icon: const Icon(Icons.person_rounded, size: 16, color: AppTheme.primaryColor),
-                    label: Text(
-                      'VER PERFIL 👤',
-                      style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 12.5, color: AppTheme.primaryColor),
+                      ),
+                      child: Text(
+                        skill,
+                        style: GoogleFonts.inter(
+                          fontSize: 11.5,
+                          fontWeight: isMatched ? FontWeight.bold : FontWeight.w600,
+                          color: isMatched ? Colors.white : const Color(0xFF1E293B),
+                        ),
+                      ),
+                    );
+                  }),
+                  if (speaksEnglish)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: AppTheme.primaryColor.withOpacity(0.08),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: AppTheme.primaryColor.withOpacity(0.2)),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.g_translate_rounded, size: 12, color: AppTheme.primaryColor),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Inglés Avanzado',
+                            style: GoogleFonts.inter(
+                              fontSize: 11.5,
+                              fontWeight: FontWeight.bold,
+                              color: AppTheme.primaryColor,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: AppTheme.primaryColor, width: 1.5),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                    ),
+                ],
+              ),
+
+              const Divider(height: 28),
+
+              // 3. ACCIÓN UNIFICADA: INVITAR A VACANTE DIRECTA 📩
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    InviteStudentModal.show(context, student: student);
+                  },
+                  icon: const Icon(Icons.mark_email_read_rounded, size: 18, color: Colors.white),
+                  label: Text(
+                    'INVITAR A VACANTE DIRECTA 📩',
+                    style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.white, letterSpacing: 0.5),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.primaryColor,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    elevation: 1,
                   ),
                 ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      ContactStudentModal.show(context, student: student);
-                    },
-                    icon: const Icon(Icons.send_rounded, size: 16, color: Colors.white),
-                    label: Text(
-                      'CONTACTAR ✉️',
-                      style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 12.5, color: Colors.white),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.primaryColor,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
+              ),
+            ],
+          ),
         ),
       ),
     );

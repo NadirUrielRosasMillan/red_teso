@@ -48,9 +48,20 @@ class _RedTESOAppState extends State<RedTESOApp> {
   }
 
   Widget _buildCurrentScreen() {
+    final authProvider = Provider.of<AuthProvider>(context);
+
+    // Si el usuario ya tiene sesión iniciada, saltar onboarding e ir directo al dashboard
+    if (authProvider.isLoggedIn) {
+      return const AuthWrapper();
+    }
+
     if (_currentStep == 'splash') {
       return SplashPage(
-        onInitializationComplete: () => setState(() => _currentStep = widget.showOnboarding ? 'onboarding' : 'auth'),
+        onInitializationComplete: () {
+          setState(() {
+            _currentStep = widget.showOnboarding ? 'onboarding' : 'auth';
+          });
+        },
       );
     }
     if (_currentStep == 'onboarding') {

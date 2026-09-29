@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
+import 'package:red_teso/features/auth/presentation/providers/auth_provider.dart';
 
 class StudentProfilePage extends StatefulWidget {
   const StudentProfilePage({super.key});
@@ -123,7 +125,13 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
           IconButton(
             icon: const Icon(Icons.save_outlined),
             onPressed: _saveProfile,
-          )
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout_rounded, color: Colors.red),
+            tooltip: 'Cerrar Sesión',
+            onPressed: () => context.read<AuthProvider>().logout(),
+          ),
+          const SizedBox(width: 8),
         ],
       ),
       body: SingleChildScrollView(
@@ -239,9 +247,9 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
               const SizedBox(height: 48),
               Center(
                 child: TextButton.icon(
-                  onPressed: () => _auth.signOut(),
+                  onPressed: () => context.read<AuthProvider>().logout(),
                   icon: const Icon(Icons.logout, color: Colors.red),
-                  label: const Text('CERRAR SESIÓN', style: TextStyle(color: Colors.red)),
+                  label: const Text('CERRAR SESIÓN', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
                 ),
               ),
             ],

@@ -44,6 +44,68 @@ class _VacancyDetailPageState extends State<VacancyDetailPage> {
     }
   }
 
+  Future<void> _unapply() async {
+    final user = _auth.currentUser;
+    if (user == null) return;
+
+    final bool? confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('¿Cancelar Postulación?', style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
+        content: Text('¿Estás seguro de cancelar tu postulación a "${widget.vacancy['puesto'] ?? 'esta vacante'}"?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('VOLVER'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text('SÍ, DESPOSTULARME', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      setState(() => _isApplying = true);
+      try {
+        final docs = await _db
+            .collection('applications')
+            .where('studentId', isEqualTo: user.uid)
+            .where('vacancyId', isEqualTo: widget.vacancy['id'])
+            .get();
+
+        for (final doc in docs.docs) {
+          await doc.reference.delete();
+        }
+
+        if (mounted) {
+          setState(() {
+            _hasApplied = false;
+            _isApplying = false;
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  const Icon(Icons.info_outline_rounded, color: Colors.white),
+                  const SizedBox(width: 10),
+                  Text('Postulación cancelada exitosamente', style: GoogleFonts.inter()),
+                ],
+              ),
+              backgroundColor: Colors.red,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
+      } catch (e) {
+        if (mounted) setState(() => _isApplying = false);
+        debugPrint('Error al cancelar postulación: $e');
+      }
+    }
+  }
+
   void _apply() async {
     final user = _auth.currentUser;
     if (user == null) return;
@@ -51,16 +113,34 @@ class _VacancyDetailPageState extends State<VacancyDetailPage> {
     setState(() => _isApplying = true);
 
     try {
+      // Obtener el nombre real registrado del alumno desde Firestore
+      String studentName = user.displayName ?? 'Alumno TESOEM';
+      try {
+        final studentDoc = await _db.collection('users').doc(user.uid).get();
+        if (studentDoc.exists) {
+          final data = studentDoc.data();
+          final fetchedName = data?['name'] ?? data?['studentName'];
+          if (fetchedName != null && fetchedName.toString().trim().isNotEmpty) {
+            studentName = fetchedName.toString().trim();
+          }
+        }
+      } catch (e) {
+        debugPrint('Error obteniendo nombre del alumno: $e');
+      }
+
+      final companyId = widget.vacancy['companyId'] ?? '';
+      final companyName = widget.vacancy['empresa'] ?? widget.vacancy['companyName'] ?? 'Empresa Colaboradora';
+
       // Guardar la postulación real en Firestore
       await _db.collection('applications').add({
         'studentId': user.uid,
-        'studentName': user.displayName ?? 'Alumno TESOEM',
-        'studentEmail': user.email,
-        'vacancyId': widget.vacancy['id'],
-        'vacancyName': widget.vacancy['puesto'],
-        'companyId': widget.vacancy['companyId'],
-        'companyName': widget.vacancy['empresa'],
-        'status': 'Enviado', // Estados: Enviado, En Revisión, Aceptado, Rechazado
+        'studentName': studentName,
+        'studentEmail': user.email ?? 'alumno@tesoem.edu.mx',
+        'vacancyId': widget.vacancy['id'] ?? '',
+        'vacancyName': widget.vacancy['puesto'] ?? 'Vacante TESOEM',
+        'companyId': companyId,
+        'companyName': companyName,
+        'status': 'Enviado', // Estados: Enviado, En Revisión, En Entrevista, Aceptado, Descartado
         'createdAt': FieldValue.serverTimestamp(),
       });
 
@@ -256,27 +336,48 @@ class _VacancyDetailPageState extends State<VacancyDetailPage> {
 
             const SizedBox(height: 36),
 
-            // Botón Acción de Postulación
+            // Botón Acción de Postulación / Cancelar Postulación
             if (_hasApplied)
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.green[50],
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppTheme.primaryGreen),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.check_circle_rounded, color: AppTheme.primaryGreen, size: 22),
-                    const SizedBox(width: 10),
-                    Text(
-                      'Ya estás postulado a esta vacante',
-                      style: GoogleFonts.outfit(color: AppTheme.primaryGreen, fontWeight: FontWeight.bold, fontSize: 15),
+              Column(
+                children: [
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.green[50],
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: AppTheme.primaryGreen),
                     ),
-                  ],
-                ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.check_circle_rounded, color: AppTheme.primaryGreen, size: 22),
+                        const SizedBox(width: 10),
+                        Text(
+                          'Ya estás postulado a esta vacante',
+                          style: GoogleFonts.outfit(color: AppTheme.primaryGreen, fontWeight: FontWeight.bold, fontSize: 15),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 48,
+                    child: OutlinedButton.icon(
+                      onPressed: _unapply,
+                      icon: const Icon(Icons.cancel_outlined, color: Colors.red, size: 18),
+                      label: Text(
+                        'CANCELAR POSTULACIÓN / DESPOSTULARME 🗑️',
+                        style: GoogleFonts.outfit(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 13),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: Colors.red, width: 1.2),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      ),
+                    ),
+                  ),
+                ],
               )
             else if (_isApplying)
               const Center(child: CircularProgressIndicator(color: AppTheme.primaryGreen))

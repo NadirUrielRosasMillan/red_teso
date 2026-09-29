@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
+import 'package:red_teso/features/auth/presentation/providers/auth_provider.dart';
 
 class CompanyProfileEditPage extends StatefulWidget {
   const CompanyProfileEditPage({super.key});
@@ -140,6 +142,14 @@ class _CompanyProfileEditPageState extends State<CompanyProfileEditPage> {
         backgroundColor: Colors.white,
         foregroundColor: const Color(0xFF0F172A),
         elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout_rounded, color: Colors.red),
+            tooltip: 'Cerrar Sesión',
+            onPressed: () => context.read<AuthProvider>().logout(),
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
@@ -305,6 +315,23 @@ class _CompanyProfileEditPageState extends State<CompanyProfileEditPage> {
                               ),
                             ),
                     ),
+
+                    const SizedBox(height: 24),
+
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: OutlinedButton.icon(
+                        onPressed: () => context.read<AuthProvider>().logout(),
+                        icon: const Icon(Icons.logout_rounded, color: Colors.red),
+                        label: Text('CERRAR SESIÓN', style: GoogleFonts.outfit(color: Colors.red, fontWeight: FontWeight.bold)),
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(color: Colors.red),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 80),
                   ],
                 ),
               ),

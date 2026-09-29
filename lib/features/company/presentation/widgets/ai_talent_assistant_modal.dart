@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
 import 'package:red_teso/features/company/presentation/pages/student_detail_view_page.dart';
 import 'package:red_teso/features/company/presentation/widgets/contact_student_modal.dart';
+import 'package:red_teso/features/company/presentation/widgets/invite_student_modal.dart';
 
 /// Asistente Virtual Inteligente con Búsqueda Semántica en Lenguaje Natural (IA RedTESO)
 class AiTalentAssistantModal extends StatefulWidget {
@@ -402,6 +403,19 @@ class _AiTalentAssistantModalState extends State<AiTalentAssistantModal>
           Row(
             children: [
               Expanded(
+                child: ElevatedButton(
+                  onPressed: () {
+                    InviteStudentModal.show(context, student: student);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.primaryColor,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  child: Text('Invitar 📩', style: GoogleFonts.inter(color: Colors.white, fontSize: 11.5, fontWeight: FontWeight.bold)),
+                ),
+              ),
+              const SizedBox(width: 6),
+              Expanded(
                 child: OutlinedButton(
                   onPressed: () {
                     Navigator.push(
@@ -413,20 +427,7 @@ class _AiTalentAssistantModalState extends State<AiTalentAssistantModal>
                     side: const BorderSide(color: Colors.white38),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  child: Text('Ver Perfil 👤', style: GoogleFonts.inter(color: Colors.white, fontSize: 11.5)),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () {
-                    ContactStudentModal.show(context, student: student);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.primaryColor,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  ),
-                  child: Text('Contactar ✉️', style: GoogleFonts.inter(color: Colors.white, fontSize: 11.5, fontWeight: FontWeight.bold)),
+                  child: Text('Perfil 👤', style: GoogleFonts.inter(color: Colors.white, fontSize: 11.5)),
                 ),
               ),
             ],
