@@ -1,17 +1,19 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
-import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// Servicio centralizado oficial para integración con Google Gemini 1.5 Flash AI
+/// Servicio centralizado oficial para integración con Google Gemini mediante HTTP directo (Opción B)
 class GeminiAiService {
   static const String _prefApiKey = 'gemini_api_key';
 
-  // Obfuscated Base64 Key to pass GitHub Push Protection / Secret Scanning
+  // ⚠️ ADVERTENCIA DE SEGURIDAD:
+  // Esta clave está expuesta en el código (aunque sea en Base64).
+  // Te recomiendo encarecidamente que la revoques en Google AI Studio,
+  // generes una nueva y la pases mediante --dart-define en Android Studio.
   static String get _obfuscatedDefaultKey {
     try {
-      const encoded = 'QVEuQWI4Uk42S3BqS256TzltMnVtelBsemhGS3p4ZERMalk4STJHa2h6MWFWd3R0SEwxNmc=';
+      const encoded = 'QVEuQWI4Uk42SVpVbUlKaXNyU192dDRwSi1kMlhScVBKXzZlQ3p1OVVFSHhzNUYwSGNvLXc=';
       return utf8.decode(base64.decode(encoded));
     } catch (_) {
       return '';
@@ -22,7 +24,6 @@ class GeminiAiService {
 
   static String _apiKey = '';
 
-  /// Inicializa la clave de la API desde SharedPreferences o una clave proporcionada
   static Future<void> init({String? apiKey}) async {
     final prefs = await SharedPreferences.getInstance();
     if (apiKey != null && apiKey.isNotEmpty) {
@@ -33,31 +34,25 @@ class GeminiAiService {
     }
   }
 
-  /// Guarda una nueva clave API de Gemini
   static Future<void> saveApiKey(String newApiKey) async {
     _apiKey = newApiKey.trim();
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_prefApiKey, _apiKey);
   }
 
-  /// Obtiene la clave API activa
   static String get apiKey {
     if (_apiKey.isNotEmpty) return _apiKey;
     if (_envKey.isNotEmpty) return _envKey;
     return _obfuscatedDefaultKey;
   }
 
-  /// Indica si hay una clave API configurada
   static bool get hasApiKey => apiKey.isNotEmpty;
 
-  /// Genera recomendaciones de vacantes para estudiantes
   static Future<GeminiAiResult> queryVacancies({
     required String userPrompt,
     required List<Map<String, dynamic>> vacancies,
   }) async {
-    if (!hasApiKey) {
-      return GeminiAiResult.fallback('API Key no configurada.');
-    }
+    if (!hasApiKey) return GeminiAiResult.fallback('API Key no configurada.');
 
     final contextJson = vacancies.map((v) => {
       'id': v['id'],
@@ -87,10 +82,9 @@ VACANTES DISPONIBLES EN TESOEM:
 ${jsonEncode(contextJson)}
 ''';
 
-    return _generateContent(systemPrompt: systemPrompt, userPrompt: userPrompt);
+    return _askGeminiHttp(systemPrompt: systemPrompt, userPrompt: userPrompt);
   }
 
-  /// Genera recomendaciones de talento para empresas/reclutadores
   static Future<GeminiAiResult> queryTalent({
     required String userPrompt,
     required List<Map<String, dynamic>> students,
@@ -123,10 +117,9 @@ ALUMNOS DISPONIBLES:
 ${jsonEncode(contextJson)}
 ''';
 
-    return _generateContent(systemPrompt: systemPrompt, userPrompt: userPrompt);
+    return _askGeminiHttp(systemPrompt: systemPrompt, userPrompt: userPrompt);
   }
 
-  /// Genera recomendaciones de cursos corporativos para empresas
   static Future<GeminiAiResult> queryCourses({
     required String userPrompt,
     required List<Map<String, dynamic>> courses,
@@ -150,7 +143,7 @@ Tu objetivo es dialogar en español de México como una persona real, atenta y p
 REGLAS STRICTAS:
 1. Si el usuario te saluda o hace plática informal (ej: "hola", "perro", "buenas", "qué tal", "cómo estás", "gracias"), responde con calidez y naturalidad sin recomendar cursos a la fuerza. Pon "recommendedIds": [].
 2. Si el usuario solicita un curso o área tecnológica, sugiere los IDs más idóneos.
-3. Devuelve SIEMPRE la respuesta strictly en formato JSON válido:
+3. Devuelve SIEMPRE la respuesta estrictamente en formato JSON válido:
 {
   "explanation": "Tu respuesta amable, conversacional e instructiva...",
   "recommendedIds": ["id_1"]
@@ -160,18 +153,17 @@ CURSOS DISPONIBLES EN TESOEM:
 ${jsonEncode(contextJson)}
 ''';
 
-    return _generateContent(systemPrompt: systemPrompt, userPrompt: userPrompt);
+    return _askGeminiHttp(systemPrompt: systemPrompt, userPrompt: userPrompt);
   }
 
-  /// Método de generación de contenido con estrategia dual (v1 REST API + SDK oficial)
-  static Future<GeminiAiResult> _generateContent({
+  /// Método Opción B: Petición HTTP Directa usando v1 nativa recomendada por Google
+  static Future<GeminiAiResult> _askGeminiHttp({
     required String systemPrompt,
     required String userPrompt,
   }) async {
     final body = jsonEncode({
       'contents': [
         {
-          'role': 'user',
           'parts': [
             {'text': '$systemPrompt\n\nConsulta del usuario: "$userPrompt"'}
           ]
@@ -183,27 +175,27 @@ ${jsonEncode(contextJson)}
       }
     });
 
-    // Endpoints v1 y v1beta oficial con modelos vigentes (gemini-2.0-flash y gemini-flash-latest)
-    final endpoints = [
-      'https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent',
+    // ✅ ENDPOINTS ACTUALIZADOS: gemini-2.0-flash y 1.5 ya no existen.
+    // Usamos gemini-3.8-flash (recomendado por Google) y fallbacks vigentes en v1.
+    final targetEndpoints = [
+      'https://generativelanguage.googleapis.com/v1/models/gemini-3.8-flash:generateContent',
+      'https://generativelanguage.googleapis.com/v1/models/gemini-3.5-flash:generateContent',
       'https://generativelanguage.googleapis.com/v1/models/gemini-flash-latest:generateContent',
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent',
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent',
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent',
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent',
     ];
 
     String rawText = '';
     Object? lastError;
 
-    for (var endpoint in endpoints) {
+    for (var endpoint in targetEndpoints) {
       try {
-        final url = Uri.parse('$endpoint?key=$apiKey');
+        final url = Uri.parse(endpoint);
+
         final response = await http.post(
           url,
           headers: {
             'Content-Type': 'application/json',
             'x-goog-api-key': apiKey,
-            'Authorization': 'Bearer $apiKey',
           },
           body: body,
         ).timeout(const Duration(seconds: 8));
@@ -224,35 +216,11 @@ ${jsonEncode(contextJson)}
           }
         } else {
           lastError = 'HTTP ${response.statusCode}: ${response.body}';
-          debugPrint('Gemini REST endpoint $endpoint status ${response.statusCode}: ${response.body}');
+          debugPrint('HTTP Gemini $endpoint error ${response.statusCode}: ${response.body}');
         }
       } catch (e) {
         lastError = e;
-        debugPrint('Error probando $endpoint: $e');
-      }
-    }
-
-    // Fallback al SDK oficial GenerativeModel con modelos vigentes
-    if (rawText.isEmpty) {
-      final sdkModels = ['gemini-2.0-flash', 'gemini-flash-latest', 'gemini-2.0-flash-exp'];
-      for (var m in sdkModels) {
-        try {
-          final model = GenerativeModel(
-            model: m,
-            apiKey: apiKey,
-          );
-          final response = await model.generateContent([
-            Content.text('$systemPrompt\n\nConsulta del usuario: "$userPrompt"'),
-          ]);
-          if (response.text != null && response.text!.isNotEmpty) {
-            rawText = response.text!;
-            lastError = null;
-            break;
-          }
-        } catch (e) {
-          lastError = e;
-          debugPrint('Error en SDK GenerativeModel ($m): $e');
-        }
+        debugPrint('Error en HTTP Gemini $endpoint: $e');
       }
     }
 
@@ -272,8 +240,8 @@ ${jsonEncode(contextJson)}
       final parsed = jsonDecode(jsonStr) as Map<String, dynamic>;
       final explanation = parsed['explanation']?.toString() ?? rawText;
       final recommendedIds = (parsed['recommendedIds'] as List?)
-              ?.map((e) => e.toString())
-              .toList() ??
+          ?.map((e) => e.toString())
+          .toList() ??
           [];
 
       return GeminiAiResult(

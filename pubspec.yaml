@@ -29,7 +29,6 @@ dependencies:
   latlong2: ^0.9.1
   http: ^1.2.1
   video_player: ^2.8.6
-  google_generative_ai: ^0.4.0
 
 dev_dependencies:
   flutter_test:
