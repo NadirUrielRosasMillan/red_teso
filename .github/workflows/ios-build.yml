@@ -22,8 +22,24 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      # NUEVO PASO: Desactivar la firma en el proyecto Xcode
+      - name: Disable Code Signing in Xcode
+        run: |
+          # Eliminar o vaciar el DEVELOPMENT_TEAM en el proyecto de Xcode
+          sed -i '' 's/DEVELOPMENT_TEAM = .*/DEVELOPMENT_TEAM = "";/g' ios/Runner.xcodeproj/project.pbxproj
+          # Forzar que no se requiera firma de código
+          sed -i '' 's/CODE_SIGN_IDENTITY = "iPhone Developer";/CODE_SIGN_IDENTITY = "";/g' ios/Runner.xcodeproj/project.pbxproj
+          sed -i '' 's/CODE_SIGN_IDENTITY = "Apple Development";/CODE_SIGN_IDENTITY = "";/g' ios/Runner.xcodeproj/project.pbxproj
+          # (Opcional) Imprimir para verificar que se aplicaron los cambios
+          grep -n "DEVELOPMENT_TEAM\|CODE_SIGN" ios/Runner.xcodeproj/project.pbxproj
+
       - name: Build iOS (Unsigned)
         run: flutter build ios --release --no-codesign
+        env:
+          CODE_SIGNING_ALLOWED: "NO"
+          CODE_SIGNING_REQUIRED: "NO"
+          CODE_SIGN_IDENTITY: ""
+          EXPANDED_CODE_SIGN_IDENTITY: ""
 
       - name: Create IPA
         run: |
