@@ -1,6 +1,8 @@
 import 'dart:ui';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:red_teso/core/services/gemini_ai_service.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
 import 'package:red_teso/features/company/presentation/pages/student_detail_view_page.dart';
 import 'package:red_teso/features/company/presentation/widgets/contact_student_modal.dart';
@@ -69,50 +71,154 @@ class _AiTalentAssistantModalState extends State<AiTalentAssistantModal>
       _queryController.text = queryText;
     });
 
-    await Future.delayed(const Duration(milliseconds: 1000));
+    await Future.delayed(const Duration(milliseconds: 700));
 
-    final query = queryText.toLowerCase();
-    List<Map<String, dynamic>> matches = [];
-    String explanation = '';
+    final trimmedQuery = queryText.trim().toLowerCase();
 
-    final isDatabase = query.contains('base') || query.contains('datos') || query.contains('sql') || query.contains('chalco');
-    final isMobile = query.contains('flutter') || query.contains('móvil') || query.contains('app');
-    final isSecurity = query.contains('seguridad') || query.contains('ciber') || query.contains('hacking');
-    final isPython = query.contains('python') || query.contains('ia') || query.contains('machine');
+    // Detección de saludos e interacción conversacional cotidiana
+    final isGreeting = RegExp(r'^(hola|holaa|holaaa|buenas|buenos dias|buenas tardes|buenas noches|hey|que tal|saludos)\b').hasMatch(trimmedQuery);
+    final isWhoAreYou = RegExp(r'(quien eres|que haces|que puedes hacer|como me ayudas|ayuda|funciones)\b').hasMatch(trimmedQuery);
+    final isThanks = RegExp(r'^(gracias|muchas gracias|thx|thank you|ok gracias)\b').hasMatch(trimmedQuery);
 
-    matches = widget.students.where((s) {
-      final name = s['name'].toString().toLowerCase();
-      final skills = (s['skills'] as List).join(' ').toLowerCase();
-      final location = (s['location'] ?? 'Chalco').toString().toLowerCase();
-
-      if (isDatabase) {
-        return skills.contains('sql') || skills.contains('base') || location.contains('chalco') || name.contains('carlos');
-      }
-      if (isMobile) {
-        return skills.contains('flutter') || skills.contains('firebase');
-      }
-      if (isSecurity) {
-        return skills.contains('seguridad') || skills.contains('ciberseguridad');
-      }
-      if (isPython) {
-        return skills.contains('python') || skills.contains('machine');
+    if (isGreeting || isWhoAreYou || isThanks) {
+      String response = '';
+      if (isGreeting) {
+        response = '¡Hola! 👋 Soy el Asistente IA de Talento RedTESO.\n\nPuedo ayudarte a encontrar alumnos y candidatos universitarios según sus habilidades técnicas, ubicación, promedio o modalidad. ¿Qué tipo de talento busca tu empresa hoy?';
+      } else if (isWhoAreYou) {
+        response = '🤖 ¡Hola! Soy el Asistente IA de Talento RedTESO.\n\nPuedo analizar los perfiles de estudiantes de TESOEM y recomendarte candidatos por habilidades (ej. SQL, Flutter, Python, Ciberseguridad), promedio o zona geográfica.\n\n¡Prueba consultando algo como "Alumnos en Ciberseguridad con promedio alto"!';
+      } else {
+        response = '¡Con gusto! 😊 Quedo a tu disposición para ayudarte a conectar con el mejor talento de TESOEM.';
       }
 
-      return name.contains(query) || skills.contains(query) || location.contains(query);
-    }).toList();
-
-    if (matches.isEmpty) {
-      matches = widget.students.take(2).toList();
+      if (mounted) {
+        setState(() {
+          _isAnalyzing = false;
+          _aiResponseText = response;
+          _matchedResults = [];
+        });
+      }
+      return;
     }
 
-    if (isDatabase) {
-      explanation = 'Analicé el directorio de Sistemas TESOEM e identifiqué a los siguientes candidatos especializados en Bases de Datos, SQL y ubicados cerca de la zona de Chalco / Oriente:';
-    } else if (isMobile) {
-      explanation = 'Encontré a los alumnos con desarrollo en aplicaciones móviles Flutter/Firebase disponibles para incorporarse a proyectos corporativos:';
-    } else if (isSecurity) {
-      explanation = 'Aquí están los perfiles con preparación en Auditoría de Seguridad e Infraestructura en Redes:';
+    final queryLower = queryText.toLowerCase();
+    final terms = queryLower.split(RegExp(r'\s+')).where((t) => t.length > 2).toList();
+
+    List<Map<String, dynamic>> combinedStudents = List.from(widget.students);
+
+    try {
+      final snapshot = await FirebaseFirestore.instance.collection('users').get();
+      for (var doc in snapshot.docs) {
+        final data = doc.data();
+        if (data['userType'] == 'alumno' || data['role'] == 'alumno' || data['gpa'] != null) {
+          final uid = doc.id;
+          if (!combinedStudents.any((s) => s['uid'] == uid || s['email'] == data['email'])) {
+            combinedStudents.add({
+              'uid': uid,
+              'name': data['name'] ?? 'Alumno TESOEM',
+              'email': data['email'] ?? '',
+              'gpa': (data['gpa'] is num) ? (data['gpa'] as num).toDouble() : 8.5,
+              'modality': data['modality'] ?? 'Servicio Social',
+              'career': 'Ing. en Sistemas Computacionales',
+              'skills': data['skills'] is List ? List<String>.from(data['skills']) : ['Java', 'SQL', 'Git'],
+              'location': 'Chalco / Oriente',
+            });
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('Error obteniendo alumnos en Firestore para la IA: $e');
+    }
+
+    if (GeminiAiService.hasApiKey) {
+      final geminiRes = await GeminiAiService.queryTalent(
+        userPrompt: queryText,
+        students: combinedStudents,
+      );
+
+      if (geminiRes.isGenerative) {
+        final matchedFromGemini = combinedStudents
+            .where((s) => geminiRes.recommendedIds.contains(s['uid']))
+            .toList();
+
+        if (mounted) {
+          setState(() {
+            _isAnalyzing = false;
+            _aiResponseText = geminiRes.explanation;
+            _matchedResults = matchedFromGemini;
+          });
+        }
+        return;
+      } else {
+        if (mounted) {
+          setState(() {
+            _isAnalyzing = false;
+            _aiResponseText = geminiRes.explanation;
+            _matchedResults = [];
+          });
+        }
+        return;
+      }
+    }
+
+    final scored = <Map<String, dynamic>, double>{};
+
+    for (var s in combinedStudents) {
+      double score = 0.0;
+      final name = s['name'].toString().toLowerCase();
+      final skillsList = (s['skills'] as List?)?.map((e) => e.toString().toLowerCase()).toList() ?? [];
+      final skillsText = skillsList.join(' ');
+      final location = (s['location'] ?? 'Chalco').toString().toLowerCase();
+      final modality = (s['modality'] ?? '').toString().toLowerCase();
+      final career = (s['career'] ?? '').toString().toLowerCase();
+      final full = '$name $skillsText $location $modality $career';
+
+      for (var term in terms) {
+        if (skillsText.contains(term)) score += 3.0;
+        if (location.contains(term)) score += 2.5;
+        if (modality.contains(term)) score += 2.0;
+        if (full.contains(term)) score += 1.0;
+      }
+
+      if (queryLower.contains('base') || queryLower.contains('sql')) {
+        if (skillsText.contains('sql') || skillsText.contains('base') || skillsText.contains('postgres')) score += 4.0;
+      }
+      if (queryLower.contains('flutter') || queryLower.contains('móvil') || queryLower.contains('app')) {
+        if (skillsText.contains('flutter') || skillsText.contains('react') || skillsText.contains('firebase')) score += 4.0;
+      }
+      if (queryLower.contains('seguridad') || queryLower.contains('ciber')) {
+        if (skillsText.contains('seguridad') || skillsText.contains('redes') || skillsText.contains('ciber')) score += 4.0;
+      }
+      if (queryLower.contains('python') || queryLower.contains('machine') || queryLower.contains('ia')) {
+        if (skillsText.contains('python') || skillsText.contains('machine') || skillsText.contains('ia')) score += 4.0;
+      }
+      if (queryLower.contains('alto') || queryLower.contains('promedio') || queryLower.contains('+9')) {
+        final gpaVal = (s['gpa'] ?? 8.0) as double;
+        if (gpaVal >= 9.0) score += 3.5;
+      }
+
+      scored[s] = score;
+    }
+
+    final sorted = scored.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
+    List<Map<String, dynamic>> matches = sorted.where((e) => e.value > 0).map((e) => e.key).toList();
+
+    if (matches.isEmpty) {
+      matches = combinedStudents.take(3).toList();
     } else {
-      explanation = 'Procesé tu consulta "${queryText}" y seleccioné las mejores coincidencias en tiempo real:';
+      matches = matches.take(4).toList();
+    }
+
+    String explanation = '';
+    if (queryLower.contains('base') || queryLower.contains('sql')) {
+      explanation = '🤖 Analicé el directorio de Sistemas TESOEM e identifiqué a los siguientes candidatos especializados en Bases de Datos, SQL y gestión de datos:';
+    } else if (queryLower.contains('flutter') || queryLower.contains('móvil') || queryLower.contains('app')) {
+      explanation = '🤖 Encontré a los alumnos con experiencia en desarrollo de aplicaciones móviles (Flutter/Firebase/React) disponibles para proyectos corporativos:';
+    } else if (queryLower.contains('seguridad') || queryLower.contains('ciber')) {
+      explanation = '🤖 Aquí están los perfiles con preparación destacada en Ciberseguridad, Redes e Infraestructura Cloud:';
+    } else if (queryLower.contains('promedio') || queryLower.contains('alto') || queryLower.contains('+9')) {
+      explanation = '🤖 Filtré a los estudiantes de Excelencia Académica con promedio sobresaliente superior a 9.0/10.0:';
+    } else {
+      explanation = '🤖 Procesé tu consulta "$queryText" mediante IA semántica y seleccioné a los alumnos de TESOEM con mayor afinidad:';
     }
 
     if (mounted) {

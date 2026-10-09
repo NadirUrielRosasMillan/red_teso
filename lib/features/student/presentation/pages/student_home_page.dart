@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
 import 'package:red_teso/features/auth/presentation/providers/auth_provider.dart';
 import 'package:red_teso/features/student/presentation/pages/vacancy_detail_page.dart';
+import 'package:red_teso/features/student/presentation/widgets/ai_vacancy_assistant_modal.dart';
 import 'package:red_teso/core/widgets/notification_bell.dart';
 
 class StudentHomePage extends StatefulWidget {
@@ -35,6 +36,16 @@ class _StudentHomePageState extends State<StudentHomePage> {
           const NotificationBell(color: AppTheme.primaryGreen),
           const SizedBox(width: 8),
         ],
+      ),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 100),
+        child: FloatingActionButton(
+          onPressed: () => AiVacancyAssistantModal.show(context),
+          backgroundColor: AppTheme.primaryGreen,
+          elevation: 6,
+          tooltip: 'Asistente IA de Vacantes 🤖',
+          child: const Icon(Icons.psychology_rounded, color: Colors.white, size: 26),
+        ),
       ),
       body: Column(
         children: [

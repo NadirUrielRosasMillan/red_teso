@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
@@ -10,8 +12,7 @@ import 'package:red_teso/features/courses/presentation/widgets/ai_course_assista
 import 'package:red_teso/features/courses/presentation/widgets/course_quote_modal.dart';
 import 'package:red_teso/features/company/presentation/pages/student_detail_view_page.dart';
 
-/// Catálogo Oficial de Cursos Universitaros TESOEM para Empresas
-/// Incluye Buscador Semántico por IA, Filtros por Nivel, solicitudes de cotización y acceso al Feed de Cortos (TikTok style)
+/// Catálogo Oficial de Cursos Universitarios TESOEM para Empresas
 class CourseCatalogPage extends StatefulWidget {
   const CourseCatalogPage({super.key});
 
@@ -20,7 +21,7 @@ class CourseCatalogPage extends StatefulWidget {
 }
 
 class _CourseCatalogPageState extends State<CourseCatalogPage> {
-  final List<CourseModel> _courses = MockCoursesData.sampleCourses;
+  final List<CourseModel> _courses = [];
   final ScrollController _scrollController = ScrollController();
 
   String _selectedCategory = 'Todos';
@@ -45,19 +46,6 @@ class _CourseCatalogPageState extends State<CourseCatalogPage> {
     super.dispose();
   }
 
-  /// Búsqueda y filtrado inteligente combinado por categoría y nivel
-  List<CourseModel> get _filteredCourses {
-    return _courses.where((course) {
-      final matchesCategory = _selectedCategory == 'Todos' ||
-          course.category.toLowerCase().contains(_selectedCategory.toLowerCase());
-
-      final matchesLevel = _selectedLevel == 'Todos' ||
-          course.level.toLowerCase().contains(_selectedLevel.toLowerCase());
-
-      return matchesCategory && matchesLevel;
-    }).toList();
-  }
-
   void _clearFilters() {
     setState(() {
       _selectedCategory = 'Todos';
@@ -67,300 +55,346 @@ class _CourseCatalogPageState extends State<CourseCatalogPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        foregroundColor: const Color(0xFF0F172A),
-        elevation: 0,
-        title: Text(
-          'Cursos TESOEM para Empresas',
-          style: GoogleFonts.outfit(
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-            color: const Color(0xFF0F172A),
-          ),
-        ),
-        actions: [
-          // Botón destacado para abrir el Feed de Cortos / Clips
-          Padding(
-            padding: const EdgeInsets.only(right: 12.0),
-            child: Center(
-              child: InkWell(
-                borderRadius: BorderRadius.circular(20),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CourseClipsFeedPage(courses: _courses),
-                    ),
-                  );
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: AppTheme.accentColor,
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance.collection('courses').snapshots(),
+      builder: (context, snapshot) {
+        List<CourseModel> allCourses = [];
+
+        if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
+          allCourses = snapshot.data!.docs.map((doc) {
+            final data = doc.data() as Map<String, dynamic>;
+            final video = (data['videoUrl'] != null && data['videoUrl'].toString().isNotEmpty)
+                ? data['videoUrl'].toString()
+                : 'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4';
+            final banner = (data['bannerUrl'] != null && data['bannerUrl'].toString().isNotEmpty)
+                ? data['bannerUrl'].toString()
+                : 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800';
+
+            return CourseModel(
+              id: doc.id,
+              title: data['title'] ?? 'Curso TESOEM',
+              category: data['category'] ?? 'Sistemas',
+              description: data['description'] ?? 'Programa oficial de capacitación universitaria.',
+              price: data['price'] ?? 'Por cotizar',
+              duration: data['duration'] ?? '40 Horas',
+              level: data['level'] ?? 'Avanzado',
+              bannerUrl: banner,
+              rating: 5.0,
+              featuredStudents: [],
+              clips: [
+                CourseClip(
+                  id: 'clip_${doc.id}',
+                  title: 'Demo de ${data['title'] ?? 'Curso'}',
+                  subtitle: data['description'] ?? 'Muestra ejecutiva del programa académico.',
+                  videoUrl: video,
+                  thumbnailUrl: banner,
+                  courseId: doc.id,
+                  courseTitle: data['title'] ?? 'Curso TESOEM',
+                ),
+              ],
+            );
+          }).toList();
+        }
+
+        final filteredCourses = allCourses.where((course) {
+          final matchesCategory = _selectedCategory == 'Todos' ||
+              course.category.toLowerCase().contains(_selectedCategory.toLowerCase());
+
+          final matchesLevel = _selectedLevel == 'Todos' ||
+              course.level.toLowerCase().contains(_selectedLevel.toLowerCase());
+
+          return matchesCategory && matchesLevel;
+        }).toList();
+
+        return Scaffold(
+          backgroundColor: const Color(0xFFF8FAFC),
+          appBar: AppBar(
+            backgroundColor: Colors.white,
+            foregroundColor: const Color(0xFF0F172A),
+            elevation: 0,
+            title: Text(
+              'Cursos TESOEM para Empresas',
+              style: GoogleFonts.outfit(
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+                color: const Color(0xFF0F172A),
+              ),
+            ),
+            actions: [
+              Padding(
+                padding: const EdgeInsets.only(right: 12.0),
+                child: Center(
+                  child: InkWell(
                     borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppTheme.accentColor.withOpacity(0.3),
-                        blurRadius: 8,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.movie_filter_rounded, size: 18, color: Colors.white),
-                      const SizedBox(width: 6),
-                      Text(
-                        'CLIPS 🎬',
-                        style: GoogleFonts.outfit(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          letterSpacing: 0.5,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CourseClipsFeedPage(courses: allCourses),
                         ),
+                      );
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: AppTheme.accentColor,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppTheme.accentColor.withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
                       ),
-                    ],
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.movie_filter_rounded, size: 18, color: Colors.white),
+                          const SizedBox(width: 6),
+                          Text(
+                            'CLIPS 🎬',
+                            style: GoogleFonts.outfit(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
+            ],
           ),
-        ],
-      ),
 
-      // Botón de Acción Flotante Inteligente cuando hace scroll
-      floatingActionButton: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 300),
-        transitionBuilder: (child, animation) => ScaleTransition(scale: animation, child: child),
-        child: _isScrolled
-            ? Padding(
-                padding: const EdgeInsets.only(bottom: 100), // Para quedar por encima del dock flotante Liquid Glass
-                child: FloatingActionButton(
-                  key: const ValueKey('floating_ai_btn'),
-                  onPressed: () => AiCourseAssistantModal.show(context, courses: _courses),
-                  backgroundColor: const Color(0xFF0F172A),
-      elevation: 6,
-                  tooltip: 'IA REDTESO 🤖',
-                  child: const Icon(Icons.psychology_rounded, color: AppTheme.accentColor, size: 24),
-                ),
-              )
-            : const SizedBox.shrink(key: ValueKey('empty_ai_btn')),
-      ),
+          floatingActionButton: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            transitionBuilder: (child, animation) => ScaleTransition(scale: animation, child: child),
+            child: _isScrolled
+                ? Padding(
+                    padding: const EdgeInsets.only(bottom: 100),
+                    child: FloatingActionButton(
+                      key: const ValueKey('floating_ai_btn'),
+                      onPressed: () => AiCourseAssistantModal.show(context, courses: allCourses),
+                      backgroundColor: const Color(0xFF0F172A),
+                      elevation: 6,
+                      tooltip: 'IA REDTESO 🤖',
+                      child: const Icon(Icons.psychology_rounded, color: AppTheme.accentColor, size: 24),
+                    ),
+                  )
+                : const SizedBox.shrink(key: ValueKey('empty_ai_btn')),
+          ),
 
-      body: CustomScrollView(
-        controller: _scrollController,
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          SliverToBoxAdapter(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 12),
+          body: CustomScrollView(
+            controller: _scrollController,
+            physics: const BouncingScrollPhysics(),
+            slivers: [
+              SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 12),
 
-                // 1. TARJETA ENCABEZADO DE BÚSQUEDA SEMÁNTICA CON IA REDTESO 🤖✨
-                AnimatedOpacity(
-                  duration: const Duration(milliseconds: 250),
-                  opacity: _isScrolled ? 0.3 : 1.0,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
-                    child: GestureDetector(
-                      onTap: () {
-                        AiCourseAssistantModal.show(context, courses: _courses);
-                      },
-                      child: Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [
-                              Color(0xFF0F172A),
-                              Color(0xFF1E293B),
-                            ],
-                          ),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: AppTheme.accentColor.withOpacity(0.5), width: 1.2),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppTheme.accentColor.withOpacity(0.2),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: const BoxDecoration(
-                                gradient: LinearGradient(colors: [AppTheme.primaryColor, AppTheme.accentColor]),
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(Icons.psychology_rounded, color: Colors.white, size: 22),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Asistente IA para Cursos 🤖✨',
-                                    style: GoogleFonts.outfit(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
-                                  ),
-                                  Text(
-                                    'Escribe en lenguaje cotidiano: "Quiero un curso de AWS o Ciberseguridad"',
-                                    style: GoogleFonts.inter(color: Colors.white70, fontSize: 11.5),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
+                    AnimatedOpacity(
+                      duration: const Duration(milliseconds: 250),
+                      opacity: _isScrolled ? 0.3 : 1.0,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+                        child: GestureDetector(
+                          onTap: () {
+                            AiCourseAssistantModal.show(context, courses: allCourses);
+                          },
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [
+                                  Color(0xFF0F172A),
+                                  Color(0xFF1E293B),
                                 ],
                               ),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(color: AppTheme.accentColor.withOpacity(0.5), width: 1.2),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppTheme.accentColor.withOpacity(0.2),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
                             ),
-                            const Icon(Icons.arrow_forward_ios_rounded, color: AppTheme.accentColor, size: 14),
-                          ],
+                            child: Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: const BoxDecoration(
+                                    gradient: LinearGradient(colors: [AppTheme.primaryColor, AppTheme.accentColor]),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(Icons.psychology_rounded, color: Colors.white, size: 22),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Asistente IA para Cursos 🤖✨',
+                                        style: GoogleFonts.outfit(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                                      ),
+                                      Text(
+                                        'Escribe en lenguaje cotidiano: "Quiero un curso de AWS o Ciberseguridad"',
+                                        style: GoogleFonts.inter(color: Colors.white70, fontSize: 11.5),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const Icon(Icons.arrow_forward_ios_rounded, color: AppTheme.accentColor, size: 14),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ),
 
-                const SizedBox(height: 10),
+                    const SizedBox(height: 10),
 
-                // 2. FILTROS POR CATEGORÍA
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Row(
-                    children: ['Todos', 'Sistemas', 'IA', 'Seguridad', 'Móvil', 'Gestión'].map((category) {
-                      final isSelected = _selectedCategory == category;
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 8.0),
-                        child: ChoiceChip(
-                          label: Text(category),
-                          selected: isSelected,
-                          selectedColor: AppTheme.primaryColor,
-                          labelStyle: GoogleFonts.inter(
-                            color: isSelected ? Colors.white : const Color(0xFF475569),
-                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                            fontSize: 12.5,
-                          ),
-                          onSelected: (val) {
-                            setState(() {
-                              _selectedCategory = category;
-                            });
-                          },
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                ),
-
-                const SizedBox(height: 8),
-
-                // 3. FILTROS POR NIVEL DE DIFICULTAD (Básico, Intermedio, Avanzado)
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Row(
-                    children: [
-                      Text('Nivel: ', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF64748B))),
-                      ...['Todos', 'Básico', 'Intermedio', 'Avanzado'].map((level) {
-                        final isSelected = _selectedLevel == level;
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 6.0),
-                          child: FilterChip(
-                            label: Text(level),
-                            selected: isSelected,
-                            selectedColor: AppTheme.accentColor,
-                            checkmarkColor: Colors.white,
-                            labelStyle: GoogleFonts.inter(
-                              color: isSelected ? Colors.white : const Color(0xFF475569),
-                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                              fontSize: 12,
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Row(
+                        children: ['Todos', 'Sistemas', 'IA', 'Seguridad', 'Móvil', 'Gestión'].map((category) {
+                          final isSelected = _selectedCategory == category;
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: ChoiceChip(
+                              label: Text(category),
+                              selected: isSelected,
+                              selectedColor: AppTheme.primaryColor,
+                              labelStyle: GoogleFonts.inter(
+                                color: isSelected ? Colors.white : const Color(0xFF475569),
+                                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                fontSize: 12.5,
+                              ),
+                              onSelected: (val) {
+                                setState(() {
+                                  _selectedCategory = category;
+                                });
+                              },
                             ),
-                            onSelected: (val) {
-                              setState(() {
-                                _selectedLevel = level;
-                              });
-                            },
-                          ),
-                        );
-                      }).toList(),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 12),
-              ],
-            ),
-          ),
-
-          // 4. LISTADO SLIVER DE CURSOS O ESTADO VACÍO (EMPTY STATE)
-          if (_filteredCourses.isEmpty)
-            SliverToBoxAdapter(
-              child: Container(
-                margin: const EdgeInsets.all(32),
-                padding: const EdgeInsets.all(28),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: const Color(0xFFE2E8F0)),
-                ),
-                child: Column(
-                  children: [
-                    const Icon(Icons.manage_search_rounded, size: 64, color: Colors.grey),
-                    const SizedBox(height: 16),
-                    Text(
-                      'No se encontraron cursos',
-                      style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A)),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      'No hay cursos que coincidan con los filtros seleccionados.',
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.inter(fontSize: 13, color: const Color(0xFF64748B)),
-                    ),
-                    const SizedBox(height: 20),
-                    ElevatedButton.icon(
-                      onPressed: _clearFilters,
-                      icon: const Icon(Icons.refresh_rounded, size: 18),
-                      label: const Text('Limpiar Filtros'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.primaryColor,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          );
+                        }).toList(),
                       ),
                     ),
+
+                    const SizedBox(height: 8),
+
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Row(
+                        children: [
+                          Text('Nivel: ', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF64748B))),
+                          ...['Todos', 'Básico', 'Intermedio', 'Avanzado'].map((level) {
+                            final isSelected = _selectedLevel == level;
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 6.0),
+                              child: FilterChip(
+                                label: Text(level),
+                                selected: isSelected,
+                                selectedColor: AppTheme.accentColor,
+                                checkmarkColor: Colors.white,
+                                labelStyle: GoogleFonts.inter(
+                                  color: isSelected ? Colors.white : const Color(0xFF475569),
+                                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                  fontSize: 12,
+                                ),
+                                onSelected: (val) {
+                                  setState(() {
+                                    _selectedLevel = level;
+                                  });
+                                },
+                              ),
+                            );
+                          }).toList(),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
                   ],
                 ),
               ),
-            )
-          else
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              sliver: SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    final course = _filteredCourses[index];
-                    return _buildCourseCard(course);
-                  },
-                  childCount: _filteredCourses.length,
-                ),
-              ),
-            ),
 
-          const SliverToBoxAdapter(
-            child: SizedBox(height: 100), // Espacio para el dock flotante Liquid Glass
+              if (filteredCourses.isEmpty)
+                SliverToBoxAdapter(
+                  child: Container(
+                    margin: const EdgeInsets.all(32),
+                    padding: const EdgeInsets.all(28),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(color: const Color(0xFFE2E8F0)),
+                    ),
+                    child: Column(
+                      children: [
+                        const Icon(Icons.manage_search_rounded, size: 64, color: Colors.grey),
+                        const SizedBox(height: 16),
+                        Text(
+                          'No se encontraron cursos',
+                          style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A)),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          'No hay cursos que coincidan con los filtros seleccionados.',
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.inter(fontSize: 13, color: const Color(0xFF64748B)),
+                        ),
+                        const SizedBox(height: 20),
+                        ElevatedButton.icon(
+                          onPressed: _clearFilters,
+                          icon: const Icon(Icons.refresh_rounded, size: 18),
+                          label: const Text('Limpiar Filtros'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppTheme.primaryColor,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              else
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        final course = filteredCourses[index];
+                        return _buildCourseCard(course);
+                      },
+                      childCount: filteredCourses.length,
+                    ),
+                  ),
+                ),
+
+              const SliverToBoxAdapter(
+                child: SizedBox(height: 100),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
-  /// Construye la tarjeta individual de cada curso
   Widget _buildCourseCard(CourseModel course) {
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
@@ -392,34 +426,13 @@ class _CourseCatalogPageState extends State<CourseCatalogPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Banner del Curso con Insignia de Nivel
               Stack(
                 children: [
                   ClipRRect(
                     borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-                    child: Image.network(
-                      course.bannerUrl,
-                      height: 160,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          height: 160,
-                          width: double.infinity,
-                          decoration: const BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [AppTheme.primaryColor, Color(0xFF4A1022)],
-                            ),
-                          ),
-                          child: const Center(
-                            child: Icon(Icons.school_rounded, color: Colors.white, size: 48),
-                          ),
-                        );
-                      },
-                    ),
+                    child: _buildCourseBannerImage(course.bannerUrl),
                   ),
 
-                  // Insignia de Nivel (Básico, Intermedio, Avanzado)
                   Positioned(
                     top: 12,
                     left: 12,
@@ -440,7 +453,6 @@ class _CourseCatalogPageState extends State<CourseCatalogPage> {
                     ),
                   ),
 
-                  // Insignia de Calificación
                   Positioned(
                     top: 12,
                     right: 12,
@@ -466,10 +478,38 @@ class _CourseCatalogPageState extends State<CourseCatalogPage> {
                       ),
                     ),
                   ),
+
+                  // Botón Play Overlay para reproducir el video del curso
+                  Positioned.fill(
+                    child: Center(
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CourseXRayPlayerPage(course: course),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.55),
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white, width: 2),
+                          ),
+                          child: const Icon(
+                            Icons.play_arrow_rounded,
+                            color: Colors.white,
+                            size: 36,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
 
-              // Detalles del Curso
               Padding(
                 padding: const EdgeInsets.all(18.0),
                 child: Column(
@@ -497,7 +537,6 @@ class _CourseCatalogPageState extends State<CourseCatalogPage> {
 
                     const SizedBox(height: 14),
 
-                    // Alumnos Participantes (X-Ray Preview Chips)
                     if (course.featuredStudents.isNotEmpty) ...[
                       Text(
                         'Talento en este curso:',
@@ -554,7 +593,6 @@ class _CourseCatalogPageState extends State<CourseCatalogPage> {
 
                     const Divider(height: 24),
 
-                    // Precio y Botón para Abrir Reproductor X-Ray
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -624,7 +662,6 @@ class _CourseCatalogPageState extends State<CourseCatalogPage> {
 
                     const SizedBox(height: 12),
 
-                    // Botón Destacado de Solicitar Cotización Corporativa
                     SizedBox(
                       width: double.infinity,
                       child: OutlinedButton.icon(
@@ -654,6 +691,42 @@ class _CourseCatalogPageState extends State<CourseCatalogPage> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildCourseBannerImage(String bannerUrl) {
+    if (bannerUrl.startsWith('http://') || bannerUrl.startsWith('https://')) {
+      return Image.network(
+        bannerUrl,
+        height: 160,
+        width: double.infinity,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => _buildPlaceholderBanner(),
+      );
+    } else if (bannerUrl.isNotEmpty && File(bannerUrl).existsSync()) {
+      return Image.file(
+        File(bannerUrl),
+        height: 160,
+        width: double.infinity,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => _buildPlaceholderBanner(),
+      );
+    }
+    return _buildPlaceholderBanner();
+  }
+
+  Widget _buildPlaceholderBanner() {
+    return Container(
+      height: 160,
+      width: double.infinity,
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [AppTheme.primaryColor, Color(0xFF4A1022)],
+        ),
+      ),
+      child: const Center(
+        child: Icon(Icons.school_rounded, color: Colors.white, size: 48),
       ),
     );
   }

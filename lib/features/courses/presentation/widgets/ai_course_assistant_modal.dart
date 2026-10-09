@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:red_teso/core/services/gemini_ai_service.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
 import 'package:red_teso/features/courses/domain/models/course_model.dart';
 import 'package:red_teso/features/courses/presentation/pages/course_detail_page.dart';
@@ -68,7 +69,77 @@ class _AiCourseAssistantModalState extends State<AiCourseAssistantModal>
       _queryController.text = queryText;
     });
 
-    await Future.delayed(const Duration(milliseconds: 1000));
+    final trimmedQuery = queryText.trim().toLowerCase();
+
+    // Detección mejorada de saludos y platica casual (ej: "oye", "hola", "buenas")
+    final isGreeting = RegExp(r'^(hola|holaa|oye|oyee|buenas|buenos dias|buenas tardes|buenas noches|hey|que tal|saludos|como estas)\b').hasMatch(trimmedQuery);
+    final isWhoAreYou = RegExp(r'(quien eres|que haces|que puedes hacer|como me ayudas|ayuda|funciones)\b').hasMatch(trimmedQuery);
+    final isThanks = RegExp(r'^(gracias|muchas gracias|thx|thank you|ok gracias)\b').hasMatch(trimmedQuery);
+
+    if (isGreeting || isWhoAreYou || isThanks) {
+      await Future.delayed(const Duration(milliseconds: 400));
+      String response = '';
+      if (isGreeting) {
+        response = '¡Hola! 👋 Soy tu Asesor Virtual de Cursos TESOEM.\n\nPuedo orientarte sobre las mejores capacitaciones ejecutivas para tu empresa. ¿En qué área o tecnología necesitas información hoy?';
+      } else if (isWhoAreYou) {
+        response = '🤖 ¡Hola! Soy el Asistente IA de Cursos TESOEM.\n\nPuedo analizar la oferta de capacitaciones corporativas y recomendarte diplomados o certificaciones en Cloud, IA, Ciberseguridad o Desarrollo Móvil.\n\n¡Prueba preguntando "Quiero un curso de Ciberseguridad"!';
+      } else {
+        response = '¡Un placer atenderte! 😊 Si deseas cotizar o consultar información de algún curso, estoy a tus órdenes.';
+      }
+
+      if (mounted) {
+        setState(() {
+          _isAnalyzing = false;
+          _aiResponseText = response;
+          _matchedResults = []; // NO MUESTRA CURSOS SIN SER SOLICITADOS
+        });
+      }
+      return;
+    }
+
+    // 1. CONSULTA REAL CON GEMINI 1.5 FLASH AI
+    if (GeminiAiService.hasApiKey) {
+      final coursesMap = widget.courses.map((c) => {
+        'id': c.id,
+        'title': c.title,
+        'category': c.category,
+        'description': c.description,
+        'price': c.price,
+        'duration': c.duration,
+        'level': c.level,
+      }).toList();
+
+      final geminiRes = await GeminiAiService.queryCourses(
+        userPrompt: queryText,
+        courses: coursesMap,
+      );
+
+      if (geminiRes.isGenerative) {
+        final matchedFromGemini = widget.courses
+            .where((c) => geminiRes.recommendedIds.contains(c.id))
+            .toList();
+
+        if (mounted) {
+          setState(() {
+            _isAnalyzing = false;
+            _aiResponseText = geminiRes.explanation;
+            _matchedResults = matchedFromGemini;
+          });
+        }
+        return;
+      } else {
+        if (mounted) {
+          setState(() {
+            _isAnalyzing = false;
+            _aiResponseText = geminiRes.explanation;
+            _matchedResults = [];
+          });
+        }
+        return;
+      }
+    }
+
+    await Future.delayed(const Duration(milliseconds: 600));
 
     final query = queryText.toLowerCase();
     List<CourseModel> matches = [];
@@ -91,10 +162,6 @@ class _AiCourseAssistantModalState extends State<AiCourseAssistantModal>
 
       return title.contains(query) || desc.contains(query) || cat.contains(query);
     }).toList();
-
-    if (matches.isEmpty) {
-      matches = widget.courses.take(2).toList();
-    }
 
     if (isCloud) {
       explanation = 'Analicé la oferta académica de la Universidad TESOEM y seleccioné los programas ejecutivos en Arquitectura Cloud, AWS e Infraestructura DevOps:';
@@ -308,7 +375,7 @@ class _AiCourseAssistantModalState extends State<AiCourseAssistantModal>
                             style: GoogleFonts.inter(color: Colors.white, fontSize: 14.5, fontWeight: FontWeight.bold),
                             cursorColor: AppTheme.accentColor,
                             decoration: InputDecoration(
-                              filled: false, // Sobrescribe el fillColor blanco global de AppTheme
+                              filled: false,
                               fillColor: Colors.transparent,
                               hintText: 'Escribe el curso que busca tu empresa...',
                               hintStyle: GoogleFonts.inter(color: Colors.white60, fontSize: 13),

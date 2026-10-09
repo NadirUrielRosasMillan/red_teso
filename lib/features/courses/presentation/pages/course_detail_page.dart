@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
@@ -33,18 +34,7 @@ class CourseDetailPage extends StatelessWidget {
               background: Stack(
                 fit: StackFit.expand,
                 children: [
-                  Image.network(
-                    course.bannerUrl,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        color: AppTheme.primaryColor,
-                        child: const Center(
-                          child: Icon(Icons.school_rounded, color: Colors.white, size: 64),
-                        ),
-                      );
-                    },
-                  ),
+                  _buildDetailHeaderImage(course.bannerUrl),
                   Container(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
@@ -184,6 +174,92 @@ class CourseDetailPage extends StatelessWidget {
                           ),
                         ),
                       ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // Tarjeta Reproductor de Video Trailer / Demo del Curso
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CourseXRayPlayerPage(course: course),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      height: 170,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        image: DecorationImage(
+                          image: course.bannerUrl.startsWith('http')
+                              ? NetworkImage(course.bannerUrl)
+                              : (File(course.bannerUrl).existsSync()
+                                  ? FileImage(File(course.bannerUrl)) as ImageProvider
+                                  : const NetworkImage('https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800')),
+                          fit: BoxFit.cover,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.12),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.black.withOpacity(0.25),
+                              Colors.black.withOpacity(0.75),
+                            ],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                          ),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(14),
+                              decoration: BoxDecoration(
+                                color: AppTheme.primaryColor,
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: AppTheme.primaryColor.withOpacity(0.5),
+                                    blurRadius: 12,
+                                    spreadRadius: 2,
+                                  ),
+                                ],
+                              ),
+                              child: const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 34),
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              'REPRODUCIR VIDEO DEMO / TRAILER 🎬',
+                              style: GoogleFonts.outfit(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13.5,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                            Text(
+                              'Toca para ver el video interactivo X-Ray',
+                              style: GoogleFonts.inter(
+                                color: Colors.white70,
+                                fontSize: 11,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
 
@@ -448,6 +524,32 @@ class CourseDetailPage extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildDetailHeaderImage(String url) {
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return Image.network(
+        url,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => Container(
+          color: AppTheme.primaryColor,
+          child: const Center(child: Icon(Icons.school_rounded, color: Colors.white, size: 64)),
+        ),
+      );
+    } else if (url.isNotEmpty && File(url).existsSync()) {
+      return Image.file(
+        File(url),
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => Container(
+          color: AppTheme.primaryColor,
+          child: const Center(child: Icon(Icons.school_rounded, color: Colors.white, size: 64)),
+        ),
+      );
+    }
+    return Container(
+      color: AppTheme.primaryColor,
+      child: const Center(child: Icon(Icons.school_rounded, color: Colors.white, size: 64)),
     );
   }
 }

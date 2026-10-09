@@ -56,6 +56,11 @@ class _RegisterPageState extends State<RegisterPage> {
         'gpa': _gpa,
         'career': 'Ingeniería en Sistemas Computacionales',
       };
+    } else if (_userType == 'Profesor') {
+      extraData = {
+        'department': 'División de Ingeniería en Sistemas Computacionales',
+        'isVerifiedProfessor': true,
+      };
     }
 
     final error = await authProvider.signUp(
@@ -101,6 +106,7 @@ class _RegisterPageState extends State<RegisterPage> {
               segments: const [
                 ButtonSegment(value: 'Alumno', label: Text('Alumno'), icon: Icon(Icons.school)),
                 ButtonSegment(value: 'Empresa', label: Text('Empresa'), icon: Icon(Icons.business)),
+                ButtonSegment(value: 'Profesor', label: Text('Profesor'), icon: Icon(Icons.co_present_rounded)),
               ],
               selected: {_userType},
               onSelectionChanged: (val) => setState(() => _userType = val.first),

@@ -1,13 +1,14 @@
+import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:video_player/video_player.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
 import 'package:red_teso/features/courses/domain/models/course_model.dart';
 import 'package:red_teso/features/courses/presentation/widgets/course_quote_modal.dart';
 import 'package:red_teso/features/company/presentation/pages/student_detail_view_page.dart';
 
 /// Reproductor de Video Interactivo con interfaz X-Ray estilo Apple TV+
-/// Permite pausar el video o tocar "X-Ray" para ver los alumnos que aparecen en escena
 class CourseXRayPlayerPage extends StatefulWidget {
   final CourseModel course;
 
@@ -21,14 +22,58 @@ class CourseXRayPlayerPage extends StatefulWidget {
 }
 
 class _CourseXRayPlayerPageState extends State<CourseXRayPlayerPage> {
+  VideoPlayerController? _videoController;
+  bool _isInitialized = false;
   bool _isPlaying = true;
   bool _showXRay = true;
-  double _currentProgress = 0.35; // 35% del video
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeVideo();
+  }
+
+  Future<void> _initializeVideo() async {
+    final videoPathOrUrl = widget.course.clips.isNotEmpty
+        ? widget.course.clips.first.videoUrl
+        : 'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4';
+
+    try {
+      if (videoPathOrUrl.startsWith('http://') || videoPathOrUrl.startsWith('https://')) {
+        _videoController = VideoPlayerController.networkUrl(Uri.parse(videoPathOrUrl));
+      } else if (videoPathOrUrl.isNotEmpty && File(videoPathOrUrl).existsSync()) {
+        _videoController = VideoPlayerController.file(File(videoPathOrUrl));
+      } else {
+        _videoController = VideoPlayerController.networkUrl(
+          Uri.parse('https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4'),
+        );
+      }
+
+      await _videoController!.initialize();
+      _videoController!.setLooping(true);
+      await _videoController!.play();
+
+      if (mounted) {
+        setState(() {
+          _isInitialized = true;
+          _isPlaying = true;
+        });
+      }
+    } catch (e) {
+      debugPrint('Error al inicializar el reproductor de video: $e');
+    }
+  }
+
+  @override
+  void dispose() {
+    _videoController?.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A), // Dark Slate / Apple TV+ vibe
+      backgroundColor: const Color(0xFF0F172A),
       appBar: AppBar(
         backgroundColor: const Color(0xFF0F172A),
         foregroundColor: Colors.white,
@@ -53,7 +98,6 @@ class _CourseXRayPlayerPageState extends State<CourseXRayPlayerPage> {
           ],
         ),
         actions: [
-          // Botón directo para solicitar cotización corporativa del curso
           IconButton(
             icon: const Icon(Icons.request_quote_rounded, color: AppTheme.accentColor),
             tooltip: 'Solicitar Cotización',
@@ -61,7 +105,6 @@ class _CourseXRayPlayerPageState extends State<CourseXRayPlayerPage> {
               CourseQuoteModal.show(context, course: widget.course);
             },
           ),
-          // Botón directo para activar/desactivar X-Ray Apple TV+ Style
           IconButton(
             icon: Icon(
               _showXRay ? Icons.subtitles_rounded : Icons.subtitles_outlined,
@@ -79,31 +122,33 @@ class _CourseXRayPlayerPageState extends State<CourseXRayPlayerPage> {
       body: SafeArea(
         child: Column(
           children: [
-            // 1. ÁREA DE REPRODUCCIÓN DE VIDEO CON MARCO
+            // 1. ÁREA DE REPRODUCCIÓN DE VIDEO CON MARCO REAL
             Expanded(
               flex: 5,
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  // Imagen de fondo del video / Banner con degradado cinematográfico
-                  Container(
-                    width: double.infinity,
-                    height: double.infinity,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: NetworkImage(widget.course.bannerUrl),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
+                  _isInitialized && _videoController != null
+                      ? SizedBox.expand(
+                          child: FittedBox(
+                            fit: BoxFit.cover,
+                            clipBehavior: Clip.hardEdge,
+                            child: SizedBox(
+                              width: _videoController!.value.size.width,
+                              height: _videoController!.value.size.height,
+                              child: VideoPlayer(_videoController!),
+                            ),
+                          ),
+                        )
+                      : _buildFallbackBanner(),
 
                   // Overlay oscuro de reproducción
                   Container(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          Colors.black.withOpacity(0.3),
-                          Colors.black.withOpacity(0.7),
+                          Colors.black.withOpacity(0.2),
+                          Colors.black.withOpacity(0.65),
                         ],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
@@ -114,19 +159,25 @@ class _CourseXRayPlayerPageState extends State<CourseXRayPlayerPage> {
                   // Botón central Play/Pause interactivo
                   GestureDetector(
                     onTap: () {
-                      setState(() {
-                        _isPlaying = !_isPlaying;
-                        if (!_isPlaying) {
-                          _showXRay = true; // Auto-activa X-Ray al pausar
-                        }
-                      });
+                      if (_videoController != null && _isInitialized) {
+                        setState(() {
+                          if (_videoController!.value.isPlaying) {
+                            _videoController!.pause();
+                            _isPlaying = false;
+                            _showXRay = true;
+                          } else {
+                            _videoController!.play();
+                            _isPlaying = true;
+                          }
+                        });
+                      }
                     },
                     child: Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
+                        color: Colors.white.withOpacity(0.25),
                         shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white.withOpacity(0.4), width: 2),
+                        border: Border.all(color: Colors.white.withOpacity(0.5), width: 2),
                       ),
                       child: Icon(
                         _isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
@@ -136,7 +187,7 @@ class _CourseXRayPlayerPageState extends State<CourseXRayPlayerPage> {
                     ),
                   ),
 
-                  // Badge de Apple TV+ Style X-Ray en la esquina superior izquierda del video
+                  // Badge de Apple TV+ Style X-Ray
                   Positioned(
                     top: 16,
                     left: 16,
@@ -165,33 +216,38 @@ class _CourseXRayPlayerPageState extends State<CourseXRayPlayerPage> {
                     ),
                   ),
 
-                  // Barra de progreso del video
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    child: Column(
-                      children: [
-                        SliderTheme(
-                          data: SliderThemeData(
-                            trackHeight: 3,
-                            thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
-                            activeTrackColor: AppTheme.primaryColor,
-                            inactiveTrackColor: Colors.white24,
-                            thumbColor: Colors.white,
-                          ),
-                          child: Slider(
-                            value: _currentProgress,
-                            onChanged: (val) {
-                              setState(() {
-                                _currentProgress = val;
-                              });
-                            },
-                          ),
-                        ),
-                      ],
+                  // Barra de progreso interactiva
+                  if (_isInitialized && _videoController != null)
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      child: ValueListenableBuilder<VideoPlayerValue>(
+                        valueListenable: _videoController!,
+                        builder: (context, value, child) {
+                          final duration = value.duration.inMilliseconds;
+                          final position = value.position.inMilliseconds;
+                          double progress = duration > 0 ? (position / duration).clamp(0.0, 1.0) : 0.0;
+
+                          return SliderTheme(
+                            data: SliderThemeData(
+                              trackHeight: 3,
+                              thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
+                              activeTrackColor: AppTheme.primaryColor,
+                              inactiveTrackColor: Colors.white24,
+                              thumbColor: Colors.white,
+                            ),
+                            child: Slider(
+                              value: progress,
+                              onChanged: (val) {
+                                final newPosition = (val * duration).toInt();
+                                _videoController!.seekTo(Duration(milliseconds: newPosition));
+                              },
+                            ),
+                          );
+                        },
+                      ),
                     ),
-                  ),
                 ],
               ),
             ),
@@ -219,7 +275,6 @@ class _CourseXRayPlayerPageState extends State<CourseXRayPlayerPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Encabezado del Panel X-Ray
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -266,136 +321,143 @@ class _CourseXRayPlayerPageState extends State<CourseXRayPlayerPage> {
                       if (_showXRay) ...[
                         const SizedBox(height: 14),
 
-                        // Lista Horizontal de Tarjetas de Alumnos (X-Ray Cards estilo Apple TV+)
-                        SizedBox(
-                          height: 170,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: widget.course.featuredStudents.length,
-                            itemBuilder: (context, index) {
-                              final student = widget.course.featuredStudents[index];
+                        if (widget.course.featuredStudents.isEmpty)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 20),
+                            child: Text(
+                              'Este curso corporativo es impartido por el cuerpo docente verificado del TESOEM.',
+                              style: GoogleFonts.inter(color: Colors.white70, fontSize: 13),
+                            ),
+                          )
+                        else
+                          SizedBox(
+                            height: 170,
+                            child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: widget.course.featuredStudents.length,
+                              itemBuilder: (context, index) {
+                                final student = widget.course.featuredStudents[index];
 
-                              return Container(
-                                width: 260,
-                                margin: const EdgeInsets.only(right: 14),
-                                padding: const EdgeInsets.all(14),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.08),
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(
-                                    color: Colors.white.withOpacity(0.18),
-                                    width: 1,
+                                return Container(
+                                  width: 260,
+                                  margin: const EdgeInsets.only(right: 14),
+                                  padding: const EdgeInsets.all(14),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.08),
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(
+                                      color: Colors.white.withOpacity(0.18),
+                                      width: 1,
+                                    ),
                                   ),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        CircleAvatar(
-                                          radius: 22,
-                                          backgroundImage: student.avatarUrl.isNotEmpty
-                                              ? NetworkImage(student.avatarUrl)
-                                              : null,
-                                          child: student.avatarUrl.isEmpty
-                                              ? Text(student.name[0])
-                                              : null,
-                                        ),
-                                        const SizedBox(width: 10),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                student.name,
-                                                style: GoogleFonts.outfit(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 14,
-                                                ),
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                              Text(
-                                                student.roleInCourse,
-                                                style: GoogleFonts.inter(
-                                                  color: AppTheme.accentColor,
-                                                  fontSize: 11.5,
-                                                  fontWeight: FontWeight.w600,
-                                                ),
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ],
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          CircleAvatar(
+                                            radius: 22,
+                                            backgroundImage: student.avatarUrl.isNotEmpty
+                                                ? NetworkImage(student.avatarUrl)
+                                                : null,
+                                            child: student.avatarUrl.isEmpty
+                                                ? Text(student.name[0])
+                                                : null,
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white.withOpacity(0.1),
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      child: Text(
-                                        '🎓 ${student.career} • GPA: ${student.gpa}',
-                                        style: GoogleFonts.inter(
-                                          color: Colors.white70,
-                                          fontSize: 11,
-                                        ),
-                                      ),
-                                    ),
-                                    const Spacer(),
-
-                                    // Botón directo para ir al perfil del alumno
-                                    GestureDetector(
-                                      onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => StudentDetailViewPage(
-                                              student: {
-                                                'name': student.name,
-                                                'modality': 'Residencias',
-                                                'gpa': student.gpa,
-                                                'gender': 'Femenino',
-                                                'speaksEnglish': true,
-                                                'career': student.career,
-                                                'role': student.roleInCourse,
-                                              },
+                                          const SizedBox(width: 10),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  student.name,
+                                                  style: GoogleFonts.outfit(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 14,
+                                                  ),
+                                                  overflow: TextOverflow.ellipsis,
+                                                ),
+                                                Text(
+                                                  student.roleInCourse,
+                                                  style: GoogleFonts.inter(
+                                                    color: AppTheme.accentColor,
+                                                    fontSize: 11.5,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                  overflow: TextOverflow.ellipsis,
+                                                ),
+                                              ],
                                             ),
                                           ),
-                                        );
-                                      },
-                                      child: Container(
-                                        width: double.infinity,
-                                        padding: const EdgeInsets.symmetric(vertical: 8),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 10),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                         decoration: BoxDecoration(
-                                          gradient: const LinearGradient(
-                                            colors: [
-                                              AppTheme.primaryColor,
-                                              Color(0xFF8B1E3F),
-                                            ],
-                                          ),
-                                          borderRadius: BorderRadius.circular(12),
+                                          color: Colors.white.withOpacity(0.1),
+                                          borderRadius: BorderRadius.circular(10),
                                         ),
-                                        child: Center(
-                                          child: Text(
-                                            'Ver Perfil Completo 👤',
-                                            style: GoogleFonts.outfit(
-                                              color: Colors.white,
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.bold,
+                                        child: Text(
+                                          '🎓 ${student.career} • GPA: ${student.gpa}',
+                                          style: GoogleFonts.inter(
+                                            color: Colors.white70,
+                                            fontSize: 11,
+                                          ),
+                                        ),
+                                      ),
+                                      const Spacer(),
+
+                                      GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => StudentDetailViewPage(
+                                                student: {
+                                                  'name': student.name,
+                                                  'modality': 'Residencias',
+                                                  'gpa': student.gpa,
+                                                  'gender': 'Femenino',
+                                                  'speaksEnglish': true,
+                                                  'career': student.career,
+                                                  'role': student.roleInCourse,
+                                                },
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        child: Container(
+                                          width: double.infinity,
+                                          padding: const EdgeInsets.symmetric(vertical: 8),
+                                          decoration: BoxDecoration(
+                                            gradient: const LinearGradient(
+                                              colors: [
+                                                AppTheme.primaryColor,
+                                                Color(0xFF8B1E3F),
+                                              ],
+                                            ),
+                                            borderRadius: BorderRadius.circular(12),
+                                          ),
+                                          child: Center(
+                                            child: Text(
+                                              'Ver Perfil Completo 👤',
+                                              style: GoogleFonts.outfit(
+                                                color: Colors.white,
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.bold,
+                                              ),
                                             ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
                           ),
-                        ),
                       ],
                     ],
                   ),
@@ -404,6 +466,34 @@ class _CourseXRayPlayerPageState extends State<CourseXRayPlayerPage> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildFallbackBanner() {
+    final url = widget.course.bannerUrl;
+    ImageProvider? imageProvider;
+
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      imageProvider = NetworkImage(url);
+    } else if (url.isNotEmpty && File(url).existsSync()) {
+      imageProvider = FileImage(File(url));
+    }
+
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      decoration: BoxDecoration(
+        color: const Color(0xFF0F172A),
+        image: imageProvider != null
+            ? DecorationImage(
+                image: imageProvider,
+                fit: BoxFit.cover,
+              )
+            : null,
+      ),
+      child: const Center(
+        child: CircularProgressIndicator(color: AppTheme.accentColor),
       ),
     );
   }
