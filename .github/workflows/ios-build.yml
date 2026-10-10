@@ -22,9 +22,9 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Disable Code Signing in Xcode
+      - name: Patch Xcode project for unsigned build
         run: |
-          sed -i '' 's/DEVELOPMENT_TEAM = .*/DEVELOPMENT_TEAM = "";/g' ios/Runner.xcodeproj/project.pbxproj
+          sed -i '' 's/DEVELOPMENT_TEAM = .*/DEVELOPMENT_TEAM = "0000000000";/g' ios/Runner.xcodeproj/project.pbxproj
           sed -i '' 's/CODE_SIGN_IDENTITY = "iPhone Developer";/CODE_SIGN_IDENTITY = "";/g' ios/Runner.xcodeproj/project.pbxproj
           sed -i '' 's/CODE_SIGN_IDENTITY = "Apple Development";/CODE_SIGN_IDENTITY = "";/g' ios/Runner.xcodeproj/project.pbxproj
           grep -n "DEVELOPMENT_TEAM\|CODE_SIGN" ios/Runner.xcodeproj/project.pbxproj
