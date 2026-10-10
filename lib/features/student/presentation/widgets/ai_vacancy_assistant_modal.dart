@@ -6,7 +6,19 @@ import 'package:red_teso/core/services/gemini_ai_service.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
 import 'package:red_teso/features/student/presentation/pages/vacancy_detail_page.dart';
 
-/// Asistente Virtual Inteligente con Búsqueda Semántica de Vacantes para Estudiantes TESOEM
+class AiChatMessage {
+  final String text;
+  final bool isUser;
+  final List<Map<String, dynamic>>? vacancyCards;
+
+  AiChatMessage({
+    required this.text,
+    required this.isUser,
+    this.vacancyCards,
+  });
+}
+
+/// Asistente Virtual Inteligente con Búsqueda Semántica de Vacantes en Formato Chat para Estudiantes
 class AiVacancyAssistantModal extends StatefulWidget {
   const AiVacancyAssistantModal({super.key});
 
@@ -26,11 +38,11 @@ class AiVacancyAssistantModal extends StatefulWidget {
 class _AiVacancyAssistantModalState extends State<AiVacancyAssistantModal>
     with SingleTickerProviderStateMixin {
   final TextEditingController _queryController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
   late AnimationController _glowController;
 
   bool _isAnalyzing = false;
-  String _aiResponseText = '';
-  List<Map<String, dynamic>> _matchedVacancies = [];
+  final List<AiChatMessage> _chatMessages = [];
 
   final List<String> _presetPrompts = [
     '💻 Vacantes de Servicio Social en Desarrollo Web o Mobile',
@@ -46,28 +58,53 @@ class _AiVacancyAssistantModalState extends State<AiVacancyAssistantModal>
       vsync: this,
       duration: const Duration(seconds: 3),
     )..repeat(reverse: true);
+
+    // Saludo inicial de bienvenida de la IA
+    _chatMessages.add(
+      AiChatMessage(
+        text: '¡Hola! 👋 Soy tu Asistente Inteligente de RedTESO.\n\nPuedo ayudarte a encontrar vacantes de Servicio Social, Residencias Profesionales o Empleos para egresados. ¿En qué área o tecnología te gustaría buscar hoy?',
+        isUser: false,
+      ),
+    );
   }
 
   @override
   void dispose() {
     _queryController.dispose();
+    _scrollController.dispose();
     _glowController.dispose();
     super.dispose();
+  }
+
+  void _scrollToBottom() {
+    Future.delayed(const Duration(milliseconds: 150), () {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
   }
 
   /// Procesa la consulta en lenguaje natural analizando Firestore /vacancies
   Future<void> _processAiQuery(String queryText) async {
     if (queryText.trim().isEmpty) return;
 
-    setState(() {
-      _isAnalyzing = true;
-      _queryController.text = queryText;
-    });
+    final userMessageText = queryText.trim();
+    _queryController.clear();
 
-    final trimmedQuery = queryText.trim().toLowerCase();
+    setState(() {
+      _chatMessages.add(AiChatMessage(text: userMessageText, isUser: true));
+      _isAnalyzing = true;
+    });
+    _scrollToBottom();
+
+    final trimmedQuery = userMessageText.toLowerCase();
 
     // Detección de saludos e interacción conversacional cotidiana
-    final isGreeting = RegExp(r'^(hola|holaa|holaaa|buenas|buenos dias|buenas tardes|buenas noches|hey|que tal|saludos)\b').hasMatch(trimmedQuery);
+    final isGreeting = RegExp(r'^(hola|holaa|holaaa|buenas|buenos dias|buenas tardes|buenas noches|hey|que tal|saludos|que onda|oye|fifi|fium)\b').hasMatch(trimmedQuery);
     final isWhoAreYou = RegExp(r'(quien eres|que haces|que puedes hacer|como me ayudas|ayuda|funciones)\b').hasMatch(trimmedQuery);
     final isThanks = RegExp(r'^(gracias|muchas gracias|thx|thank you|ok gracias)\b').hasMatch(trimmedQuery);
 
@@ -75,19 +112,19 @@ class _AiVacancyAssistantModalState extends State<AiVacancyAssistantModal>
       await Future.delayed(const Duration(milliseconds: 500));
       String response = '';
       if (isGreeting) {
-        response = '¡Hola! 👋 Soy tu Asistente Inteligente de RedTESO.\n\nPuedo ayudarte a encontrar vacantes de Servicio Social, Residencias Profesionales o Empleos para egresados. ¿Qué tipo de vacante o área te gustaría consultar hoy?';
+        response = '¡Hola! 👋 Qué gusto saludarte. ¿Qué tipo de vacante o tecnología te gustaría consultar hoy?';
       } else if (isWhoAreYou) {
-        response = '🤖 ¡Hola! Soy el Asistente IA de RedTESO.\n\nPuedo analizar la oferta de empresas vinculadas con TESOEM y recomendarte las mejores vacantes filtrando por tecnología (ej. Flutter, Python, SQL), modalidad (Servicio Social / Residencias) o ubicación (Chalco, Ixtapaluca, Remoto).\n\n¡Prueba escribiendo "Vacantes de Servicio Social en desarrollo web"!';
+        response = '🤖 ¡Hola! Soy el Asistente IA de RedTESO.\n\nPuedo analizar la oferta de empresas vinculadas con TESOEM y recomendarte las mejores vacantes por área (ej. Flutter, Python, SQL, Ciberseguridad).\n\n¡Prueba escribiendo "Vacantes de Servicio Social en desarrollo web"!';
       } else {
-        response = '¡Con mucho gusto! 😊 Estoy aquí para ayudarte a impulsar tu carrera profesional en TESOEM. Si quieres buscar vacantes en algún área específica, solo dímelo.';
+        response = '¡Con mucho gusto! 😊 Estoy aquí para ayudarte a impulsar tu carrera profesional en TESOEM.';
       }
 
       if (mounted) {
         setState(() {
           _isAnalyzing = false;
-          _aiResponseText = response;
-          _matchedVacancies = [];
+          _chatMessages.add(AiChatMessage(text: response, isUser: false));
         });
+        _scrollToBottom();
       }
       return;
     }
@@ -103,48 +140,37 @@ class _AiVacancyAssistantModalState extends State<AiVacancyAssistantModal>
         allVacancies.addAll(_fallbackVacancies);
       }
 
-      // 1. INTENTO DE CONSULTA CON GEMINI 1.5 FLASH AI REAL
+      // 1. INTENTO DE CONSULTA CON GEMINI REAL
       if (GeminiAiService.hasApiKey) {
         final geminiRes = await GeminiAiService.queryVacancies(
-          userPrompt: queryText,
+          userPrompt: userMessageText,
           vacancies: allVacancies,
         );
 
-        if (geminiRes.isGenerative) {
-          final matchedFromGemini = allVacancies
-              .where((v) => geminiRes.recommendedIds.contains(v['id']))
-              .toList();
+        final matchedFromGemini = allVacancies
+            .where((v) => geminiRes.recommendedIds.contains(v['id']))
+            .toList();
 
-          if (mounted) {
-            setState(() {
-              _isAnalyzing = false;
-              _aiResponseText = geminiRes.explanation;
-              _matchedVacancies = matchedFromGemini;
-            });
-          }
-          return;
-        } else {
-          if (mounted) {
-            setState(() {
-              _isAnalyzing = false;
-              _aiResponseText = geminiRes.explanation;
-              _matchedVacancies = [];
-            });
-          }
-          return;
+        if (mounted) {
+          setState(() {
+            _isAnalyzing = false;
+            _chatMessages.add(
+              AiChatMessage(
+                text: geminiRes.explanation,
+                isUser: false,
+                vacancyCards: matchedFromGemini,
+              ),
+            );
+          });
+          _scrollToBottom();
         }
+        return;
       }
 
-      await Future.delayed(const Duration(milliseconds: 700));
-
-      // Si Firestore aún no tiene muchas vacantes, agregamos vacantes de demostración de alta calidad
-      if (allVacancies.length < 3) {
-        allVacancies.addAll(_fallbackVacancies);
-      }
+      await Future.delayed(const Duration(milliseconds: 600));
 
       // Sistema de scoring de relevancia por Inteligencia Artificial (Fallback local)
-      final queryLower = queryText.toLowerCase();
-      final terms = queryLower.split(RegExp(r'\s+')).where((t) => t.length > 2).toList();
+      final terms = trimmedQuery.split(RegExp(r'\s+')).where((t) => t.length > 2).toList();
       final scoredVacancies = <Map<String, dynamic>, double>{};
 
       for (var v in allVacancies) {
@@ -158,7 +184,6 @@ class _AiVacancyAssistantModalState extends State<AiVacancyAssistantModal>
 
         final fullText = '$title $company $desc $type $location $requirements';
 
-        // Coincidencias de términos
         for (var term in terms) {
           if (title.contains(term)) score += 3.0;
           if (type.contains(term)) score += 2.5;
@@ -167,60 +192,53 @@ class _AiVacancyAssistantModalState extends State<AiVacancyAssistantModal>
           if (fullText.contains(term)) score += 1.0;
         }
 
-        // Filtros semánticos clave
-        if (queryLower.contains('servicio') && type.contains('servicio')) score += 4.0;
-        if (queryLower.contains('residencia') && type.contains('residencia')) score += 4.0;
-        if ((queryLower.contains('egresado') || queryLower.contains('empleo')) && (type.contains('egresado') || type.contains('empleo'))) score += 4.0;
-
-        if (queryLower.contains('chalco') && location.contains('chalco')) score += 3.5;
-        if (queryLower.contains('remoto') && (location.contains('remoto') || desc.contains('remoto'))) score += 3.5;
-        if ((queryLower.contains('apoyo') || queryLower.contains('beca') || queryLower.contains('sueldo')) &&
-            (v['sueldo'] != null && !v['sueldo'].toString().contains('0'))) {
-          score += 2.5;
-        }
+        if (trimmedQuery.contains('servicio') && type.contains('servicio')) score += 4.0;
+        if (trimmedQuery.contains('residencia') && type.contains('residencia')) score += 4.0;
+        if ((trimmedQuery.contains('egresado') || trimmedQuery.contains('empleo')) && (type.contains('egresado') || type.contains('empleo'))) score += 4.0;
+        if ((trimmedQuery.contains('chalco') || trimmedQuery.contains('reyes')) && (location.contains('chalco') || location.contains('reyes'))) score += 3.5;
+        if (trimmedQuery.contains('auto') && (title.contains('auto') || desc.contains('auto'))) score += 4.0;
 
         scoredVacancies[v] = score;
       }
 
-      // Ordenar por relevancia
-      final sortedList = scoredVacancies.entries.toList()
-        ..sort((a, b) => b.value.compareTo(a.value));
-
+      final sortedList = scoredVacancies.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
       List<Map<String, dynamic>> matches = sortedList.where((e) => e.value > 0).map((e) => e.key).toList();
 
-      if (matches.isEmpty) {
-        matches = allVacancies.take(2).toList();
-      } else {
-        matches = matches.take(4).toList();
-      }
-
-      // Generar explicación dinámica
       String explanation = '';
-      if (queryLower.contains('servicio')) {
-        explanation = '🤖 Identifiqué las vacantes activas autorizadas por el departamento de Vinculación TESOEM para Servicio Social:';
-      } else if (queryLower.contains('residencia')) {
-        explanation = '🤖 Encontré proyectos empresariales elegibles para Residencias Profesionales con opción a contratación:';
-      } else if (queryLower.contains('chalco') || queryLower.contains('ixtapaluca')) {
-        explanation = '🤖 Filtré vacantes con ubicaciones estratégicas en la zona Oriente (Chalco, Ixtapaluca, Valle de Chalco):';
+      if (matches.isNotEmpty) {
+        explanation = '🤖 Encontré las siguientes oportunidades en TESOEM afines a tu búsqueda:';
+        matches = matches.take(3).toList();
       } else {
-        explanation = '🤖 Procesé tu búsqueda "$queryText" mediante análisis semántico y seleccioné las mejores vacantes para tu perfil:';
+        explanation = '🤖 Entendido. Platícame más sobre qué tecnología, zona o modalidad te interesa para recomendarte la mejor opción.';
       }
 
       if (mounted) {
         setState(() {
           _isAnalyzing = false;
-          _aiResponseText = explanation;
-          _matchedVacancies = matches;
+          _chatMessages.add(
+            AiChatMessage(
+              text: explanation,
+              isUser: false,
+              vacancyCards: matches,
+            ),
+          );
         });
+        _scrollToBottom();
       }
     } catch (e) {
       debugPrint('Error en IA Vacancy Assistant: $e');
       if (mounted) {
         setState(() {
           _isAnalyzing = false;
-          _aiResponseText = 'Encontré las siguientes oportunidades recomendadas para tu perfil académico:';
-          _matchedVacancies = _fallbackVacancies.take(3).toList();
+          _chatMessages.add(
+            AiChatMessage(
+              text: 'Ocurrió un inconveniente al consultar las vacantes. Te comparto las más destacadas:',
+              isUser: false,
+              vacancyCards: _fallbackVacancies.take(2).toList(),
+            ),
+          );
         });
+        _scrollToBottom();
       }
     }
   }
@@ -245,16 +263,6 @@ class _AiVacancyAssistantModalState extends State<AiVacancyAssistantModal>
       'sueldo': 'Apoyo para pasajes \$3,500/mes',
       'descripcion': 'Soporte en mantenimiento y optimización de bases de datos PostgreSQL y MySQL.',
       'requisitos': 'SQL, Consultas complejas, Trabajo en equipo',
-    },
-    {
-      'id': 'v_fallback_3',
-      'puesto': 'Analista de Ciberseguridad & Redes',
-      'empresa': 'Fintech Innovación Digital',
-      'tipo': 'Empleo Egresados',
-      'ubicacion': 'Remoto',
-      'sueldo': '\$18,000 - \$22,000 / mes',
-      'descripcion': 'Monitoreo de seguridad en servidores cloud AWS y gestión de incidentes.',
-      'requisitos': 'Linux, Redes, Ciberseguridad, Inglés intermedio',
     },
   ];
 
@@ -320,7 +328,7 @@ class _AiVacancyAssistantModalState extends State<AiVacancyAssistantModal>
                               style: GoogleFonts.outfit(color: Colors.white, fontSize: 19, fontWeight: FontWeight.bold),
                             ),
                             Text(
-                              'Recomendación inteligente de vacantes en lenguaje cotidiano',
+                              'Chat conversacional e inteligente en español',
                               style: GoogleFonts.inter(color: Colors.white70, fontSize: 11.5),
                             ),
                           ],
@@ -336,99 +344,88 @@ class _AiVacancyAssistantModalState extends State<AiVacancyAssistantModal>
 
                 const Divider(color: Colors.white12, height: 1),
 
-                // Contenido
+                // Área de Mensajes e Historial de Chat
                 Expanded(
-                  child: SingleChildScrollView(
+                  child: ListView.builder(
+                    controller: _scrollController,
                     padding: const EdgeInsets.all(20.0),
                     physics: const BouncingScrollPhysics(),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Sugerencias de búsqueda rápida:',
-                          style: GoogleFonts.inter(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 8),
+                    itemCount: _chatMessages.length + (_isAnalyzing ? 1 : 0) + 1,
+                    itemBuilder: (context, index) {
+                      if (index == 0) {
+                        // Sugerencias rápidas arriba
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Sugerencias de búsqueda rápida:',
+                              style: GoogleFonts.inter(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 8),
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: _presetPrompts.map((prompt) {
+                                return GestureDetector(
+                                  onTap: () => _processAiQuery(prompt),
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFF1E293B),
+                                      borderRadius: BorderRadius.circular(16),
+                                      border: Border.all(color: Colors.white.withOpacity(0.2)),
+                                    ),
+                                    child: Text(
+                                      prompt,
+                                      style: GoogleFonts.inter(fontSize: 12, color: Colors.white, fontWeight: FontWeight.w500),
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                            const SizedBox(height: 20),
+                            const Divider(color: Colors.white12),
+                            const SizedBox(height: 12),
+                          ],
+                        );
+                      }
 
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: _presetPrompts.map((prompt) {
-                            return GestureDetector(
-                              onTap: () => _processAiQuery(prompt),
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF1E293B),
-                                  borderRadius: BorderRadius.circular(16),
-                                  border: Border.all(color: Colors.white.withOpacity(0.2)),
-                                ),
-                                child: Text(
-                                  prompt,
-                                  style: GoogleFonts.inter(fontSize: 12, color: Colors.white, fontWeight: FontWeight.w500),
-                                ),
+                      final msgIndex = index - 1;
+
+                      if (msgIndex < _chatMessages.length) {
+                        final msg = _chatMessages[msgIndex];
+                        return _buildChatBubble(msg);
+                      }
+
+                      // Indicador de "Escribiendo..."
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 16),
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.06),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: Colors.white12),
+                        ),
+                        child: Row(
+                          children: [
+                            const CircularProgressIndicator(color: AppTheme.primaryGreen, strokeWidth: 2.5),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Text(
+                                'La IA está redactando la respuesta...',
+                                style: GoogleFonts.inter(color: Colors.white70, fontSize: 13),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
-                            );
-                          }).toList(),
+                            ),
+                          ],
                         ),
-
-                        const SizedBox(height: 24),
-
-                        if (_isAnalyzing) ...[
-                          Container(
-                            padding: const EdgeInsets.all(20),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.06),
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: Colors.white12),
-                            ),
-                            child: Row(
-                              children: [
-                                const CircularProgressIndicator(color: AppTheme.primaryGreen, strokeWidth: 2.5),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  child: Text(
-                                    'La IA está analizando las vacantes registradas en Firestore...',
-                                    style: GoogleFonts.inter(color: Colors.white, fontSize: 13),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ] else if (_aiResponseText.isNotEmpty) ...[
-                          Container(
-                            padding: const EdgeInsets.all(16),
-                            margin: const EdgeInsets.only(bottom: 20),
-                            decoration: BoxDecoration(
-                              color: AppTheme.primaryGreen.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: AppTheme.primaryGreen.withOpacity(0.4)),
-                            ),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Icon(Icons.auto_awesome_rounded, color: AppTheme.accentColor, size: 20),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Text(
-                                    _aiResponseText,
-                                    style: GoogleFonts.inter(color: Colors.white, fontSize: 13.5, height: 1.4),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          Column(
-                            children: _matchedVacancies.map((v) => _buildAiVacancyCard(v)).toList(),
-                          ),
-                        ],
-                      ],
-                    ),
+                      );
+                    },
                   ),
                 ),
 
-                // Campo de entrada
+                // Campo de entrada de texto
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: const BoxDecoration(
@@ -452,7 +449,7 @@ class _AiVacancyAssistantModalState extends State<AiVacancyAssistantModal>
                             decoration: InputDecoration(
                               filled: false,
                               fillColor: Colors.transparent,
-                              hintText: '¿Qué tipo de vacante estás buscando?...',
+                              hintText: 'Escribe tu duda o consulta...',
                               hintStyle: GoogleFonts.inter(color: Colors.white60, fontSize: 13),
                               border: InputBorder.none,
                               enabledBorder: InputBorder.none,
@@ -485,6 +482,73 @@ class _AiVacancyAssistantModalState extends State<AiVacancyAssistantModal>
     );
   }
 
+  Widget _buildChatBubble(AiChatMessage msg) {
+    if (msg.isUser) {
+      return Align(
+        alignment: Alignment.centerRight,
+        child: Container(
+          margin: const EdgeInsets.only(bottom: 14, left: 40),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: AppTheme.primaryGreen,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+              bottomLeft: Radius.circular(20),
+            ),
+          ),
+          child: Text(
+            msg.text,
+            style: GoogleFonts.inter(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500),
+          ),
+        ),
+      );
+    }
+
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 16, right: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFF1E293B),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                  bottomRight: Radius.circular(20),
+                ),
+                border: Border.all(color: Colors.white12),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Icon(Icons.auto_awesome_rounded, color: AppTheme.accentColor, size: 20),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      msg.text,
+                      style: GoogleFonts.inter(color: Colors.white, fontSize: 13.5, height: 1.4),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (msg.vacancyCards != null && msg.vacancyCards!.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              Column(
+                children: msg.vacancyCards!.map((v) => _buildAiVacancyCard(v)).toList(),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildAiVacancyCard(Map<String, dynamic> v) {
     final title = v['puesto'] ?? 'Vacante';
     final company = v['empresa'] ?? 'Empresa';
@@ -493,7 +557,7 @@ class _AiVacancyAssistantModalState extends State<AiVacancyAssistantModal>
     final salary = v['sueldo'] ?? 'Convenio TESOEM';
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 14),
+      margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.08),
@@ -556,7 +620,7 @@ class _AiVacancyAssistantModalState extends State<AiVacancyAssistantModal>
             width: double.infinity,
             child: ElevatedButton.icon(
               onPressed: () {
-                Navigator.pop(context); // Cerrar modal
+                Navigator.pop(context);
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => VacancyDetailPage(vacancy: v)),

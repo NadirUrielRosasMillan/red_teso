@@ -1,10 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
 import 'package:red_teso/core/widgets/notification_bell.dart';
+import 'package:red_teso/core/widgets/liquid_glass_ambient_background.dart';
 import 'package:red_teso/features/auth/presentation/providers/auth_provider.dart';
 import 'package:red_teso/features/professor/presentation/pages/create_course_page.dart';
 
@@ -24,16 +27,16 @@ class _ProfessorDashboardPageState extends State<ProfessorDashboardPage> {
     final user = _auth.currentUser;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
-        title: Text('Panel de Docente TESOEM 🎓', style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.white,
-        foregroundColor: const Color(0xFF0F172A),
+        title: Text('Panel de Docente TESOEM 🎓', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white)),
+        backgroundColor: const Color(0xFF090D16).withOpacity(0.85),
+        foregroundColor: Colors.white,
         elevation: 0,
         actions: [
-          const NotificationBell(color: AppTheme.primaryGreen),
+          const NotificationBell(color: Colors.white),
           IconButton(
-            icon: const Icon(Icons.logout_rounded, color: Colors.red),
+            icon: const Icon(Icons.logout_rounded, color: Colors.redAccent),
             tooltip: 'Cerrar Sesión',
             onPressed: () => context.read<AuthProvider>().logout(),
           ),
@@ -49,12 +52,13 @@ class _ProfessorDashboardPageState extends State<ProfessorDashboardPage> {
         icon: const Icon(Icons.add_rounded, color: Colors.white),
         label: Text('NUEVO CURSO', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white)),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20.0),
-        physics: const BouncingScrollPhysics(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+      body: LiquidGlassAmbientBackground(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20.0),
+          physics: const BouncingScrollPhysics(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
             // Banner del Profesor
             _buildProfessorHeader(user?.uid),
 
@@ -100,7 +104,20 @@ class _ProfessorDashboardPageState extends State<ProfessorDashboardPage> {
                 }
 
                 if (!snapshot.hasData) {
-                  return const Center(child: CircularProgressIndicator(color: AppTheme.primaryGreen));
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: 3,
+                    itemBuilder: (context, index) => Shimmer.fromColors(
+                      baseColor: Colors.grey[200]!,
+                      highlightColor: Colors.grey[50]!,
+                      child: Container(
+                        height: 90,
+                        margin: const EdgeInsets.only(bottom: 12),
+                        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20)),
+                      ),
+                    ),
+                  );
                 }
 
                 final docs = snapshot.data!.docs;
@@ -152,7 +169,10 @@ class _ProfessorDashboardPageState extends State<ProfessorDashboardPage> {
                   itemCount: docs.length,
                   itemBuilder: (context, index) {
                     final data = docs[index].data() as Map<String, dynamic>;
-                    return _buildCourseCard(data, docs[index].id);
+                    return _buildCourseCard(data, docs[index].id)
+                        .animate(delay: (index * 80).ms)
+                        .fadeIn(duration: 400.ms, curve: Curves.easeOut)
+                        .slideY(begin: 0.15, end: 0, curve: Curves.easeOut);
                   },
                 );
               },
@@ -162,6 +182,7 @@ class _ProfessorDashboardPageState extends State<ProfessorDashboardPage> {
           ],
         ),
       ),
+    ),
     );
   }
 
@@ -237,30 +258,25 @@ class _ProfessorDashboardPageState extends State<ProfessorDashboardPage> {
   }
 
   Widget _buildStatCard(String title, String value, IconData icon, Color color) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
-      ),
+    return GlassmorphicCard(
+      glowColor: color,
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.12),
+              color: color.withOpacity(0.2),
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: color, size: 22),
+            child: Icon(icon, color: Colors.white, size: 22),
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(value, style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 20, color: const Color(0xFF0F172A))),
-                Text(title, style: GoogleFonts.inter(fontSize: 11.5, color: const Color(0xFF64748B))),
+                Text(value, style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white)),
+                Text(title, style: GoogleFonts.inter(fontSize: 11.5, color: Colors.white70)),
               ],
             ),
           ),
@@ -275,34 +291,28 @@ class _ProfessorDashboardPageState extends State<ProfessorDashboardPage> {
     final price = c['price'] ?? 'Por cotizar';
     final duration = c['duration'] ?? '40 Horas';
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
-      ),
+    return GlassmorphicCard(
+      glowColor: AppTheme.primaryGreen,
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: AppTheme.primaryGreen.withOpacity(0.1),
+              color: AppTheme.primaryGreen.withOpacity(0.25),
               borderRadius: BorderRadius.circular(14),
             ),
-            child: const Icon(Icons.school_rounded, color: AppTheme.primaryGreen, size: 24),
+            child: const Icon(Icons.school_rounded, color: Colors.white, size: 24),
           ),
           const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 15, color: const Color(0xFF0F172A))),
+                Text(title, style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.white)),
                 const SizedBox(height: 2),
-                Text('$category • $duration', style: GoogleFonts.inter(color: const Color(0xFF64748B), fontSize: 12)),
+                Text('$category • $duration', style: GoogleFonts.inter(color: Colors.white70, fontSize: 12)),
                 const SizedBox(height: 4),
-                Text(price, style: GoogleFonts.inter(color: AppTheme.primaryGreen, fontWeight: FontWeight.bold, fontSize: 13)),
+                Text(price, style: GoogleFonts.inter(color: AppTheme.accentColor, fontWeight: FontWeight.bold, fontSize: 13)),
               ],
             ),
           ),
@@ -310,7 +320,7 @@ class _ProfessorDashboardPageState extends State<ProfessorDashboardPage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               IconButton(
-                icon: const Icon(Icons.edit_outlined, color: Colors.blue, size: 20),
+                icon: const Icon(Icons.edit_outlined, color: Colors.blueAccent, size: 20),
                 tooltip: 'Editar Curso',
                 onPressed: () {
                   Navigator.push(
@@ -325,7 +335,7 @@ class _ProfessorDashboardPageState extends State<ProfessorDashboardPage> {
                 },
               ),
               IconButton(
-                icon: const Icon(Icons.delete_outline_rounded, color: Colors.red, size: 20),
+                icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent, size: 20),
                 tooltip: 'Eliminar Curso',
                 onPressed: () async {
                   await _db.collection('courses').doc(docId).delete();

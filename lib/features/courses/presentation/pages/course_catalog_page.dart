@@ -1,8 +1,12 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
+import 'package:red_teso/core/widgets/liquid_glass_ambient_background.dart';
 import 'package:red_teso/features/courses/data/mock_courses_data.dart';
 import 'package:red_teso/features/courses/domain/models/course_model.dart';
 import 'package:red_teso/features/courses/presentation/pages/course_clips_feed_page.dart';
@@ -107,17 +111,17 @@ class _CourseCatalogPageState extends State<CourseCatalogPage> {
         }).toList();
 
         return Scaffold(
-          backgroundColor: const Color(0xFFF8FAFC),
+          backgroundColor: Colors.transparent,
           appBar: AppBar(
-            backgroundColor: Colors.white,
-            foregroundColor: const Color(0xFF0F172A),
+            backgroundColor: const Color(0xFF090D16).withOpacity(0.85),
+            foregroundColor: Colors.white,
             elevation: 0,
             title: Text(
               'Cursos TESOEM para Empresas',
               style: GoogleFonts.outfit(
                 fontWeight: FontWeight.bold,
                 fontSize: 20,
-                color: const Color(0xFF0F172A),
+                color: Colors.white,
               ),
             ),
             actions: [
@@ -188,10 +192,11 @@ class _CourseCatalogPageState extends State<CourseCatalogPage> {
                 : const SizedBox.shrink(key: ValueKey('empty_ai_btn')),
           ),
 
-          body: CustomScrollView(
-            controller: _scrollController,
-            physics: const BouncingScrollPhysics(),
-            slivers: [
+          body: LiquidGlassAmbientBackground(
+            child: CustomScrollView(
+              controller: _scrollController,
+              physics: const BouncingScrollPhysics(),
+              slivers: [
               SliverToBoxAdapter(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -378,7 +383,10 @@ class _CourseCatalogPageState extends State<CourseCatalogPage> {
                     delegate: SliverChildBuilderDelegate(
                       (context, index) {
                         final course = filteredCourses[index];
-                        return _buildCourseCard(course);
+                        return _buildCourseCard(course)
+                            .animate(delay: (index * 80).ms)
+                            .fadeIn(duration: 400.ms, curve: Curves.easeOut)
+                            .slideY(begin: 0.15, end: 0, curve: Curves.easeOut);
                       },
                       childCount: filteredCourses.length,
                     ),
@@ -390,42 +398,26 @@ class _CourseCatalogPageState extends State<CourseCatalogPage> {
               ),
             ],
           ),
+        ),
         );
       },
     );
   }
 
   Widget _buildCourseCard(CourseModel course) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
+    return GlassmorphicCard(
+      glowColor: AppTheme.primaryColor,
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CourseDetailPage(course: course),
           ),
-        ],
-        border: Border.all(color: const Color(0xFFF1F5F9)),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(24),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(24),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => CourseDetailPage(course: course),
-              ),
-            );
-          },
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+        );
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
               Stack(
                 children: [
                   ClipRRect(
@@ -596,27 +588,33 @@ class _CourseCatalogPageState extends State<CourseCatalogPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              course.price,
-                              style: GoogleFonts.outfit(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: AppTheme.primaryColor,
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                course.price,
+                                style: GoogleFonts.outfit(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppTheme.accentColor,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
-                            ),
-                            Text(
-                              course.duration,
-                              style: GoogleFonts.inter(
-                                fontSize: 11.5,
-                                color: const Color(0xFF64748B),
+                              Text(
+                                course.duration,
+                                style: GoogleFonts.inter(
+                                  fontSize: 11.5,
+                                  color: Colors.white70,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-
+                        const SizedBox(width: 8),
                         InkWell(
                           borderRadius: BorderRadius.circular(16),
                           onTap: () {
@@ -690,8 +688,6 @@ class _CourseCatalogPageState extends State<CourseCatalogPage> {
               ),
             ],
           ),
-        ),
-      ),
     );
   }
 
@@ -704,7 +700,7 @@ class _CourseCatalogPageState extends State<CourseCatalogPage> {
         fit: BoxFit.cover,
         errorBuilder: (context, error, stackTrace) => _buildPlaceholderBanner(),
       );
-    } else if (bannerUrl.isNotEmpty && File(bannerUrl).existsSync()) {
+    } else if (!kIsWeb && bannerUrl.isNotEmpty && File(bannerUrl).existsSync()) {
       return Image.file(
         File(bannerUrl),
         height: 160,

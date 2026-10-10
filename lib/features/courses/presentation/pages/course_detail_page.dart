@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
@@ -197,7 +198,7 @@ class CourseDetailPage extends StatelessWidget {
                         image: DecorationImage(
                           image: course.bannerUrl.startsWith('http')
                               ? NetworkImage(course.bannerUrl)
-                              : (File(course.bannerUrl).existsSync()
+                              : (!kIsWeb && course.bannerUrl.isNotEmpty && File(course.bannerUrl).existsSync()
                                   ? FileImage(File(course.bannerUrl)) as ImageProvider
                                   : const NetworkImage('https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800')),
                           fit: BoxFit.cover,
@@ -537,7 +538,7 @@ class CourseDetailPage extends StatelessWidget {
           child: const Center(child: Icon(Icons.school_rounded, color: Colors.white, size: 64)),
         ),
       );
-    } else if (url.isNotEmpty && File(url).existsSync()) {
+    } else if (!kIsWeb && url.isNotEmpty && File(url).existsSync()) {
       return Image.file(
         File(url),
         fit: BoxFit.cover,

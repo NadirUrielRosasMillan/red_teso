@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
@@ -145,7 +146,7 @@ class _CreateCoursePageState extends State<CreateCoursePage> {
       String finalImageUrl = 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800';
 
       // 1. SUBIDA REAL DE LA IMAGEN DE PORTADA A FIREBASE STORAGE
-      if (_pickedImagePath != null && File(_pickedImagePath!).existsSync()) {
+      if (!kIsWeb && _pickedImagePath != null && File(_pickedImagePath!).existsSync()) {
         try {
           final file = File(_pickedImagePath!);
           final storageRef = FirebaseStorage.instance.ref().child('course_banners/${user.uid}_${DateTime.now().millisecondsSinceEpoch}.jpg');
@@ -158,7 +159,7 @@ class _CreateCoursePageState extends State<CreateCoursePage> {
       }
 
       // 2. SUBIDA REAL DEL VIDEO MP4 A FIREBASE STORAGE
-      if (_pickedVideoPath != null && File(_pickedVideoPath!).existsSync()) {
+      if (!kIsWeb && _pickedVideoPath != null && File(_pickedVideoPath!).existsSync()) {
         try {
           final file = File(_pickedVideoPath!);
           final storageRef = FirebaseStorage.instance.ref().child('course_videos/${user.uid}_${DateTime.now().millisecondsSinceEpoch}.mp4');

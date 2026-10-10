@@ -1,8 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
+import 'package:red_teso/core/widgets/liquid_glass_ambient_background.dart';
 import 'package:red_teso/features/company/presentation/pages/create_vacancy_page.dart';
 import 'package:red_teso/features/student/presentation/pages/vacancy_detail_page.dart';
 
@@ -21,17 +24,19 @@ class _ManageVacanciesPageState extends State<ManageVacanciesPage> {
     final bool? confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('¿Eliminar Vacante?', style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
-        content: Text('¿Estás seguro de eliminar "$title"? Esta acción no se puede deshacer.'),
+        backgroundColor: const Color(0xFF1E293B),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: Text('¿Eliminar Vacante?', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white)),
+        content: Text('¿Estás seguro de eliminar "$title"? Esta acción no se puede deshacer.', style: GoogleFonts.inter(color: Colors.white70)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('CANCELAR'),
+            child: Text('CANCELAR', style: GoogleFonts.inter(color: Colors.white60)),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('ELIMINAR', style: TextStyle(color: Colors.white)),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+            child: Text('ELIMINAR', style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -58,21 +63,22 @@ class _ManageVacanciesPageState extends State<ManageVacanciesPage> {
   Widget build(BuildContext context) {
     final user = _auth.currentUser;
     if (user == null) {
-      return const Scaffold(
-        body: Center(child: Text('Inicia sesión para ver tus publicaciones')),
+      return Scaffold(
+        backgroundColor: const Color(0xFF090D16),
+        body: Center(child: Text('Inicia sesión para ver tus publicaciones', style: GoogleFonts.inter(color: Colors.white))),
       );
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
-        title: Text('Mis Vacantes Publicadas', style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.white,
-        foregroundColor: const Color(0xFF0F172A),
+        title: Text('Mis Vacantes Publicadas', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white)),
+        backgroundColor: const Color(0xFF090D16).withOpacity(0.85),
+        foregroundColor: Colors.white,
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.add_rounded, color: AppTheme.primaryColor, size: 28),
+            icon: const Icon(Icons.add_rounded, color: AppTheme.accentColor, size: 28),
             tooltip: 'Publicar nueva vacante',
             onPressed: () {
               Navigator.push(
@@ -85,7 +91,7 @@ class _ManageVacanciesPageState extends State<ManageVacanciesPage> {
         ],
       ),
       floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 90), // Por encima del dock flotante Liquid Glass
+        padding: const EdgeInsets.only(bottom: 90),
         child: FloatingActionButton(
           onPressed: () {
             Navigator.push(
@@ -94,101 +100,87 @@ class _ManageVacanciesPageState extends State<ManageVacanciesPage> {
             );
           },
           backgroundColor: AppTheme.primaryColor,
-          elevation: 6,
+          elevation: 8,
           tooltip: 'Publicar nueva vacante',
           child: const Icon(Icons.add_rounded, color: Colors.white, size: 28),
         ),
-      ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: _db
-            .collection('vacancies')
-            .where('companyId', isEqualTo: user.uid)
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return const Center(child: Text('Error al cargar las vacantes'));
-          }
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator(color: AppTheme.primaryColor));
-          }
+      ).animate().scale(delay: 300.ms, duration: 400.ms, curve: Curves.easeOutBack),
+      body: LiquidGlassAmbientBackground(
+        child: StreamBuilder<QuerySnapshot>(
+          stream: _db
+              .collection('vacancies')
+              .where('companyId', isEqualTo: user.uid)
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return Center(child: Text('Error al cargar las vacantes', style: GoogleFonts.inter(color: Colors.white)));
+            }
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return _buildShimmerSkeletonList();
+            }
 
-          final docs = snapshot.data!.docs;
+            final docs = snapshot.data!.docs;
 
-          if (docs.isEmpty) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: AppTheme.primaryColor.withOpacity(0.1),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(Icons.post_add_rounded, size: 64, color: AppTheme.primaryColor),
-                    ),
-                    const SizedBox(height: 20),
-                    Text(
-                      'No has publicado vacantes aún',
-                      style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A)),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Publica tu primera oportunidad laboral o de residencias para conectar con los alumnos de TESOEM.',
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.inter(fontSize: 13.5, color: const Color(0xFF64748B)),
-                    ),
-                    const SizedBox(height: 24),
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const CreateVacancyPage()),
-                        );
-                      },
-                      icon: const Icon(Icons.add_rounded, color: Colors.white),
-                      label: Text('PUBLICAR VACANTE', style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.primaryColor,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }
-
-          return ListView.builder(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
-            itemCount: docs.length,
-            itemBuilder: (context, index) {
-              final v = docs[index].data() as Map<String, dynamic>;
-              final id = docs[index].id;
-              final puesto = v['puesto'] ?? 'Sin título';
-              final tipo = v['tipo'] ?? 'Residencias';
-              final apoyo = v['apoyo'] ?? 0;
-              final gpa = v['gpa'] ?? 8.0;
-
-              return Container(
-                margin: const EdgeInsets.only(bottom: 16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: const Color(0xFFE2E8F0)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.04),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
+            if (docs.isEmpty) {
+              return Center(
                 child: Padding(
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(24.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: AppTheme.primaryColor.withOpacity(0.2),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(Icons.post_add_rounded, size: 64, color: AppTheme.accentColor),
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        'No has publicado vacantes aún',
+                        style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Publica tu primera oportunidad laboral o de residencias para conectar con los alumnos de TESOEM.',
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.inter(fontSize: 13.5, color: Colors.white70),
+                      ),
+                      const SizedBox(height: 24),
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const CreateVacancyPage()),
+                          );
+                        },
+                        icon: const Icon(Icons.add_rounded, color: Colors.white),
+                        label: Text('PUBLICAR VACANTE', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppTheme.primaryColor,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+
+            return ListView.builder(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+              itemCount: docs.length,
+              itemBuilder: (context, index) {
+                final v = docs[index].data() as Map<String, dynamic>;
+                final id = docs[index].id;
+                final puesto = v['puesto'] ?? 'Sin título';
+                final tipo = v['tipo'] ?? 'Residencias';
+                final apoyo = v['apoyo'] ?? 0;
+
+                return GlassmorphicCard(
+                  glowColor: AppTheme.primaryColor,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -205,20 +197,20 @@ class _ManageVacanciesPageState extends State<ManageVacanciesPage> {
                                   style: GoogleFonts.outfit(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
-                                    color: const Color(0xFF0F172A),
+                                    color: Colors.white,
                                   ),
                                 ),
                                 const SizedBox(height: 4),
                                 Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                   decoration: BoxDecoration(
-                                    color: AppTheme.primaryColor.withOpacity(0.1),
+                                    color: AppTheme.primaryColor.withOpacity(0.3),
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                   child: Text(
                                     tipo,
                                     style: GoogleFonts.inter(
-                                      color: AppTheme.primaryColor,
+                                      color: Colors.white,
                                       fontSize: 12,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -230,7 +222,7 @@ class _ManageVacanciesPageState extends State<ManageVacanciesPage> {
                           Row(
                             children: [
                               IconButton(
-                                icon: const Icon(Icons.edit_outlined, color: Colors.blue),
+                                icon: const Icon(Icons.edit_outlined, color: Colors.blueAccent),
                                 tooltip: 'Editar Vacante',
                                 onPressed: () {
                                   Navigator.push(
@@ -244,7 +236,7 @@ class _ManageVacanciesPageState extends State<ManageVacanciesPage> {
                                 },
                               ),
                               IconButton(
-                                icon: const Icon(Icons.delete_outline_rounded, color: Colors.red),
+                                icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent),
                                 tooltip: 'Eliminar',
                                 onPressed: () => _confirmDeleteVacancy(id, puesto),
                               ),
@@ -259,21 +251,21 @@ class _ManageVacanciesPageState extends State<ManageVacanciesPage> {
                         v['descripcion'] ?? 'Sin descripción',
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.inter(fontSize: 13, color: const Color(0xFF64748B)),
+                        style: GoogleFonts.inter(fontSize: 13, color: Colors.white70),
                       ),
 
-                      const Divider(height: 24),
+                      const Divider(height: 24, color: Colors.white12),
 
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Row(
                             children: [
-                              const Icon(Icons.monetization_on_outlined, size: 16, color: Colors.green),
+                              const Icon(Icons.monetization_on_outlined, size: 16, color: Colors.amber),
                               const SizedBox(width: 4),
                               Text(
                                 '\$$apoyo MXN / mes',
-                                style: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.bold, color: const Color(0xFF334155)),
+                                style: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.bold, color: Colors.amber),
                               ),
                             ],
                           ),
@@ -289,17 +281,17 @@ class _ManageVacanciesPageState extends State<ManageVacanciesPage> {
                             child: Container(
                               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                               decoration: BoxDecoration(
-                                color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                                color: AppTheme.accentColor.withOpacity(0.2),
                                 borderRadius: BorderRadius.circular(10),
-                                border: Border.all(color: AppTheme.primaryColor.withValues(alpha: 0.3)),
+                                border: Border.all(color: AppTheme.accentColor.withOpacity(0.4)),
                               ),
                               child: Row(
                                 children: [
-                                  const Icon(Icons.map_rounded, size: 14, color: AppTheme.primaryColor),
+                                  const Icon(Icons.map_rounded, size: 14, color: AppTheme.accentColor),
                                   const SizedBox(width: 4),
                                   Text(
                                     'Ver Mapa 📍',
-                                    style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: AppTheme.primaryColor),
+                                    style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: AppTheme.accentColor),
                                   ),
                                 ],
                               ),
@@ -309,12 +301,33 @@ class _ManageVacanciesPageState extends State<ManageVacanciesPage> {
                       ),
                     ],
                   ),
-                ),
-              );
-            },
-          );
-        },
+                ).animate(delay: (index * 70).ms).fadeIn(duration: 400.ms, curve: Curves.easeOut).slideY(begin: 0.15, end: 0, curve: Curves.easeOut);
+              },
+            );
+          },
+        ),
       ),
+    );
+  }
+
+  Widget _buildShimmerSkeletonList() {
+    return ListView.builder(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+      itemCount: 4,
+      itemBuilder: (context, index) {
+        return Shimmer.fromColors(
+          baseColor: Colors.white.withOpacity(0.08),
+          highlightColor: Colors.white.withOpacity(0.18),
+          child: Container(
+            height: 110,
+            margin: const EdgeInsets.only(bottom: 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+            ),
+          ),
+        );
+      },
     );
   }
 }

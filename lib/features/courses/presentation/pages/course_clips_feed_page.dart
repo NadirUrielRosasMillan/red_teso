@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:video_player/video_player.dart';
@@ -121,7 +122,7 @@ class _SingleClipVideoWidgetState extends State<_SingleClipVideoWidget> {
     try {
       if (url.startsWith('http://') || url.startsWith('https://')) {
         _videoController = VideoPlayerController.networkUrl(Uri.parse(url));
-      } else if (url.isNotEmpty && File(url).existsSync()) {
+      } else if (!kIsWeb && url.isNotEmpty && File(url).existsSync()) {
         _videoController = VideoPlayerController.file(File(url));
       } else {
         _videoController = VideoPlayerController.networkUrl(
@@ -452,7 +453,7 @@ class _SingleClipVideoWidgetState extends State<_SingleClipVideoWidget> {
         fit: BoxFit.cover,
         errorBuilder: (context, error, stackTrace) => Container(color: Colors.grey[900]),
       );
-    } else if (url.isNotEmpty && File(url).existsSync()) {
+    } else if (!kIsWeb && url.isNotEmpty && File(url).existsSync()) {
       return Image.file(
         File(url),
         fit: BoxFit.cover,

@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:ui';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:video_player/video_player.dart';
@@ -41,7 +42,7 @@ class _CourseXRayPlayerPageState extends State<CourseXRayPlayerPage> {
     try {
       if (videoPathOrUrl.startsWith('http://') || videoPathOrUrl.startsWith('https://')) {
         _videoController = VideoPlayerController.networkUrl(Uri.parse(videoPathOrUrl));
-      } else if (videoPathOrUrl.isNotEmpty && File(videoPathOrUrl).existsSync()) {
+      } else if (!kIsWeb && videoPathOrUrl.isNotEmpty && File(videoPathOrUrl).existsSync()) {
         _videoController = VideoPlayerController.file(File(videoPathOrUrl));
       } else {
         _videoController = VideoPlayerController.networkUrl(
@@ -476,7 +477,7 @@ class _CourseXRayPlayerPageState extends State<CourseXRayPlayerPage> {
 
     if (url.startsWith('http://') || url.startsWith('https://')) {
       imageProvider = NetworkImage(url);
-    } else if (url.isNotEmpty && File(url).existsSync()) {
+    } else if (!kIsWeb && url.isNotEmpty && File(url).existsSync()) {
       imageProvider = FileImage(File(url));
     }
 

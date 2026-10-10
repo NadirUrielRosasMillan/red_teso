@@ -232,30 +232,74 @@ ${jsonEncode(contextJson)}
   }
 
   static GeminiAiResult _parseResponse(String rawText) {
-    if (rawText.isEmpty) {
+    if (rawText.trim().isEmpty) {
       return GeminiAiResult.fallback('Respuesta vacía de Gemini');
     }
-    try {
-      final jsonStr = _cleanJsonString(rawText);
-      final parsed = jsonDecode(jsonStr) as Map<String, dynamic>;
-      final explanation = parsed['explanation']?.toString() ?? rawText;
-      final recommendedIds = (parsed['recommendedIds'] as List?)
-          ?.map((e) => e.toString())
-          .toList() ??
-          [];
 
+    String explanation = '';
+    List<String> recommendedIds = [];
+
+    // 1. Limpieza rigurosa de bloques de código markdown (```json ... ```)
+    var cleaned = _cleanJsonString(rawText);
+
+    // 2. Intentar parsear como JSON directo
+    try {
+      final Map<String, dynamic> parsed = jsonDecode(cleaned);
+      if (parsed.containsKey('explanation')) {
+        explanation = parsed['explanation'].toString();
+      }
+      if (parsed.containsKey('recommendedIds') && parsed['recommendedIds'] is List) {
+        recommendedIds = (parsed['recommendedIds'] as List)
+            .map((e) => e.toString())
+            .toList();
+      }
+
+      if (explanation.isNotEmpty) {
+        return GeminiAiResult(
+          explanation: explanation,
+          recommendedIds: recommendedIds,
+          isGenerative: true,
+        );
+      }
+    } catch (_) {}
+
+    // 3. Extractor por Expresión Regular para aislar la explicación si el JSON es parcial
+    final expMatch = RegExp(r'"explanation"\s*:\s*"((?:[^"\\]|\\.)*)"', dotAll: true).firstMatch(cleaned);
+    if (expMatch != null && expMatch.group(1) != null) {
+      explanation = expMatch.group(1)!
+          .replaceAll(r'\"', '"')
+          .replaceAll(r'\n', '\n')
+          .replaceAll(r'\\', r'\');
+    }
+
+    final idsMatch = RegExp(r'"recommendedIds"\s*:\s*\[([^\]]*)\]', dotAll: true).firstMatch(cleaned);
+    if (idsMatch != null && idsMatch.group(1) != null) {
+      final idsStr = idsMatch.group(1)!;
+      final matches = RegExp(r'"([^"]+)"').allMatches(idsStr);
+      recommendedIds = matches.map((m) => m.group(1)!).toList();
+    }
+
+    // Si logró extraer la explicación limpia, retorna únicamente el texto humano
+    if (explanation.isNotEmpty) {
       return GeminiAiResult(
         explanation: explanation,
         recommendedIds: recommendedIds,
         isGenerative: true,
       );
-    } catch (e) {
-      return GeminiAiResult(
-        explanation: rawText,
-        recommendedIds: [],
-        isGenerative: true,
-      );
     }
+
+    // Si de plano no venía estructura JSON, elimina cualquier rastro de ```json y etiquetas JSON
+    var pureText = cleaned
+        .replaceAll(RegExp(r'^\s*\{\s*"explanation"\s*:\s*"'), '')
+        .replaceAll(RegExp(r'"\s*,\s*"recommendedIds".*$', dotAll: true), '')
+        .replaceAll(RegExp(r'```(?:json)?'), '')
+        .trim();
+
+    return GeminiAiResult(
+      explanation: pureText.isNotEmpty ? pureText : rawText,
+      recommendedIds: recommendedIds,
+      isGenerative: true,
+    );
   }
 
   static String _cleanJsonString(String raw) {

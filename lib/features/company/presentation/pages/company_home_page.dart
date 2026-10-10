@@ -1,8 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
+import 'package:red_teso/core/widgets/liquid_glass_ambient_background.dart';
 import 'package:red_teso/core/widgets/notification_bell.dart';
 import 'package:red_teso/features/auth/presentation/providers/auth_provider.dart';
 import 'package:red_teso/features/company/presentation/pages/student_detail_view_page.dart';
@@ -67,17 +71,17 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         title: Text(
           'Buscador de Talento',
-          style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 20, color: const Color(0xFF0F172A)),
+          style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white),
         ),
-        backgroundColor: Colors.white,
-        foregroundColor: const Color(0xFF0F172A),
+        backgroundColor: const Color(0xFF090D16).withOpacity(0.85),
+        foregroundColor: Colors.white,
         elevation: 0,
         actions: [
-          const NotificationBell(color: AppTheme.primaryColor),
+          const NotificationBell(color: Colors.white),
           const SizedBox(width: 8),
         ],
       ),
@@ -101,10 +105,11 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
             : const SizedBox.shrink(key: ValueKey('empty_ai_talent_btn')),
       ),
 
-      body: CustomScrollView(
-        controller: _scrollController,
-        physics: const BouncingScrollPhysics(),
-        slivers: [
+      body: LiquidGlassAmbientBackground(
+        child: CustomScrollView(
+          controller: _scrollController,
+          physics: const BouncingScrollPhysics(),
+          slivers: [
           SliverToBoxAdapter(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -341,7 +346,10 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
                       final student = filtered[index];
-                      return _buildExecutiveTalentCard(student);
+                      return _buildExecutiveTalentCard(student)
+                          .animate(delay: (index * 70).ms)
+                          .fadeIn(duration: 400.ms, curve: Curves.easeOut)
+                          .slideY(begin: 0.15, end: 0, curve: Curves.easeOut);
                     },
                     childCount: filtered.length,
                   ),
@@ -355,6 +363,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
           ),
         ],
       ),
+    ),
     );
   }
 
@@ -366,7 +375,8 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
     final speaksEnglish = student['speaksEnglish'] ?? false;
     final skills = List<String>.from(student['skills'] ?? ['Java', 'Python', 'React', 'Flutter', 'AWS', 'SQL']);
 
-    return GestureDetector(
+    return GlassmorphicCard(
+      glowColor: AppTheme.primaryColor,
       onTap: () {
         Navigator.push(
           context,
@@ -375,25 +385,9 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
           ),
         );
       },
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 20),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: const Color(0xFFE2E8F0)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 16,
-              offset: const Offset(0, 6),
-            ),
-          ],
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
               // 1. FOTO/AVATAR DE PERFIL CON MARCO GUINDA Y BADGE DORADO DE PROMEDIO
               Row(
                 children: [
@@ -598,8 +592,6 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
               ),
             ],
           ),
-        ),
-      ),
     );
   }
 
