@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:red_teso/core/services/fcm_notification_service.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -139,15 +140,13 @@ class _ContactStudentModalState extends State<ContactStudentModal> {
         // 1. Guardar solicitud en la colección 'interviews' de Firestore
         await _db.collection('interviews').add(interviewData);
 
-        // 2. Enviar notificación automática en tiempo real al alumno
+        // 2. Enviar notificación automática push en tiempo real al alumno
         if (studentUid.isNotEmpty) {
-          await _db.collection('notifications').add({
-            'toUserId': studentUid,
-            'title': '📩 ¡Nueva invitación de entrevista!',
-            'message': '${_companyNameController.text.trim()} te ha enviado una invitación de contacto para la fecha $formattedDate a las $formattedTime.',
-            'createdAt': FieldValue.serverTimestamp(),
-            'read': false,
-          });
+          await FcmNotificationService.sendPushNotification(
+            targetUserId: studentUid,
+            title: '📩 ¡Nueva invitación de entrevista!',
+            message: '${_companyNameController.text.trim()} te ha enviado una invitación de contacto para la fecha $formattedDate a las $formattedTime.',
+          );
         }
 
         // 3. Opción de abrir cliente de correo nativo si tiene email registrado

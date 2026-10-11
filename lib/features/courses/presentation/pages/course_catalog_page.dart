@@ -376,6 +376,28 @@ class _CourseCatalogPageState extends State<CourseCatalogPage> {
                     ),
                   ),
                 )
+              else if (MediaQuery.of(context).size.width > 700)
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  sliver: SliverGrid(
+                    gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                      maxCrossAxisExtent: 380,
+                      mainAxisSpacing: 20,
+                      crossAxisSpacing: 20,
+                      mainAxisExtent: 420,
+                    ),
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        final course = filteredCourses[index];
+                        return _buildCompactCourseCard(course)
+                            .animate(delay: (index * 60).ms)
+                            .fadeIn(duration: 400.ms, curve: Curves.easeOut)
+                            .slideY(begin: 0.15, end: 0, curve: Curves.easeOut);
+                      },
+                      childCount: filteredCourses.length,
+                    ),
+                  ),
+                )
               else
                 SliverPadding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -383,10 +405,13 @@ class _CourseCatalogPageState extends State<CourseCatalogPage> {
                     delegate: SliverChildBuilderDelegate(
                       (context, index) {
                         final course = filteredCourses[index];
-                        return _buildCourseCard(course)
-                            .animate(delay: (index * 80).ms)
-                            .fadeIn(duration: 400.ms, curve: Curves.easeOut)
-                            .slideY(begin: 0.15, end: 0, curve: Curves.easeOut);
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 16.0),
+                          child: _buildCompactCourseCard(course)
+                              .animate(delay: (index * 80).ms)
+                              .fadeIn(duration: 400.ms, curve: Curves.easeOut)
+                              .slideY(begin: 0.15, end: 0, curve: Curves.easeOut),
+                        );
                       },
                       childCount: filteredCourses.length,
                     ),
@@ -404,9 +429,11 @@ class _CourseCatalogPageState extends State<CourseCatalogPage> {
     );
   }
 
-  Widget _buildCourseCard(CourseModel course) {
+  Widget _buildCompactCourseCard(CourseModel course) {
     return GlassmorphicCard(
       glowColor: AppTheme.primaryColor,
+      padding: EdgeInsets.zero,
+      margin: EdgeInsets.zero,
       onTap: () {
         Navigator.push(
           context,
@@ -418,303 +445,168 @@ class _CourseCatalogPageState extends State<CourseCatalogPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-              Stack(
-                children: [
-                  ClipRRect(
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-                    child: _buildCourseBannerImage(course.bannerUrl),
-                  ),
-
-                  Positioned(
-                    top: 12,
-                    left: 12,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: AppTheme.primaryColor.withOpacity(0.85),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        course.level,
-                        style: GoogleFonts.inter(
-                          color: Colors.white,
-                          fontSize: 11.5,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  Positioned(
-                    top: 12,
-                    right: 12,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.7),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.star_rounded, color: Colors.amber, size: 14),
-                          const SizedBox(width: 4),
-                          Text(
-                            '${course.rating}',
-                            style: GoogleFonts.inter(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  // Botón Play Overlay para reproducir el video del curso
-                  Positioned.fill(
-                    child: Center(
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => CourseXRayPlayerPage(course: course),
-                            ),
-                          );
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.55),
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white, width: 2),
-                          ),
-                          child: const Icon(
-                            Icons.play_arrow_rounded,
-                            color: Colors.white,
-                            size: 36,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+          Stack(
+            children: [
+              ClipRRect(
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                child: _buildCourseBannerImage(course.bannerUrl, height: 150),
               ),
-
-              Padding(
-                padding: const EdgeInsets.all(18.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      course.title,
-                      style: GoogleFonts.outfit(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: const Color(0xFF0F172A),
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      course.description,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.inter(
-                        fontSize: 13,
-                        color: const Color(0xFF64748B),
-                        height: 1.4,
-                      ),
-                    ),
-
-                    const SizedBox(height: 14),
-
-                    if (course.featuredStudents.isNotEmpty) ...[
+              Positioned(
+                top: 10,
+                left: 10,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: AppTheme.primaryColor.withOpacity(0.9),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    course.level,
+                    style: GoogleFonts.inter(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 10,
+                right: 10,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.75),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.star_rounded, color: Colors.amber, size: 13),
+                      const SizedBox(width: 3),
                       Text(
-                        'Talento en este curso:',
-                        style: GoogleFonts.inter(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: const Color(0xFF334155),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 6,
-                        children: course.featuredStudents.map((s) {
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => StudentDetailViewPage(
-                                    student: {
-                                      'name': s.name,
-                                      'modality': 'Residencias',
-                                      'gpa': s.gpa,
-                                      'gender': 'Femenino',
-                                      'speaksEnglish': true,
-                                      'career': s.career,
-                                      'role': s.roleInCourse,
-                                    },
-                                  ),
-                                ),
-                              );
-                            },
-                            child: Chip(
-                              avatar: CircleAvatar(
-                                backgroundColor: AppTheme.primaryColor.withOpacity(0.15),
-                                child: Text(
-                                  s.name.isNotEmpty ? s.name[0] : 'A',
-                                  style: GoogleFonts.outfit(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppTheme.primaryColor,
-                                  ),
-                                ),
-                              ),
-                              label: Text('${s.name} (${s.gpa})'),
-                              labelStyle: GoogleFonts.inter(fontSize: 11.5),
-                              backgroundColor: const Color(0xFFF1F5F9),
-                            ),
-                          );
-                        }).toList(),
+                        '${course.rating}',
+                        style: GoogleFonts.inter(color: Colors.white, fontSize: 11.5, fontWeight: FontWeight.bold),
                       ),
                     ],
-
-                    const Divider(height: 24),
-
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                course.price,
-                                style: GoogleFonts.outfit(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppTheme.accentColor,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              Text(
-                                course.duration,
-                                style: GoogleFonts.inter(
-                                  fontSize: 11.5,
-                                  color: Colors.white70,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
+                  ),
+                ),
+              ),
+              Positioned.fill(
+                child: Center(
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CourseXRayPlayerPage(course: course),
                         ),
-                        const SizedBox(width: 8),
-                        InkWell(
-                          borderRadius: BorderRadius.circular(16),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => CourseXRayPlayerPage(course: course),
-                              ),
-                            );
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                            decoration: BoxDecoration(
-                              color: AppTheme.primaryColor,
-                              borderRadius: BorderRadius.circular(16),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: AppTheme.primaryColor.withOpacity(0.3),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Icon(Icons.play_circle_fill_rounded, size: 18, color: Colors.white),
-                                const SizedBox(width: 6),
-                                Text(
-                                  'VER X-RAY 🎬',
-                                  style: GoogleFonts.outfit(
-                                    color: Colors.white,
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    SizedBox(
-                      width: double.infinity,
-                      child: OutlinedButton.icon(
-                        onPressed: () {
-                          CourseQuoteModal.show(context, course: course);
-                        },
-                        icon: const Icon(Icons.request_quote_rounded, color: AppTheme.primaryColor, size: 18),
-                        label: Text(
-                          'SOLICITAR COTIZACIÓN CORPORATIVA 💼',
-                          style: GoogleFonts.outfit(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12.5,
-                            color: AppTheme.primaryColor,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                        style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: AppTheme.primaryColor, width: 1.5),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                        ),
+                      );
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.55),
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 1.5),
                       ),
+                      child: const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 28),
                     ),
-                  ],
+                  ),
                 ),
               ),
             ],
           ),
+
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(14.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    course.title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.white, height: 1.25),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    '${course.category} • ${course.duration}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.inter(fontSize: 11.5, color: Colors.white70),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    course.price,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.bold, color: AppTheme.accentColor),
+                  ),
+                  const Spacer(),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => CourseDetailPage(course: course)),
+                            );
+                          },
+                          style: OutlinedButton.styleFrom(
+                            side: const BorderSide(color: Colors.white38),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                          ),
+                          child: Text('Ficha 📄', style: GoogleFonts.inter(color: Colors.white, fontSize: 11)),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            CourseQuoteModal.show(context, course: course);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppTheme.primaryColor,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                          ),
+                          child: Text('Cotizar 💼', style: GoogleFonts.inter(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildCourseBannerImage(String bannerUrl) {
+  Widget _buildCourseBannerImage(String bannerUrl, {double height = 160}) {
     if (bannerUrl.startsWith('http://') || bannerUrl.startsWith('https://')) {
       return Image.network(
         bannerUrl,
-        height: 160,
+        height: height,
         width: double.infinity,
         fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) => _buildPlaceholderBanner(),
+        errorBuilder: (context, error, stackTrace) => _buildPlaceholderBanner(height: height),
       );
     } else if (!kIsWeb && bannerUrl.isNotEmpty && File(bannerUrl).existsSync()) {
       return Image.file(
         File(bannerUrl),
-        height: 160,
+        height: height,
         width: double.infinity,
         fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) => _buildPlaceholderBanner(),
+        errorBuilder: (context, error, stackTrace) => _buildPlaceholderBanner(height: height),
       );
     }
-    return _buildPlaceholderBanner();
+    return _buildPlaceholderBanner(height: height);
   }
 
-  Widget _buildPlaceholderBanner() {
+  Widget _buildPlaceholderBanner({double height = 160}) {
     return Container(
-      height: 160,
+      height: height,
       width: double.infinity,
       decoration: const BoxDecoration(
         gradient: LinearGradient(

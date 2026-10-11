@@ -5,6 +5,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:red_teso/core/services/activity_log_service.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
 import 'package:red_teso/core/widgets/liquid_glass_ambient_background.dart';
 
@@ -70,6 +71,8 @@ class StudentApplicationsPage extends StatelessWidget {
         body: Center(child: Text('Inicia sesión para ver tus postulaciones', style: GoogleFonts.inter(color: Colors.white))),
       );
     }
+
+    ActivityLogService.logActivity(action: 'Checó sus postulaciones activas');
 
     return Scaffold(
       backgroundColor: Colors.transparent,

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:red_teso/core/services/fcm_notification_service.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
 import 'package:red_teso/core/widgets/liquid_glass_ambient_background.dart';
 import 'package:red_teso/features/company/presentation/pages/student_detail_view_page.dart';
@@ -45,13 +46,11 @@ class _CompanyApplicantsPageState extends State<CompanyApplicantsPage> {
           message = 'Tu postulación para "$vacancyName" ha finalizado.';
         }
 
-        await _db.collection('notifications').add({
-          'toUserId': studentId,
-          'title': title,
-          'message': message,
-          'createdAt': FieldValue.serverTimestamp(),
-          'read': false,
-        });
+        await FcmNotificationService.sendPushNotification(
+          targetUserId: studentId,
+          title: title,
+          message: message,
+        );
       }
 
       if (!mounted) return;

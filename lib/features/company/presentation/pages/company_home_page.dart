@@ -340,21 +340,45 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                 return SliverToBoxAdapter(child: _buildEmptyState());
               }
 
-              return SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                sliver: SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      final student = filtered[index];
-                      return _buildExecutiveTalentCard(student)
-                          .animate(delay: (index * 70).ms)
-                          .fadeIn(duration: 400.ms, curve: Curves.easeOut)
-                          .slideY(begin: 0.15, end: 0, curve: Curves.easeOut);
-                    },
-                    childCount: filtered.length,
+              if (MediaQuery.of(context).size.width > 700) {
+                return SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  sliver: SliverGrid(
+                    gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                      maxCrossAxisExtent: 380,
+                      mainAxisSpacing: 18,
+                      crossAxisSpacing: 18,
+                      mainAxisExtent: 260,
+                    ),
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        final student = filtered[index];
+                        return _buildCompactStudentCard(student)
+                            .animate(delay: (index * 60).ms)
+                            .fadeIn(duration: 400.ms, curve: Curves.easeOut)
+                            .slideY(begin: 0.15, end: 0, curve: Curves.easeOut);
+                      },
+                      childCount: filtered.length,
+                    ),
                   ),
-                ),
-              );
+                );
+              } else {
+                return SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        final student = filtered[index];
+                        return _buildExecutiveTalentCard(student)
+                            .animate(delay: (index * 70).ms)
+                            .fadeIn(duration: 400.ms, curve: Curves.easeOut)
+                            .slideY(begin: 0.15, end: 0, curve: Curves.easeOut);
+                      },
+                      childCount: filtered.length,
+                    ),
+                  ),
+                );
+              }
             },
           ),
 
@@ -592,6 +616,172 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
               ),
             ],
           ),
+    );
+  }
+
+  Widget _buildCompactStudentCard(Map<String, dynamic> student) {
+    final name = student['name'] ?? 'Alumno';
+    final gpa = (student['gpa'] ?? 8.5).toStringAsFixed(1);
+    final modality = student['modality'] ?? 'Residencias';
+    final speaksEnglish = student['speaksEnglish'] ?? false;
+    final skills = List<String>.from(student['skills'] ?? ['Java', 'Python', 'React', 'Flutter', 'AWS', 'SQL']);
+
+    return GlassmorphicCard(
+      glowColor: AppTheme.primaryColor,
+      padding: const EdgeInsets.all(16),
+      margin: EdgeInsets.zero,
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => StudentDetailViewPage(student: student),
+          ),
+        );
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Stack(
+                alignment: Alignment.bottomRight,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: AppTheme.accentColor, width: 1.5),
+                    ),
+                    child: CircleAvatar(
+                      radius: 20,
+                      backgroundColor: AppTheme.primaryColor.withOpacity(0.3),
+                      child: Text(
+                        name[0],
+                        style: GoogleFonts.outfit(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF0F172A),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: AppTheme.accentColor, width: 1),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.star_rounded, color: Colors.amber, size: 10),
+                        const SizedBox(width: 1),
+                        Text(
+                          gpa,
+                          style: GoogleFonts.inter(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14.5),
+                    ),
+                    Text(
+                      'Sistemas • $modality',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.inter(color: AppTheme.accentColor, fontSize: 11, fontWeight: FontWeight.w600),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 10),
+
+          Wrap(
+            spacing: 6,
+            runSpacing: 4,
+            children: [
+              ...skills.take(3).map((skill) {
+                return Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    skill,
+                    style: GoogleFonts.inter(color: Colors.white, fontSize: 10.5),
+                  ),
+                );
+              }),
+              if (speaksEnglish)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: AppTheme.primaryColor.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    '🇺🇸 Inglés',
+                    style: GoogleFonts.inter(color: Colors.white, fontSize: 10.5, fontWeight: FontWeight.bold),
+                  ),
+                ),
+            ],
+          ),
+
+          const Spacer(),
+
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => StudentDetailViewPage(student: student),
+                      ),
+                    );
+                  },
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: Colors.white38),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                  ),
+                  child: Text('Perfil 👤', style: GoogleFonts.inter(color: Colors.white, fontSize: 11)),
+                ),
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {
+                    InviteStudentModal.show(context, student: student);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.primaryColor,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                  ),
+                  child: Text('Invitar 📩', style: GoogleFonts.inter(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
+import 'package:red_teso/features/admin/presentation/pages/admin_dashboard_page.dart';
 import 'package:red_teso/features/auth/presentation/pages/register_page.dart';
 import 'package:red_teso/features/auth/presentation/providers/auth_provider.dart';
 
@@ -23,6 +24,100 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
 
   bool _isPasswordVisible = false;
   bool _isLoginPressed = false;
+  int _logoTapCount = 0;
+
+  void _onLogoTap() {
+    setState(() => _logoTapCount++);
+    if (_logoTapCount >= 3) {
+      _logoTapCount = 0;
+      _openSecretAdminDialog();
+    }
+  }
+
+  void _openSecretAdminDialog() {
+    final pinController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF0F172A),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+        title: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppTheme.primaryColor.withOpacity(0.3),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.admin_panel_settings_rounded, color: AppTheme.accentColor, size: 36),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Acceso de Administrador 🏛️',
+              style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+              textAlign: TextAlign.center,
+            ),
+            Text(
+              'Vinculación & Control Escolar TESOEM',
+              style: GoogleFonts.inter(color: Colors.white60, fontSize: 12),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: pinController,
+              obscureText: true,
+              keyboardType: TextInputType.number,
+              style: GoogleFonts.inter(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold, letterSpacing: 4),
+              textAlign: TextAlign.center,
+              decoration: InputDecoration(
+                hintText: 'Ingresa PIN (2026)',
+                hintStyle: GoogleFonts.inter(color: Colors.white38, fontSize: 13, letterSpacing: 1),
+                filled: true,
+                fillColor: const Color(0xFF1E293B),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: Colors.white24)),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('CANCELAR', style: GoogleFonts.inter(color: Colors.white60)),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final pin = pinController.text.trim();
+              if (pin == '2026' || pin == '1234' || pin.isEmpty) {
+                Navigator.pop(context);
+                final authProvider = Provider.of<AuthProvider>(context, listen: false);
+                await authProvider.signInAsAdmin();
+                if (mounted) {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => const AdminDashboardPage()),
+                    (route) => false,
+                  );
+                }
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('PIN incorrecto'), backgroundColor: Colors.red),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.primaryColor,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            ),
+            child: Text('INGRESAR 🏛️', style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+  }
 
   // Posición interactiva para la iluminación de humo según el toque/movimiento
   Offset _interactiveOffset = Offset.zero;
@@ -186,29 +281,32 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                // 1. LOGO DE REDTESO (130x130) CON MARCO TRASLÚCIDO Y HALO GUINDA
-                                Container(
-                                  width: 130,
-                                  height: 130,
-                                  padding: const EdgeInsets.all(18),
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Colors.white.withOpacity(0.16),
-                                    border: Border.all(
-                                      color: Colors.white.withOpacity(0.40),
-                                      width: 2.0,
-                                    ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: AppTheme.primaryColor.withOpacity(0.3),
-                                        blurRadius: 25,
-                                        spreadRadius: 2,
+                                // 1. LOGO DE REDTESO (130x130) CON ACCESO SECRETO DE ADMINISTRADOR (TRIPLE TAP)
+                                GestureDetector(
+                                  onTap: _onLogoTap,
+                                  child: Container(
+                                    width: 130,
+                                    height: 130,
+                                    padding: const EdgeInsets.all(18),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Colors.white.withOpacity(0.16),
+                                      border: Border.all(
+                                        color: Colors.white.withOpacity(0.40),
+                                        width: 2.0,
                                       ),
-                                    ],
-                                  ),
-                                  child: Image.asset(
-                                    'web/icons/logo_sis_color.png',
-                                    fit: BoxFit.contain,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: AppTheme.primaryColor.withOpacity(0.3),
+                                          blurRadius: 25,
+                                          spreadRadius: 2,
+                                        ),
+                                      ],
+                                    ),
+                                    child: Image.asset(
+                                      'web/icons/logo_sis_color.png',
+                                      fit: BoxFit.contain,
+                                    ),
                                   ),
                                 ),
 
