@@ -24,27 +24,29 @@ jobs:
 
       - name: Patch Xcode project for unsigned build
         run: |
-          sed -i '' 's/DEVELOPMENT_TEAM = .*/DEVELOPMENT_TEAM = "";/g' ios/Runner.xcodeproj/project.pbxproj
+          sed -i '' 's/DEVELOPMENT_TEAM = .*/DEVELOPMENT_TEAM = "0000000000";/g' ios/Runner.xcodeproj/project.pbxproj
           sed -i '' 's/CODE_SIGN_IDENTITY = "iPhone Developer";/CODE_SIGN_IDENTITY = "";/g' ios/Runner.xcodeproj/project.pbxproj
           sed -i '' 's/CODE_SIGN_IDENTITY = "Apple Development";/CODE_SIGN_IDENTITY = "";/g' ios/Runner.xcodeproj/project.pbxproj
           grep -n "DEVELOPMENT_TEAM\|CODE_SIGN" ios/Runner.xcodeproj/project.pbxproj
 
       - name: Build iOS (Unsigned)
-        run: flutter build ios --release --no-codesign --extra-build-args="CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=''"
+        run: flutter build ios --release --no-codesign
+        env:
+          CODE_SIGNING_ALLOWED: "NO"
+          CODE_SIGNING_REQUIRED: "NO"
+          CODE_SIGN_IDENTITY: ""
+          EXPANDED_CODE_SIGN_IDENTITY: ""
 
       - name: Create IPA
         run: |
+          cd build/ios/iphoneos
           mkdir -p Payload
-          if [ -d "build/ios/iphoneos/Runner.app" ]; then
-            cp -r build/ios/iphoneos/Runner.app Payload/
-          elif [ -d "build/ios/archive/Runner.xcarchive/Products/Applications/Runner.app" ]; then
-            cp -r build/ios/archive/Runner.xcarchive/Products/Applications/Runner.app Payload/
-          fi
+          mv Runner.app Payload/
           zip -r -y Runner.ipa Payload
 
       - name: Upload IPA Artifact
         uses: actions/upload-artifact@v4
         with:
           name: ios-ipa
-          path: Runner.ipa
+          path: build/ios/iphoneos/Runner.ipa
           retention-days: 7
