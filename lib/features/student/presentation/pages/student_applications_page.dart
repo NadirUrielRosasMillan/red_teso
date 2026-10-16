@@ -1,4 +1,3 @@
-
 import 'dart:math' as math;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,6 +7,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:red_teso/core/services/activity_log_service.dart';
 
 class StudentApplicationsPage extends StatelessWidget {
   const StudentApplicationsPage({super.key});
@@ -36,8 +36,7 @@ class StudentApplicationsPage extends StatelessWidget {
   }
 
   bool _isInReview(String status) {
-    return status == 'En Revisión' ||
-        status == 'En Entrevista';
+    return status == 'En Revisión' || status == 'En Entrevista';
   }
 
   Future<void> _confirmDeleteApplication(
@@ -146,8 +145,8 @@ class StudentApplicationsPage extends StatelessWidget {
       if (!context.mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text(
+        const SnackBar(
+          content: Text(
             'No se pudo eliminar la postulación. Inténtalo de nuevo.',
           ),
           backgroundColor: _red,
@@ -192,6 +191,8 @@ class StudentApplicationsPage extends StatelessWidget {
         ),
       );
     }
+
+    ActivityLogService.logActivity(action: 'Checó sus postulaciones activas');
 
     return Scaffold(
       backgroundColor: _background,
@@ -262,8 +263,7 @@ class StudentApplicationsPage extends StatelessWidget {
                   return _buildError();
                 }
 
-                if (snapshot.connectionState ==
-                        ConnectionState.waiting &&
+                if (snapshot.connectionState == ConnectionState.waiting &&
                     !snapshot.hasData) {
                   return _buildLoading();
                 }
@@ -317,7 +317,6 @@ class StudentApplicationsPage extends StatelessWidget {
                                 .animate()
                                 .fadeIn(duration: 350.ms)
                                 .slideY(begin: -0.04, end: 0),
-
                             Padding(
                               padding: EdgeInsets.fromLTRB(
                                 horizontalPadding,
@@ -356,7 +355,6 @@ class StudentApplicationsPage extends StatelessWidget {
                                 ],
                               ),
                             ),
-
                             Padding(
                               padding: EdgeInsets.fromLTRB(
                                 horizontalPadding,
@@ -420,7 +418,6 @@ class StudentApplicationsPage extends StatelessWidget {
                                 ],
                               ),
                             ),
-
                             Expanded(
                               child: docs.isEmpty
                                   ? _buildEmptyState()
@@ -434,8 +431,8 @@ class StudentApplicationsPage extends StatelessWidget {
                                       itemCount: docs.length,
                                       itemBuilder: (context, index) {
                                         final doc = docs[index];
-                                        final app = doc.data()
-                                            as Map<String, dynamic>;
+                                        final app =
+                                            doc.data() as Map<String, dynamic>;
 
                                         return _buildApplicationCard(
                                           context,
@@ -480,11 +477,11 @@ class StudentApplicationsPage extends StatelessWidget {
         ),
         borderRadius: BorderRadius.circular(23),
         border: Border.all(
-          color: _gold.withOpacity(0.65),
+          color: _gold.withValues(alpha: 0.65),
         ),
         boxShadow: [
           BoxShadow(
-            color: _wine.withOpacity(0.15),
+            color: _wine.withValues(alpha: 0.15),
             blurRadius: 17,
             offset: const Offset(0, 6),
           ),
@@ -496,10 +493,10 @@ class StudentApplicationsPage extends StatelessWidget {
             width: 53,
             height: 53,
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.12),
+              color: Colors.white.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(17),
               border: Border.all(
-                color: _gold.withOpacity(0.7),
+                color: _gold.withValues(alpha: 0.7),
               ),
             ),
             child: const Icon(
@@ -527,7 +524,7 @@ class StudentApplicationsPage extends StatelessWidget {
                       ? 'Tu próxima oportunidad puede comenzar hoy.'
                       : 'Tienes $total ${total == 1 ? 'postulación registrada' : 'postulaciones registradas'}.',
                   style: GoogleFonts.inter(
-                    color: Colors.white.withOpacity(0.85),
+                    color: Colors.white.withValues(alpha: 0.85),
                     fontSize: 11,
                   ),
                 ),
@@ -562,7 +559,7 @@ class StudentApplicationsPage extends StatelessWidget {
         border: Border.all(color: _border),
         boxShadow: [
           BoxShadow(
-            color: _wine.withOpacity(0.045),
+            color: _wine.withValues(alpha: 0.045),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -575,7 +572,7 @@ class StudentApplicationsPage extends StatelessWidget {
             width: 34,
             height: 34,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.10),
+              color: color.withValues(alpha: 0.10),
               borderRadius: BorderRadius.circular(11),
             ),
             child: Icon(
@@ -618,8 +615,7 @@ class StudentApplicationsPage extends StatelessWidget {
     final status = (app['status'] ?? 'Enviado').toString();
     final statusInfo = _getStatusInfo(status);
 
-    final vacancyName =
-        (app['vacancyName'] ?? 'Vacante TESOEM').toString();
+    final vacancyName = (app['vacancyName'] ?? 'Vacante TESOEM').toString();
     final companyName =
         (app['companyName'] ?? 'Empresa colaboradora').toString();
 
@@ -638,7 +634,7 @@ class StudentApplicationsPage extends StatelessWidget {
         border: Border.all(color: _border),
         boxShadow: [
           BoxShadow(
-            color: _wine.withOpacity(0.065),
+            color: _wine.withValues(alpha: 0.065),
             blurRadius: 16,
             offset: const Offset(0, 5),
           ),
@@ -699,11 +695,9 @@ class StudentApplicationsPage extends StatelessWidget {
                 _buildStatusBadge(statusInfo),
               ],
             ),
-
             const SizedBox(height: 15),
-            Divider(height: 1, color: _border),
+            const Divider(height: 1, color: _border),
             const SizedBox(height: 12),
-
             Row(
               children: [
                 const Icon(
@@ -742,17 +736,15 @@ class StudentApplicationsPage extends StatelessWidget {
                 ),
               ],
             ),
-
             const SizedBox(height: 9),
-
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: statusColor.withOpacity(0.075),
+                color: statusColor.withValues(alpha: 0.075),
                 borderRadius: BorderRadius.circular(13),
                 border: Border.all(
-                  color: statusColor.withOpacity(0.20),
+                  color: statusColor.withValues(alpha: 0.20),
                 ),
               ),
               child: Row(
@@ -859,10 +851,10 @@ class StudentApplicationsPage extends StatelessWidget {
         vertical: 7,
       ),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.09),
+        color: color.withValues(alpha: 0.09),
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
-          color: color.withOpacity(0.25),
+          color: color.withValues(alpha: 0.25),
         ),
       ),
       child: Row(
@@ -1060,8 +1052,7 @@ class _ApplicationsBackgroundPainter extends CustomPainter {
         ..color = const Color(0x20B47A22),
     );
 
-    final dotPaint = Paint()
-      ..color = const Color(0x66B47A22);
+    final dotPaint = Paint()..color = const Color(0x66B47A22);
 
     for (int i = 0; i < 24; i++) {
       final x = ((i * 83 + 29) % 997) / 997 * size.width;

@@ -1,14 +1,11 @@
-
 import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-
-import '../../../../core/theme/app_theme.dart';
-import '../providers/auth_provider.dart';
-import 'register_page.dart';
+import 'package:red_teso/features/auth/presentation/pages/register_page.dart';
+import 'package:red_teso/features/auth/presentation/providers/auth_provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -17,8 +14,7 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage>
-    with TickerProviderStateMixin {
+class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -26,9 +22,7 @@ class _LoginPageState extends State<LoginPage>
   late final AnimationController _buttonController;
 
   bool _isPasswordVisible = false;
-  bool _isLoginPressed = false;
 
-  static const Color _wine = Color(0xFF650D2B);
   static const Color _darkWine = Color(0xFF210713);
   static const Color _gold = Color(0xFFE7BD72);
   static const Color _cream = Color(0xFFFFF8EF);
@@ -136,9 +130,8 @@ class _LoginPageState extends State<LoginPage>
                       constraints: BoxConstraints(
                         maxWidth: isWide ? 1020 : 470,
                       ),
-                      child: isWide
-                          ? _buildDesktopLayout()
-                          : _buildMobileLayout(),
+                      child:
+                          isWide ? _buildDesktopLayout() : _buildMobileLayout(),
                     ),
                   ),
                 );
@@ -335,7 +328,6 @@ class _LoginPageState extends State<LoginPage>
                 ),
               ),
               const SizedBox(height: 30),
-
               _buildInput(
                 controller: _emailController,
                 label: 'Correo electrónico',
@@ -343,9 +335,7 @@ class _LoginPageState extends State<LoginPage>
                 icon: Icons.alternate_email_rounded,
                 keyboardType: TextInputType.emailAddress,
               ),
-
               const SizedBox(height: 20),
-
               _buildInput(
                 controller: _passwordController,
                 label: 'Contraseña',
@@ -368,9 +358,7 @@ class _LoginPageState extends State<LoginPage>
                 ),
                 onSubmitted: (_) => _login(),
               ),
-
               const SizedBox(height: 30),
-
               Consumer<AuthProvider>(
                 builder: (context, auth, child) {
                   return AnimatedBuilder(
@@ -409,8 +397,7 @@ class _LoginPageState extends State<LoginPage>
                                     },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.transparent,
-                                disabledBackgroundColor:
-                                    Colors.white24,
+                                disabledBackgroundColor: Colors.white24,
                                 shadowColor: Colors.transparent,
                                 foregroundColor: _darkWine,
                                 shape: RoundedRectangleBorder(
@@ -453,9 +440,7 @@ class _LoginPageState extends State<LoginPage>
                   );
                 },
               ),
-
               const SizedBox(height: 25),
-
               Center(
                 child: Wrap(
                   alignment: WrapAlignment.center,
@@ -703,14 +688,13 @@ class _PremiumBackgroundPainter extends CustomPainter {
     canvas.drawPath(path2, ribbonPaint);
 
     // Partículas doradas
-    final particlePaint = Paint()
-      ..color = _gold.withValues(alpha: 0.44);
+    final particlePaint = Paint()..color = _gold.withValues(alpha: 0.44);
 
     for (int i = 0; i < 45; i++) {
       final x = ((i * 73.7) % 997) / 997 * size.width;
       final baseY = ((i * 137.3) % 991) / 991 * size.height;
-      final y = (baseY + progress * size.height * (0.08 + (i % 3) * 0.04))
-          % size.height;
+      final y = (baseY + progress * size.height * (0.08 + (i % 3) * 0.04)) %
+          size.height;
       final radius = 0.6 + (i % 4) * 0.35;
 
       canvas.drawCircle(

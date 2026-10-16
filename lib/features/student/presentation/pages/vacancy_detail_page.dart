@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
+import 'package:red_teso/features/student/presentation/pages/student_dashboard_page.dart';
 import 'package:red_teso/features/company/presentation/pages/company_profile_view_page.dart';
 import 'package:red_teso/features/company/presentation/widgets/vacancy_location_map_widget.dart';
 
@@ -190,9 +191,27 @@ class _VacancyDetailPageState extends State<VacancyDetailPage> {
     final transportTip = v['transportTip'] ?? 'Combi directa desde TESOEM o Metro Santa Marta';
     final requisitos = List<String>.from(v['requisitos'] ?? ['Proactividad', 'Trabajo en equipo']);
 
+    void safePop() {
+      if (Navigator.canPop(context)) {
+        Navigator.pop(context);
+      } else if (Navigator.of(context, rootNavigator: true).canPop()) {
+        Navigator.of(context, rootNavigator: true).pop();
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const StudentDashboardPage()),
+        );
+      }
+    }
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded),
+          tooltip: 'Regresar',
+          onPressed: () => safePop(),
+        ),
         title: Text('Detalle de Vacante', style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
         foregroundColor: const Color(0xFF0F172A),
         backgroundColor: Colors.white,

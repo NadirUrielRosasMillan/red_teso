@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:red_teso/core/services/fcm_notification_service.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
 import 'package:red_teso/features/company/presentation/pages/create_vacancy_page.dart';
 
@@ -88,19 +89,11 @@ class _InviteStudentModalState extends State<InviteStudentModal> {
           ? '$companyName te invita a postularte a "$vacancyTitle". Nota: "$noteText"'
           : '$companyName te invita a postularte a su vacante de "$vacancyTitle". ¡Revisa los detalles y postúlate!';
 
-      // Guardar notificación en Firestore para el alumno
-      await _db.collection('notifications').add({
-        'toUserId': studentId,
-        'title': '¡Invitación de $companyName! 💼✨',
-        'message': customMessage,
-        'vacancyId': _selectedVacancyId,
-        'vacancyTitle': vacancyTitle,
-        'companyId': user.uid,
-        'companyName': companyName,
-        'type': 'invitation',
-        'read': false,
-        'createdAt': FieldValue.serverTimestamp(),
-      });
+      await FcmNotificationService.sendPushNotification(
+        targetUserId: studentId,
+        title: '¡Invitación de $companyName! 💼✨',
+        message: customMessage,
+      );
 
       if (!mounted) return;
 

@@ -192,6 +192,11 @@ class _CreateVacancyPageState extends State<CreateVacancyPage> {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded),
+          tooltip: 'Regresar',
+          onPressed: () => Navigator.pop(context),
+        ),
         title: Text(isEditing ? 'Editar Vacante' : 'Publicar Oportunidad', style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
         backgroundColor: Colors.white,
         foregroundColor: const Color(0xFF0F172A),
