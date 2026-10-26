@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 import 'dart:ui';
 
@@ -6,6 +7,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:red_teso/features/auth/presentation/pages/register_page.dart';
 import 'package:red_teso/features/auth/presentation/providers/auth_provider.dart';
+import 'package:red_teso/features/admin/presentation/pages/admin_dashboard_page.dart';
+import 'package:red_teso/features/student/presentation/pages/student_dashboard_page.dart';
+import 'package:red_teso/features/company/presentation/pages/company_dashboard_page.dart';
+import 'package:red_teso/features/professor/presentation/pages/professor_dashboard_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -22,6 +27,9 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   late final AnimationController _buttonController;
 
   bool _isPasswordVisible = false;
+  bool _isSubmitting = false;
+  int _logoTapCount = 0;
+  Timer? _logoTapResetTimer;
 
   static const Color _darkWine = Color(0xFF210713);
   static const Color _gold = Color(0xFFE7BD72);
@@ -47,6 +55,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
 
   @override
   void dispose() {
+    _logoTapResetTimer?.cancel();
     _emailController.dispose();
     _passwordController.dispose();
     _backgroundController.dispose();
@@ -54,7 +63,37 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     super.dispose();
   }
 
+  void _handleLogoTap() {
+    _logoTapCount++;
+    _logoTapResetTimer?.cancel();
+    _logoTapResetTimer = Timer(const Duration(seconds: 2), () {
+      _logoTapCount = 0;
+    });
+
+    if (_logoTapCount >= 3) {
+      _logoTapCount = 0;
+      _logoTapResetTimer?.cancel();
+      _showAdminAccessDialog();
+    }
+  }
+
+  Future<void> _showAdminAccessDialog() async {
+    final authorized = await showDialog<bool>(
+      context: context,
+      barrierDismissible: true,
+      builder: (_) => const _AdminAccessDialog(),
+    );
+
+    if (!mounted || authorized != true) return;
+
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const AdminDashboardPage()),
+    );
+  }
+
   Future<void> _login() async {
+    if (_isSubmitting) return;
+
     final email = _emailController.text.trim();
     final password = _passwordController.text;
 
@@ -68,20 +107,75 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
       return;
     }
 
+    setState(() => _isSubmitting = true);
+
     try {
-      await Provider.of<AuthProvider>(
-        context,
-        listen: false,
-      ).signIn(email, password);
-    } catch (e) {
+      final auth = context.read<AuthProvider>();
+      final String? errorMessage = await auth.signIn(email, password);
+
       if (!mounted) return;
 
+      // AuthProvider.signIn devuelve el error como String?; no siempre lanza
+      // una excepción. Mostrarlo era necesario para que el usuario supiera
+      // por qué no avanzaba.
+      if (errorMessage != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMessage),
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: const Color(0xFF7A1F35),
+            duration: const Duration(seconds: 5),
+          ),
+        );
+        return;
+      }
+
+      final Widget destination;
+      switch (auth.userType) {
+        case UserType.alumno:
+          destination = const StudentDashboardPage();
+          break;
+        case UserType.empresa:
+          destination = const CompanyDashboardPage();
+          break;
+        case UserType.profesor:
+          destination = const ProfessorDashboardPage();
+          break;
+        case UserType.admin:
+          destination = const AdminDashboardPage();
+          break;
+        case UserType.none:
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'La sesión se validó, pero no se encontró un perfil válido. '
+                'Verifica el tipo de usuario en Firestore.',
+              ),
+              behavior: SnackBarBehavior.floating,
+              duration: Duration(seconds: 5),
+            ),
+          );
+          return;
+      }
+
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute<void>(builder: (_) => destination),
+        (route) => false,
+      );
+    } catch (e, stackTrace) {
+      debugPrint('Error inesperado al iniciar sesión: $e\n$stackTrace');
+
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('No se pudo iniciar sesión: $e'),
           behavior: SnackBarBehavior.floating,
+          backgroundColor: const Color(0xFF7A1F35),
+          duration: const Duration(seconds: 5),
         ),
       );
+    } finally {
+      if (mounted) setState(() => _isSubmitting = false);
     }
   }
 
@@ -215,10 +309,12 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(
-          width: compact ? 94 : 108,
-          height: compact ? 94 : 108,
-          decoration: BoxDecoration(
+        GestureDetector(
+          onTap: _handleLogoTap,
+          child: Container(
+            width: compact ? 94 : 108,
+            height: compact ? 94 : 108,
+            decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: Colors.white.withValues(alpha: 0.07),
             border: Border.all(
@@ -248,6 +344,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                   );
                 },
               ),
+            ),
             ),
           ),
         ),
@@ -596,6 +693,139 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         fontWeight: FontWeight.w600,
         letterSpacing: 2,
       ),
+    );
+  }
+}
+
+class _AdminAccessDialog extends StatefulWidget {
+  const _AdminAccessDialog();
+
+  @override
+  State<_AdminAccessDialog> createState() => _AdminAccessDialogState();
+}
+
+class _AdminAccessDialogState extends State<_AdminAccessDialog> {
+  final TextEditingController _passwordController = TextEditingController();
+  bool _obscurePassword = true;
+  String? _errorMessage;
+
+  static const Color _darkWine = Color(0xFF210713);
+  static const Color _gold = Color(0xFFE7BD72);
+
+  @override
+  void dispose() {
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    if (_passwordController.text == '2026') {
+      Navigator.of(context).pop(true);
+    } else {
+      setState(() => _errorMessage = 'Contraseña incorrecta.');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      scrollable: true,
+      backgroundColor: const Color(0xFF2A1821),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24),
+        side: BorderSide(color: _gold.withValues(alpha: 0.35)),
+      ),
+      title: Row(
+        children: [
+          const Icon(Icons.admin_panel_settings_rounded, color: _gold),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              'Acceso administrador',
+              style: GoogleFonts.outfit(
+                color: Colors.white,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+        ],
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Ingresa la contraseña administrativa.',
+            style: GoogleFonts.inter(color: Colors.white70, fontSize: 13),
+          ),
+          const SizedBox(height: 18),
+          TextField(
+            controller: _passwordController,
+            autofocus: true,
+            obscureText: _obscurePassword,
+            style: GoogleFonts.inter(color: Colors.white),
+            onSubmitted: (_) => _submit(),
+            decoration: InputDecoration(
+              hintText: 'Contraseña',
+              hintStyle: GoogleFonts.inter(color: Colors.white38),
+              prefixIcon: const Icon(Icons.lock_outline_rounded, color: _gold),
+              suffixIcon: IconButton(
+                onPressed: () => setState(
+                  () => _obscurePassword = !_obscurePassword,
+                ),
+                icon: Icon(
+                  _obscurePassword
+                      ? Icons.visibility_rounded
+                      : Icons.visibility_off_rounded,
+                  color: Colors.white60,
+                ),
+              ),
+              filled: true,
+              fillColor: Colors.black.withValues(alpha: 0.20),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(
+                  color: Colors.white.withValues(alpha: 0.15),
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: const BorderSide(color: _gold, width: 1.4),
+              ),
+            ),
+          ),
+          if (_errorMessage != null) ...[
+            const SizedBox(height: 10),
+            Text(
+              _errorMessage!,
+              style: GoogleFonts.inter(color: Colors.redAccent, fontSize: 12),
+            ),
+          ],
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(false),
+          child: Text(
+            'Cancelar',
+            style: GoogleFonts.inter(color: Colors.white70),
+          ),
+        ),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: _gold,
+            foregroundColor: _darkWine,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          onPressed: _submit,
+          child: Text(
+            'ENTRAR',
+            style: GoogleFonts.inter(fontWeight: FontWeight.w800),
+          ),
+        ),
+      ],
     );
   }
 }

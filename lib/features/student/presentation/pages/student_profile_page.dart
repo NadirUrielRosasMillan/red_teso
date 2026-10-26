@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:red_teso/features/auth/presentation/providers/auth_provider.dart';
+import 'package:red_teso/core/widgets/theme_toggle_button.dart';
 
 class StudentProfilePage extends StatefulWidget {
   const StudentProfilePage({super.key});
@@ -32,6 +33,14 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
   static const Color _border = Color(0xFFECE1E4);
   static const Color _green = Color(0xFF31805A);
   static const Color _red = Color(0xFFB42336);
+
+  bool get _isDark => Theme.of(context).brightness == Brightness.dark;
+  Color get _pageBackground => _isDark ? const Color(0xFF121016) : _cream;
+  Color get _cardBackground => _isDark ? const Color(0xFF251F29) : Colors.white;
+  Color get _textColor => _isDark ? const Color(0xFFF4EDF1) : _ink;
+  Color get _mutedColor => _isDark ? const Color(0xFFB9AAB3) : _muted;
+  Color get _borderColor => _isDark ? const Color(0xFF403541) : _border;
+  Color get _fieldBackground => _isDark ? const Color(0xFF1B171F) : const Color(0xFFFFFCFA);
 
   double _gpa = 8.0;
   String _modality = 'Servicio Social';
@@ -277,14 +286,14 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Scaffold(
-        backgroundColor: _cream,
+      return Scaffold(
+        backgroundColor: _pageBackground,
         body: Center(child: CircularProgressIndicator(color: _wine)),
       );
     }
 
     return Scaffold(
-      backgroundColor: _cream,
+      backgroundColor: _pageBackground,
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
@@ -320,7 +329,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                   Center(
                     child: Text(
                       'REDTESO · TU FUTURO PROFESIONAL',
-                      style: GoogleFonts.poppins(color: _muted, fontSize: 10, letterSpacing: 1.2, fontWeight: FontWeight.w600),
+                      style: GoogleFonts.poppins(color: _mutedColor, fontSize: 10, letterSpacing: 1.2, fontWeight: FontWeight.w600),
                     ),
                   ),
                 ]),
@@ -349,10 +358,18 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('RedTESO', style: GoogleFonts.poppins(color: _wineDark, fontSize: 20, fontWeight: FontWeight.w800)),
-                Text('Perfil profesional', style: GoogleFonts.inter(color: _muted, fontSize: 12)),
+                Text('Perfil profesional', style: GoogleFonts.inter(color: _mutedColor, fontSize: 12)),
               ],
             ),
           ),
+          Container(
+            decoration: BoxDecoration(
+              color: _wine,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const ThemeToggleButton(),
+          ),
+          const SizedBox(width: 4),
           IconButton(
             tooltip: 'Guardar cambios',
             onPressed: _saveProfile,
@@ -470,8 +487,8 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title, style: GoogleFonts.poppins(color: _ink, fontSize: 16, fontWeight: FontWeight.w700)),
-              Text(subtitle, style: GoogleFonts.inter(color: _muted, fontSize: 11)),
+              Text(title, style: GoogleFonts.poppins(color: _textColor, fontSize: 16, fontWeight: FontWeight.w700)),
+              Text(subtitle, style: GoogleFonts.inter(color: _mutedColor, fontSize: 11)),
             ],
           ),
         ),
@@ -491,7 +508,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
             TextFormField(
               controller: _nameController,
               textCapitalization: TextCapitalization.words,
-              style: GoogleFonts.inter(color: _ink, fontSize: 13),
+              style: GoogleFonts.inter(color: _textColor, fontSize: 13),
               decoration: _inputDecoration('Tu nombre completo', Icons.badge_outlined),
               validator: (value) => value == null || value.trim().isEmpty ? 'El nombre es obligatorio.' : null,
             ),
@@ -501,7 +518,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
             TextFormField(
               controller: _phoneController,
               keyboardType: TextInputType.phone,
-              style: GoogleFonts.inter(color: _ink, fontSize: 13),
+              style: GoogleFonts.inter(color: _textColor, fontSize: 13),
               decoration: _inputDecoration('Tu número de teléfono', Icons.phone_outlined),
             ),
             const SizedBox(height: 17),
@@ -510,7 +527,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
             DropdownButtonFormField<String>(
               initialValue: _modalities.contains(_modality) ? _modality : 'Servicio Social',
               isExpanded: true,
-              style: GoogleFonts.inter(color: _ink, fontSize: 13),
+              style: GoogleFonts.inter(color: _textColor, fontSize: 13),
               decoration: _inputDecoration('Selecciona modalidad', Icons.school_outlined),
               items: _modalities.map((item) => DropdownMenuItem(value: item, child: Text(item, overflow: TextOverflow.ellipsis))).toList(),
               onChanged: (value) {
@@ -539,9 +556,9 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
               thumbColor: _gold,
               onChanged: (value) => setState(() => _gpa = value),
             ),
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [Text('7.0', style: TextStyle(color: _muted, fontSize: 11)), Text('10.0', style: TextStyle(color: _muted, fontSize: 11))],
+              children: [Text('7.0', style: TextStyle(color: _mutedColor, fontSize: 11)), Text('10.0', style: TextStyle(color: _mutedColor, fontSize: 11))],
             ),
           ],
         ),
@@ -554,7 +571,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Agrega tecnologías y competencias que dominas.', style: GoogleFonts.inter(color: _muted, fontSize: 12)),
+          Text('Agrega tecnologías y competencias que dominas.', style: GoogleFonts.inter(color: _mutedColor, fontSize: 12)),
           const SizedBox(height: 14),
           Row(
             children: [
@@ -563,7 +580,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                   controller: _skillController,
                   textCapitalization: TextCapitalization.words,
                   onSubmitted: (_) => _addSkill(),
-                  style: GoogleFonts.inter(color: _ink, fontSize: 13),
+                  style: GoogleFonts.inter(color: _textColor, fontSize: 13),
                   decoration: _inputDecoration('Ej. Flutter, Python, SQL', Icons.code_rounded),
                 ),
               ),
@@ -581,7 +598,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
           ),
           const SizedBox(height: 15),
           if (_skills.isEmpty)
-            Text('Aún no agregas habilidades.', style: GoogleFonts.inter(color: _muted, fontSize: 12))
+            Text('Aún no agregas habilidades.', style: GoogleFonts.inter(color: _mutedColor, fontSize: 12))
           else
             Wrap(
               spacing: 8,
@@ -589,7 +606,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
               children: _skills.map((skill) => Chip(
                 avatar: const Icon(Icons.check_circle_rounded, color: _wine, size: 17),
                 label: Text(skill, style: GoogleFonts.inter(color: _wineDark, fontSize: 12)),
-                backgroundColor: const Color(0xFFF8EAF0),
+                backgroundColor: _isDark ? const Color(0xFF382633) : const Color(0xFFF8EAF0),
                 side: BorderSide(color: _wine.withValues(alpha: 0.12)),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 deleteIcon: const Icon(Icons.close_rounded, color: _red, size: 16),
@@ -597,7 +614,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
               )).toList(),
             ),
           const SizedBox(height: 8),
-          Text('Guarda los cambios para conservar tus habilidades.', style: GoogleFonts.inter(color: _muted, fontSize: 10)),
+          Text('Guarda los cambios para conservar tus habilidades.', style: GoogleFonts.inter(color: _mutedColor, fontSize: 10)),
         ],
       ),
     );
@@ -622,7 +639,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
             return Container(
               margin: const EdgeInsets.only(bottom: 10),
               padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20), border: Border.all(color: _border)),
+              decoration: BoxDecoration(color: _cardBackground, borderRadius: BorderRadius.circular(20), border: Border.all(color: _borderColor)),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -637,9 +654,9 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text((data['companyName'] ?? 'Empresa').toString(), style: GoogleFonts.poppins(color: _ink, fontWeight: FontWeight.w700, fontSize: 13)),
+                        Text((data['companyName'] ?? 'Empresa').toString(), style: GoogleFonts.poppins(color: _textColor, fontWeight: FontWeight.w700, fontSize: 13)),
                         const SizedBox(height: 5),
-                        Text('“${data['comment'] ?? ''}”', style: GoogleFonts.inter(color: _muted, fontSize: 12, fontStyle: FontStyle.italic, height: 1.5)),
+                        Text('“${data['comment'] ?? ''}”', style: GoogleFonts.inter(color: _mutedColor, fontSize: 12, fontStyle: FontStyle.italic, height: 1.5)),
                       ],
                     ),
                   ),
@@ -666,7 +683,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
         children: [
           const Icon(Icons.rate_review_outlined, color: _wine, size: 25),
           const SizedBox(width: 12),
-          Expanded(child: Text(message, style: GoogleFonts.inter(color: _muted, fontSize: 12, height: 1.5))),
+          Expanded(child: Text(message, style: GoogleFonts.inter(color: _mutedColor, fontSize: 12, height: 1.5))),
         ],
       ),
     );
@@ -680,7 +697,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: _cardBackground,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: hasFile ? _wine.withValues(alpha: 0.35) : _border, width: hasFile ? 1.5 : 1),
         boxShadow: [BoxShadow(color: _wineDark.withValues(alpha: 0.025), blurRadius: 12, offset: const Offset(0, 4))],
@@ -697,7 +714,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(docType, style: GoogleFonts.poppins(color: _ink, fontWeight: FontWeight.w700, fontSize: 14)),
+                Text(docType, style: GoogleFonts.poppins(color: _textColor, fontWeight: FontWeight.w700, fontSize: 14)),
                 const SizedBox(height: 5),
                 if (isUploading)
                   ClipRRect(
@@ -767,19 +784,19 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
   }
 
   Widget _fieldLabel(String label) {
-    return Text(label, style: GoogleFonts.poppins(color: _ink, fontSize: 12, fontWeight: FontWeight.w700));
+    return Text(label, style: GoogleFonts.poppins(color: _textColor, fontSize: 12, fontWeight: FontWeight.w700));
   }
 
   InputDecoration _inputDecoration(String hint, IconData icon) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: GoogleFonts.inter(color: _muted.withValues(alpha: 0.8), fontSize: 11),
+      hintStyle: GoogleFonts.inter(color: _mutedColor.withValues(alpha: 0.8), fontSize: 11),
       prefixIcon: Icon(icon, color: _wine, size: 20),
       filled: true,
-      fillColor: const Color(0xFFFFFCFA),
+      fillColor: _fieldBackground,
       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 15),
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: _border)),
-      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: _border)),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: _borderColor)),
+      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: _borderColor)),
       focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: _wine, width: 1.5)),
       errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: _red)),
       focusedErrorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: _red, width: 1.5)),
@@ -791,7 +808,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
       width: double.infinity,
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: _cardBackground,
         borderRadius: BorderRadius.circular(21),
         border: Border.all(color: _border),
         boxShadow: [BoxShadow(color: _wineDark.withValues(alpha: 0.035), blurRadius: 15, offset: const Offset(0, 5))],

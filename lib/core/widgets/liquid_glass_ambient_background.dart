@@ -1,9 +1,11 @@
 import 'dart:ui';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
 
-/// Fondo Dinámico Ambiental 2026 con Esferas Flotantes en Guinda y Verde Esmeralda (Optimizado Multiplataforma)
+/// Fondo ambiental para RED-Teso.
+/// Las capas decorativas no interceptan clics ni eventos del puntero.
 class LiquidGlassAmbientBackground extends StatefulWidget {
   final Widget child;
 
@@ -13,23 +15,25 @@ class LiquidGlassAmbientBackground extends StatefulWidget {
   });
 
   @override
-  State<LiquidGlassAmbientBackground> createState() => _LiquidGlassAmbientBackgroundState();
+  State<LiquidGlassAmbientBackground> createState() =>
+      _LiquidGlassAmbientBackgroundState();
 }
 
-class _LiquidGlassAmbientBackgroundState extends State<LiquidGlassAmbientBackground>
+class _LiquidGlassAmbientBackgroundState
+    extends State<LiquidGlassAmbientBackground>
     with SingleTickerProviderStateMixin {
-  late AnimationController _animController;
+  late final AnimationController _animController;
 
   @override
   void initState() {
     super.initState();
+
     _animController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 12),
     );
 
-    // En móviles ejecuta la animación continua; en Web mantiene posición estática elegante
-    // para liberar el Event Loop de Chrome y evitar congelamientos al cerrar F12 DevTools.
+    // En Web dejamos el fondo estático para simplificar el renderizado.
     if (!kIsWeb) {
       _animController.repeat(reverse: true);
     }
@@ -43,110 +47,131 @@ class _LiquidGlassAmbientBackgroundState extends State<LiquidGlassAmbientBackgro
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+    final size = MediaQuery.sizeOf(context);
 
-    return Scaffold(
-      backgroundColor: const Color(0xFF090D16), // Noche Profunda 2026
-      body: Stack(
-        children: [
-          // 1. ESFERA AMBIENTAL 1: GUINDA OFICIAL (FLOTANTE / ESTÁTICA EN WEB)
-          AnimatedBuilder(
-            animation: _animController,
-            builder: (context, child) {
-              final value = _animController.value;
-              return Positioned(
-                top: -80 + (value * 50),
-                left: -60 + (value * 60),
-                child: Container(
-                  width: size.width * 0.8,
-                  height: size.width * 0.8,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: RadialGradient(
-                      colors: [
-                        AppTheme.primaryColor.withOpacity(0.40),
-                        AppTheme.primaryColor.withOpacity(0.0),
-                      ],
-                    ),
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        const Positioned.fill(
+          child: IgnorePointer(
+            child: ColoredBox(color: Color(0xFF090D16)),
+          ),
+        ),
+
+        // Esfera guinda.
+        AnimatedBuilder(
+          animation: _animController,
+          child: IgnorePointer(
+            child: SizedBox(
+              width: size.width * 0.8,
+              height: size.width * 0.8,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: RadialGradient(
+                    colors: [
+                      AppTheme.primaryColor.withValues(alpha: 0.40),
+                      AppTheme.primaryColor.withValues(alpha: 0),
+                    ],
                   ),
                 ),
-              );
-            },
+              ),
+            ),
           ),
+          builder: (context, child) {
+            final value = kIsWeb ? 0.0 : _animController.value;
+            return Positioned(
+              top: -80 + value * 50,
+              left: -60 + value * 60,
+              child: child!,
+            );
+          },
+        ),
 
-          // 2. ESFERA AMBIENTAL 2: VERDE ESMERALDA (FLOTANTE / ESTÁTICA EN WEB)
-          AnimatedBuilder(
-            animation: _animController,
-            builder: (context, child) {
-              final value = _animController.value;
-              return Positioned(
-                bottom: -100 + ((1 - value) * 60),
-                right: -80 + ((1 - value) * 50),
-                child: Container(
-                  width: size.width * 0.85,
-                  height: size.width * 0.85,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: RadialGradient(
-                      colors: [
-                        AppTheme.primaryGreen.withOpacity(0.35),
-                        AppTheme.primaryGreen.withOpacity(0.0),
-                      ],
-                    ),
+        // Esfera verde.
+        AnimatedBuilder(
+          animation: _animController,
+          child: IgnorePointer(
+            child: SizedBox(
+              width: size.width * 0.85,
+              height: size.width * 0.85,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: RadialGradient(
+                    colors: [
+                      AppTheme.primaryGreen.withValues(alpha: 0.35),
+                      AppTheme.primaryGreen.withValues(alpha: 0),
+                    ],
                   ),
                 ),
-              );
-            },
+              ),
+            ),
           ),
+          builder: (context, child) {
+            final value = kIsWeb ? 0.0 : _animController.value;
+            return Positioned(
+              bottom: -100 + (1 - value) * 60,
+              right: -80 + (1 - value) * 50,
+              child: child!,
+            );
+          },
+        ),
 
-          // 3. ESFERA AMBIENTAL 3: DESTELLO DORADO ACCENT
-          AnimatedBuilder(
-            animation: _animController,
-            builder: (context, child) {
-              final value = _animController.value;
-              return Positioned(
-                top: size.height * 0.4 + (value * 30),
-                right: -50 + (value * 20),
-                child: Container(
-                  width: size.width * 0.5,
-                  height: size.width * 0.5,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: RadialGradient(
-                      colors: [
-                        AppTheme.accentColor.withOpacity(0.18),
-                        AppTheme.accentColor.withOpacity(0.0),
-                      ],
-                    ),
+        // Destello dorado.
+        AnimatedBuilder(
+          animation: _animController,
+          child: IgnorePointer(
+            child: SizedBox(
+              width: size.width * 0.5,
+              height: size.width * 0.5,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: RadialGradient(
+                    colors: [
+                      AppTheme.accentColor.withValues(alpha: 0.18),
+                      AppTheme.accentColor.withValues(alpha: 0),
+                    ],
                   ),
                 ),
-              );
-            },
+              ),
+            ),
           ),
+          builder: (context, child) {
+            final value = kIsWeb ? 0.0 : _animController.value;
+            return Positioned(
+              top: size.height * 0.4 + value * 30,
+              right: -50 + value * 20,
+              child: child!,
+            );
+          },
+        ),
 
-          // 4. CAPA DE DIFUMINADO / MASCARA TRASLÚCIDA
-          Positioned.fill(
+        // Difuminado decorativo. IgnorePointer evita que capture interacciones.
+        Positioned.fill(
+          child: IgnorePointer(
             child: kIsWeb
-                ? Container(color: Colors.black.withOpacity(0.35))
+                ? ColoredBox(
+                    color: Colors.black.withValues(alpha: 0.35),
+                  )
                 : BackdropFilter(
                     filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
-                    child: Container(
-                      color: Colors.black.withOpacity(0.20),
+                    child: ColoredBox(
+                      color: Colors.black.withValues(alpha: 0.20),
                     ),
                   ),
           ),
+        ),
 
-          // 5. CONTENIDO DE LA PANTALLA
-          Positioned.fill(
-            child: widget.child,
-          ),
-        ],
-      ),
+        // La interfaz queda por encima de todas las capas decorativas.
+        Positioned.fill(child: widget.child),
+      ],
     );
   }
 }
 
-/// Tarjeta Flotante Estilo Vidrio Esmerilado (Glassmorphism Card 2026 Alta Velocidad)
+/// Tarjeta de estilo vidrio esmerilado.
 class GlassmorphicCard extends StatefulWidget {
   final Widget child;
   final VoidCallback? onTap;
@@ -170,29 +195,51 @@ class GlassmorphicCard extends StatefulWidget {
 class _GlassmorphicCardState extends State<GlassmorphicCard> {
   bool _isHovered = false;
 
+  void _setHovered(bool hovering) {
+    if (!mounted || _isHovered == hovering) return;
+    setState(() => _isHovered = hovering);
+  }
+
   @override
   Widget build(BuildContext context) {
-    final effectiveGlowColor = widget.glowColor ?? AppTheme.primaryColor;
+    final effectiveGlowColor =
+        widget.glowColor ?? AppTheme.primaryColor;
 
     final cardContent = Container(
       padding: widget.padding ?? const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(_isHovered ? 0.12 : 0.08),
+        color: Colors.white.withValues(alpha: _isHovered ? 0.12 : 0.08),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: _isHovered
-              ? Colors.white.withOpacity(0.40)
-              : Colors.white.withOpacity(0.20),
-          width: _isHovered ? 1.5 : 1.0,
+          color: Colors.white.withValues(alpha: _isHovered ? 0.40 : 0.20),
+          width: _isHovered ? 1.5 : 1,
         ),
       ),
       child: widget.child,
     );
 
+    Widget interactiveCard = Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(24),
+        onTap: widget.onTap,
+        onHover: _setHovered,
+        child: cardContent,
+      ),
+    );
+
+    // En plataformas no web conservamos el difuminado de la tarjeta.
+    if (!kIsWeb) {
+      interactiveCard = BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+        child: interactiveCard,
+      );
+    }
+
     return Container(
       margin: widget.margin ?? const EdgeInsets.only(bottom: 16),
       child: AnimatedScale(
-        scale: _isHovered ? 1.02 : 1.0,
+        scale: _isHovered ? 1.02 : 1,
         duration: const Duration(milliseconds: 150),
         curve: Curves.easeOutCubic,
         child: AnimatedContainer(
@@ -201,7 +248,9 @@ class _GlassmorphicCardState extends State<GlassmorphicCard> {
             borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
-                color: effectiveGlowColor.withOpacity(_isHovered ? 0.35 : 0.18),
+                color: effectiveGlowColor.withValues(
+                  alpha: _isHovered ? 0.35 : 0.18,
+                ),
                 blurRadius: _isHovered ? 20 : 12,
                 spreadRadius: _isHovered ? 2 : 0,
                 offset: const Offset(0, 6),
@@ -210,36 +259,7 @@ class _GlassmorphicCardState extends State<GlassmorphicCard> {
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(24),
-            child: kIsWeb
-                ? Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(24),
-                      onHover: (hovering) {
-                        if (mounted && _isHovered != hovering) {
-                          setState(() => _isHovered = hovering);
-                        }
-                      },
-                      onTap: widget.onTap,
-                      child: cardContent,
-                    ),
-                  )
-                : BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-                    child: Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(24),
-                        onHover: (hovering) {
-                          if (mounted && _isHovered != hovering) {
-                            setState(() => _isHovered = hovering);
-                          }
-                        },
-                        onTap: widget.onTap,
-                        child: cardContent,
-                      ),
-                    ),
-                  ),
+            child: interactiveCard,
           ),
         ),
       ),
