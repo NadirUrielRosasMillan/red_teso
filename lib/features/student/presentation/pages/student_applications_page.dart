@@ -8,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:red_teso/core/services/activity_log_service.dart';
+import 'package:red_teso/core/widgets/theme_toggle_button.dart';
 
 class StudentApplicationsPage extends StatelessWidget {
   const StudentApplicationsPage({super.key});
@@ -48,7 +49,7 @@ class StudentApplicationsPage extends StatelessWidget {
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          backgroundColor: Colors.white,
+          backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF251F29) : Colors.white,
           surfaceTintColor: Colors.transparent,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(22),
@@ -69,7 +70,7 @@ class StudentApplicationsPage extends StatelessWidget {
             '¿Eliminar postulación?',
             textAlign: TextAlign.center,
             style: GoogleFonts.outfit(
-              color: _text,
+              color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFF4EDF1) : _text,
               fontWeight: FontWeight.w800,
             ),
           ),
@@ -78,7 +79,7 @@ class StudentApplicationsPage extends StatelessWidget {
             'Esta acción la quitará de tu historial.',
             textAlign: TextAlign.center,
             style: GoogleFonts.inter(
-              color: _muted,
+              color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFB9AAB3) : _muted,
               fontSize: 13,
               height: 1.5,
             ),
@@ -90,7 +91,7 @@ class StudentApplicationsPage extends StatelessWidget {
               child: Text(
                 'Cancelar',
                 style: GoogleFonts.inter(
-                  color: _muted,
+                  color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFB9AAB3) : _muted,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -163,7 +164,7 @@ class StudentApplicationsPage extends StatelessWidget {
 
     if (user == null) {
       return Scaffold(
-        backgroundColor: _background,
+        backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF121016) : _background,
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(24),
@@ -180,7 +181,7 @@ class StudentApplicationsPage extends StatelessWidget {
                   'Inicia sesión para ver tus postulaciones',
                   textAlign: TextAlign.center,
                   style: GoogleFonts.outfit(
-                    color: _text,
+                    color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFF4EDF1) : _text,
                     fontSize: 19,
                     fontWeight: FontWeight.w800,
                   ),
@@ -195,7 +196,7 @@ class StudentApplicationsPage extends StatelessWidget {
     ActivityLogService.logActivity(action: 'Checó sus postulaciones activas');
 
     return Scaffold(
-      backgroundColor: _background,
+      backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF121016) : _background,
       appBar: AppBar(
         backgroundColor: _wine,
         foregroundColor: Colors.white,
@@ -243,12 +244,18 @@ class StudentApplicationsPage extends StatelessWidget {
             ),
           ],
         ),
+        actions: const [
+          ThemeToggleButton(),
+          SizedBox(width: 8),
+        ],
       ),
       body: Stack(
         children: [
-          const Positioned.fill(
+          Positioned.fill(
             child: CustomPaint(
-              painter: _ApplicationsBackgroundPainter(),
+              painter: _ApplicationsBackgroundPainter(
+                isDark: Theme.of(context).brightness == Brightness.dark,
+              ),
             ),
           ),
           SafeArea(
@@ -260,12 +267,12 @@ class StudentApplicationsPage extends StatelessWidget {
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
-                  return _buildError();
+                  return _buildError(context);
                 }
 
                 if (snapshot.connectionState == ConnectionState.waiting &&
                     !snapshot.hasData) {
-                  return _buildLoading();
+                  return _buildLoading(context);
                 }
 
                 final docs = snapshot.data?.docs.toList() ?? [];
@@ -328,6 +335,7 @@ class StudentApplicationsPage extends StatelessWidget {
                                 children: [
                                   Expanded(
                                     child: _buildSummaryCard(
+                                      context: context,
                                       title: 'Enviadas',
                                       count: sent,
                                       icon: Icons.send_rounded,
@@ -337,6 +345,7 @@ class StudentApplicationsPage extends StatelessWidget {
                                   const SizedBox(width: 9),
                                   Expanded(
                                     child: _buildSummaryCard(
+                                      context: context,
                                       title: 'En revisión',
                                       count: review,
                                       icon: Icons.schedule_rounded,
@@ -346,6 +355,7 @@ class StudentApplicationsPage extends StatelessWidget {
                                   const SizedBox(width: 9),
                                   Expanded(
                                     child: _buildSummaryCard(
+                                      context: context,
                                       title: 'Aceptadas',
                                       count: accepted,
                                       icon: Icons.check_circle_rounded,
@@ -381,7 +391,7 @@ class StudentApplicationsPage extends StatelessWidget {
                                         Text(
                                           'Actividad reciente',
                                           style: GoogleFonts.outfit(
-                                            color: _text,
+                                            color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFF4EDF1) : _text,
                                             fontWeight: FontWeight.w800,
                                             fontSize: wide ? 23 : 20,
                                           ),
@@ -389,7 +399,7 @@ class StudentApplicationsPage extends StatelessWidget {
                                         Text(
                                           'Consulta el estado de tus oportunidades.',
                                           style: GoogleFonts.inter(
-                                            color: _muted,
+                                            color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFB9AAB3) : _muted,
                                             fontSize: 11,
                                           ),
                                         ),
@@ -543,6 +553,7 @@ class StudentApplicationsPage extends StatelessWidget {
   }
 
   Widget _buildSummaryCard({
+    required BuildContext context,
     required String title,
     required int count,
     required IconData icon,
@@ -554,9 +565,9 @@ class StudentApplicationsPage extends StatelessWidget {
         vertical: 13,
       ),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF251F29) : Colors.white,
         borderRadius: BorderRadius.circular(17),
-        border: Border.all(color: _border),
+        border: Border.all(color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF403541) : _border),
         boxShadow: [
           BoxShadow(
             color: _wine.withValues(alpha: 0.045),
@@ -585,7 +596,7 @@ class StudentApplicationsPage extends StatelessWidget {
           Text(
             '$count',
             style: GoogleFonts.outfit(
-              color: _text,
+              color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFF4EDF1) : _text,
               fontSize: 25,
               fontWeight: FontWeight.w800,
               height: 1,
@@ -597,7 +608,7 @@ class StudentApplicationsPage extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: GoogleFonts.inter(
-              color: _muted,
+              color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFB9AAB3) : _muted,
               fontSize: 10,
               fontWeight: FontWeight.w700,
             ),
@@ -629,9 +640,9 @@ class StudentApplicationsPage extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 15),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF251F29) : Colors.white,
         borderRadius: BorderRadius.circular(21),
-        border: Border.all(color: _border),
+        border: Border.all(color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF403541) : _border),
         boxShadow: [
           BoxShadow(
             color: _wine.withValues(alpha: 0.065),
@@ -673,7 +684,7 @@ class StudentApplicationsPage extends StatelessWidget {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: GoogleFonts.outfit(
-                          color: _text,
+                          color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFF4EDF1) : _text,
                           fontSize: 16,
                           fontWeight: FontWeight.w800,
                         ),
@@ -684,7 +695,7 @@ class StudentApplicationsPage extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: GoogleFonts.inter(
-                          color: _muted,
+                          color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFB9AAB3) : _muted,
                           fontSize: 12,
                         ),
                       ),
@@ -696,7 +707,12 @@ class StudentApplicationsPage extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 15),
-            const Divider(height: 1, color: _border),
+            Divider(
+              height: 1,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? const Color(0xFF403541)
+                  : _border,
+            ),
             const SizedBox(height: 12),
             Row(
               children: [
@@ -710,7 +726,7 @@ class StudentApplicationsPage extends StatelessWidget {
                   child: Text(
                     'Fecha de postulación: $dateText',
                     style: GoogleFonts.inter(
-                      color: _muted,
+                      color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFB9AAB3) : _muted,
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
                     ),
@@ -760,7 +776,7 @@ class StudentApplicationsPage extends StatelessWidget {
                     child: Text(
                       _getStatusMessage(status),
                       style: GoogleFonts.inter(
-                        color: _text,
+                        color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFF4EDF1) : _text,
                         fontSize: 11,
                         height: 1.5,
                       ),
@@ -919,7 +935,7 @@ class StudentApplicationsPage extends StatelessWidget {
                     'Tu próxima oportunidad te espera',
                     textAlign: TextAlign.center,
                     style: GoogleFonts.outfit(
-                      color: _text,
+                      color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFF4EDF1) : _text,
                       fontSize: 21,
                       fontWeight: FontWeight.w800,
                     ),
@@ -931,7 +947,7 @@ class StudentApplicationsPage extends StatelessWidget {
                     'una oportunidad para comenzar tu camino profesional.',
                     textAlign: TextAlign.center,
                     style: GoogleFonts.inter(
-                      color: _muted,
+                      color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFB9AAB3) : _muted,
                       fontSize: 12,
                       height: 1.6,
                     ),
@@ -945,7 +961,7 @@ class StudentApplicationsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildError() {
+  Widget _buildError(BuildContext context) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(25),
@@ -969,7 +985,7 @@ class StudentApplicationsPage extends StatelessWidget {
               'No pudimos cargar tus postulaciones',
               textAlign: TextAlign.center,
               style: GoogleFonts.outfit(
-                color: _text,
+                color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFF4EDF1) : _text,
                 fontSize: 19,
                 fontWeight: FontWeight.w800,
               ),
@@ -979,7 +995,7 @@ class StudentApplicationsPage extends StatelessWidget {
               'Comprueba tu conexión e inténtalo de nuevo.',
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(
-                color: _muted,
+                color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFB9AAB3) : _muted,
                 fontSize: 12,
               ),
             ),
@@ -989,14 +1005,14 @@ class StudentApplicationsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildLoading() {
+  Widget _buildLoading(BuildContext context) {
     return ListView(
       padding: const EdgeInsets.all(18),
       children: List.generate(
         3,
         (index) => Shimmer.fromColors(
-          baseColor: const Color(0xFFE8DDE1),
-          highlightColor: Colors.white,
+          baseColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF403541) : const Color(0xFFE8DDE1),
+          highlightColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF554956) : Colors.white,
           child: Container(
             height: 170,
             margin: const EdgeInsets.only(bottom: 14),
@@ -1012,7 +1028,9 @@ class StudentApplicationsPage extends StatelessWidget {
 }
 
 class _ApplicationsBackgroundPainter extends CustomPainter {
-  const _ApplicationsBackgroundPainter();
+  final bool isDark;
+
+  const _ApplicationsBackgroundPainter({required this.isDark});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -1021,14 +1039,12 @@ class _ApplicationsBackgroundPainter extends CustomPainter {
     canvas.drawRect(
       rect,
       Paint()
-        ..shader = const LinearGradient(
+        ..shader = LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            Color(0xFFFFF9F1),
-            Color(0xFFF8F0E7),
-            Color(0xFFF1E4DD),
-          ],
+          colors: isDark
+              ? const [Color(0xFF121016), Color(0xFF19141D), Color(0xFF211823)]
+              : const [Color(0xFFFFF9F1), Color(0xFFF8F0E7), Color(0xFFF1E4DD)],
         ).createShader(rect),
     );
 

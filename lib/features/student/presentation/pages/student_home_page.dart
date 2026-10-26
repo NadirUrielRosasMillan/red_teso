@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:red_teso/core/widgets/theme_toggle_button.dart';
 
 import 'package:red_teso/core/widgets/notification_bell.dart';
 import 'package:red_teso/features/student/presentation/pages/vacancy_detail_page.dart';
@@ -52,7 +53,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
     final user = _auth.currentUser;
 
     return Scaffold(
-      backgroundColor: _background,
+      backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF121016) : _background,
       appBar: AppBar(
         backgroundColor: _wine,
         foregroundColor: Colors.white,
@@ -103,8 +104,9 @@ class _StudentHomePageState extends State<StudentHomePage> {
           ],
         ),
         actions: const [
-          NotificationBell(color: Colors.white),
-          SizedBox(width: 15),
+           const ThemeToggleButton(),
+    const NotificationBell(color: Colors.white),
+    const SizedBox(width: 15),
         ],
       ),
 
@@ -137,9 +139,9 @@ class _StudentHomePageState extends State<StudentHomePage> {
 
       body: Stack(
         children: [
-          const Positioned.fill(
+          Positioned.fill(
             child: CustomPaint(
-              painter: _AmbientPainter(),
+              painter: _AmbientPainter(isDark: Theme.of(context).brightness == Brightness.dark),
             ),
           ),
           SafeArea(
@@ -205,7 +207,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                                     Text(
                                       'Oportunidades para ti',
                                       style: GoogleFonts.outfit(
-                                        color: _text,
+                                        color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFF4EDF1) : _text,
                                         fontSize: wide ? 25 : 22,
                                         fontWeight: FontWeight.w800,
                                       ),
@@ -214,7 +216,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                                     Text(
                                       'El siguiente paso de tu carrera comienza aquí.',
                                       style: GoogleFonts.inter(
-                                        color: _muted,
+                                        color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFB9AAB3) : _muted,
                                         fontSize: 11,
                                       ),
                                     ),
@@ -224,7 +226,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                               Container(
                                 padding: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withValues(alpha: 0.85),
+                                  color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF251F29) : Colors.white.withValues(alpha: 0.85),
                                   border: Border.all(color: _border),
                                   borderRadius: BorderRadius.circular(13),
                                 ),
@@ -252,7 +254,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                               }
 
                               if (!snapshot.hasData) {
-                                return _buildLoading();
+                                return _buildLoading(context);
                               }
 
                               final docs = snapshot.data!.docs.toList();
@@ -534,9 +536,9 @@ class _StudentHomePageState extends State<StudentHomePage> {
   Widget _buildSearch() {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF251F29) : Colors.white,
         borderRadius: BorderRadius.circular(17),
-        border: Border.all(color: _border),
+        border: Border.all(color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF403541) : _border),
         boxShadow: [
           BoxShadow(
             color: _wine.withValues(alpha: 0.07),
@@ -549,14 +551,14 @@ class _StudentHomePageState extends State<StudentHomePage> {
         controller: _searchController,
         onChanged: (_) => setState(() {}),
         style: GoogleFonts.inter(
-          color: _text,
+          color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFF4EDF1) : _text,
           fontSize: 13,
         ),
         cursorColor: _wine,
         decoration: InputDecoration(
           hintText: 'Busca puestos, empresas...',
           hintStyle: GoogleFonts.inter(
-            color: _muted,
+            color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFB9AAB3) : _muted,
             fontSize: 12,
           ),
           prefixIcon: const Icon(
@@ -607,7 +609,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
         onSelected: (_) {
           setState(() => _selectedCategory = category);
         },
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF2B2430) : Colors.white,
         selectedColor: _wine,
         side: BorderSide(
           color: selected ? _wine : _border,
@@ -622,7 +624,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
         label: Text(
           category,
           style: GoogleFonts.inter(
-            color: selected ? Colors.white : _wine,
+            color: selected ? Colors.white : (Theme.of(context).brightness == Brightness.dark ? const Color(0xFFF4EDF1) : _wine),
             fontSize: 11,
             fontWeight: FontWeight.w700,
           ),
@@ -655,9 +657,9 @@ class _StudentHomePageState extends State<StudentHomePage> {
           },
           child: Ink(
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF251F29) : Colors.white,
               borderRadius: BorderRadius.circular(22),
-              border: Border.all(color: _border),
+              border: Border.all(color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF403541) : _border),
               boxShadow: [
                 BoxShadow(
                   color: _wine.withValues(alpha: 0.07),
@@ -699,7 +701,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: GoogleFonts.outfit(
-                                color: _text,
+                                color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFF4EDF1) : _text,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w800,
                               ),
@@ -710,7 +712,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: GoogleFonts.inter(
-                                color: _muted,
+                                color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFB9AAB3) : _muted,
                                 fontSize: 11,
                               ),
                             ),
@@ -738,7 +740,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                     ],
                   ),
                   const SizedBox(height: 14),
-                  Divider(height: 1, color: _border),
+                  Divider(height: 1, color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF403541) : _border),
                   const SizedBox(height: 11),
                   Row(
                     children: [
@@ -752,7 +754,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                         child: Text(
                           'Descubre esta oportunidad',
                           style: GoogleFonts.inter(
-                            color: _muted,
+                            color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFB9AAB3) : _muted,
                             fontSize: 10,
                           ),
                         ),
@@ -800,9 +802,9 @@ class _StudentHomePageState extends State<StudentHomePage> {
         vertical: 8,
       ),
       decoration: BoxDecoration(
-        color: highlighted
-            ? const Color(0xFFFFF2D8)
-            : const Color(0xFFF7F2F3),
+        color: Theme.of(context).brightness == Brightness.dark
+            ? (highlighted ? const Color(0xFF49351F) : const Color(0xFF342B35))
+            : (highlighted ? const Color(0xFFFFF2D8) : const Color(0xFFF7F2F3)),
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
           color: highlighted ? _gold : _border,
@@ -814,7 +816,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
           Icon(
             icon,
             size: 14,
-            color: highlighted ? _wine : _muted,
+            color: highlighted ? (Theme.of(context).brightness == Brightness.dark ? const Color(0xFFFFD78A) : _wine) : (Theme.of(context).brightness == Brightness.dark ? const Color(0xFFB9AAB3) : _muted),
           ),
           const SizedBox(width: 6),
           Flexible(
@@ -823,7 +825,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: GoogleFonts.inter(
-                color: highlighted ? _wine : _muted,
+                color: highlighted ? (Theme.of(context).brightness == Brightness.dark ? const Color(0xFFFFD78A) : _wine) : (Theme.of(context).brightness == Brightness.dark ? const Color(0xFFB9AAB3) : _muted),
                 fontSize: 10,
                 fontWeight:
                     highlighted ? FontWeight.w800 : FontWeight.w500,
@@ -873,7 +875,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                     title,
                     textAlign: TextAlign.center,
                     style: GoogleFonts.outfit(
-                      color: _text,
+                      color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFF4EDF1) : _text,
                       fontSize: 19,
                       fontWeight: FontWeight.w800,
                     ),
@@ -883,7 +885,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                     subtitle,
                     textAlign: TextAlign.center,
                     style: GoogleFonts.inter(
-                      color: _muted,
+                      color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFB9AAB3) : _muted,
                       fontSize: 12,
                       height: 1.6,
                     ),
@@ -901,14 +903,14 @@ class _StudentHomePageState extends State<StudentHomePage> {
     );
   }
 
-  Widget _buildLoading() {
+  Widget _buildLoading(BuildContext context) {
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 18),
       itemCount: 3,
       itemBuilder: (_, __) {
         return Shimmer.fromColors(
-          baseColor: const Color(0xFFE8DDE1),
-          highlightColor: Colors.white,
+          baseColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF403541) : const Color(0xFFE8DDE1),
+          highlightColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF554956) : Colors.white,
           child: Container(
             height: 135,
             margin: const EdgeInsets.only(bottom: 14),
@@ -924,7 +926,9 @@ class _StudentHomePageState extends State<StudentHomePage> {
 }
 
 class _AmbientPainter extends CustomPainter {
-  const _AmbientPainter();
+  final bool isDark;
+
+  const _AmbientPainter({required this.isDark});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -933,14 +937,10 @@ class _AmbientPainter extends CustomPainter {
     canvas.drawRect(
       rect,
       Paint()
-        ..shader = const LinearGradient(
+        ..shader = LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            Color(0xFFFFF9F1),
-            Color(0xFFF7EEE5),
-            Color(0xFFF1E4DD),
-          ],
+          colors: isDark ? const [Color(0xFF121016), Color(0xFF19141D), Color(0xFF211823)] : const [Color(0xFFFFF9F1), Color(0xFFF7EEE5), Color(0xFFF1E4DD)],
         ).createShader(rect),
     );
 

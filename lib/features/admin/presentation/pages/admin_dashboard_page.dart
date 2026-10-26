@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -6,9 +7,10 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
-import 'package:red_teso/core/widgets/notification_bell.dart';
 import 'package:red_teso/core/widgets/liquid_glass_ambient_background.dart';
-import 'package:red_teso/features/auth/presentation/providers/auth_provider.dart';
+import 'package:red_teso/features/auth/presentation/pages/login_page.dart';
+import 'package:red_teso/features/auth/presentation/providers/auth_provider.dart'
+    as app_auth;
 
 class AdminDashboardPage extends StatefulWidget {
   const AdminDashboardPage({super.key});
@@ -47,6 +49,15 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
       }
     } catch (e) {
       debugPrint('Error al aprobar: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('No se pudo aprobar: $e'),
+            backgroundColor: Colors.redAccent,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
     }
   }
 
@@ -57,34 +68,176 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
     return null;
   }
 
+  Future<void> _confirmLogout() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      barrierDismissible: true,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: const Color(0xFF171B27),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        icon: const Icon(Icons.logout_rounded, color: Colors.redAccent, size: 34),
+        title: Text(
+          'Cerrar sesión',
+          style: GoogleFonts.outfit(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: Text(
+          '¿Seguro que deseas salir del panel administrativo?',
+          textAlign: TextAlign.center,
+          style: GoogleFonts.inter(color: Colors.white70),
+        ),
+        actionsAlignment: MainAxisAlignment.spaceEvenly,
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton.icon(
+            style: FilledButton.styleFrom(
+              backgroundColor: Colors.redAccent,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            icon: const Icon(Icons.exit_to_app_rounded, size: 18),
+            label: const Text('Salir'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    // Cerrar Firebase primero: un error de Firestore no debe bloquear la salida.
+    try {
+      await FirebaseAuth.instance.signOut();
+    } catch (e) {
+      debugPrint('Error cerrando sesión de Firebase: $e');
+    }
+
+    if (!mounted) return;
+
+    // Navegación directa al login, sin depender de rutas nombradas.
+    Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+      MaterialPageRoute<void>(
+        builder: (_) => const _AdminLogoutLoginRedirect(),
+      ),
+      (route) => false,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
-        title: Text('Control Escolar & Vinculación 🏛️', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 18)),
-        backgroundColor: const Color(0xFF090D16).withOpacity(0.85),
+        automaticallyImplyLeading: false,
+        toolbarHeight: 78,
+        titleSpacing: 18,
+        title: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFE5BD78), Color(0xFF9B713A)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(15),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFFE5BD78).withValues(alpha: 0.22),
+                    blurRadius: 16,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: const Icon(
+                Icons.account_balance_rounded,
+                color: Color(0xFF17131B),
+                size: 24,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Control Escolar',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.outfit(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 19,
+                    ),
+                  ),
+                  Text(
+                    'RED TESOEM  •  Administración',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.inter(
+                      color: Colors.white60,
+                      fontSize: 10,
+                      letterSpacing: 0.6,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: const Color(0xFF090D16).withValues(alpha: 0.96),
         foregroundColor: Colors.white,
         elevation: 0,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.logout_rounded, color: Colors.redAccent),
-            tooltip: 'Cerrar Sesión Admin',
-            onPressed: () => context.read<AuthProvider>().logout(),
+          Padding(
+            padding: const EdgeInsets.only(right: 14),
+            child: IconButton.filledTonal(
+              onPressed: _confirmLogout,
+              tooltip: 'Cerrar sesión',
+              style: IconButton.styleFrom(
+                backgroundColor: Colors.redAccent.withValues(alpha: 0.13),
+                foregroundColor: Colors.redAccent,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  side: BorderSide(
+                    color: Colors.redAccent.withValues(alpha: 0.25),
+                  ),
+                ),
+              ),
+              icon: const Icon(Icons.logout_rounded),
+            ),
           ),
-          const SizedBox(width: 8),
         ],
         bottom: TabBar(
           controller: _tabController,
-          labelColor: AppTheme.accentColor,
-          unselectedLabelColor: Colors.white60,
-          indicatorColor: AppTheme.accentColor,
+          labelColor: const Color(0xFFE5BD78),
+          unselectedLabelColor: Colors.white54,
+          indicatorColor: const Color(0xFFE5BD78),
+          indicatorWeight: 3,
+          indicatorSize: TabBarIndicatorSize.label,
+          dividerColor: Colors.white10,
+          labelStyle: GoogleFonts.inter(
+            fontWeight: FontWeight.w700,
+            fontSize: 11,
+          ),
+          unselectedLabelStyle: GoogleFonts.inter(fontSize: 11),
           isScrollable: true,
+          tabAlignment: TabAlignment.start,
           tabs: const [
-            Tab(icon: Icon(Icons.verified_user_rounded), text: 'Aprobaciones'),
-            Tab(icon: Icon(Icons.analytics_rounded), text: 'Log de Actividad 📊'),
-            Tab(icon: Icon(Icons.people_alt_rounded), text: 'Alumnos'),
-            Tab(icon: Icon(Icons.gavel_rounded), text: 'Moderación'),
+            Tab(icon: Icon(Icons.verified_user_rounded, size: 19), text: 'Aprobaciones'),
+            Tab(icon: Icon(Icons.analytics_rounded, size: 19), text: 'Actividad'),
+            Tab(icon: Icon(Icons.people_alt_rounded, size: 19), text: 'Alumnos'),
+            Tab(icon: Icon(Icons.gavel_rounded, size: 19), text: 'Moderación'),
           ],
         ),
       ),
@@ -93,7 +246,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
           children: [
             // Resumen de Métricas Universitarias Reales
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.fromLTRB(14, 16, 14, 12),
               child: Row(
                 children: [
                   _buildCountCard('Alumnos', 'users', 'type', 'alumno', Icons.people_outline_rounded, Colors.blueAccent),
@@ -121,6 +274,52 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
     );
   }
 
+  Widget _buildStreamError(Object error, VoidCallback reintentar) {
+    debugPrint('Error de Firestore en Control Escolar: $error');
+
+    final mensaje = error is FirebaseException
+        ? 'Firebase: ${error.code}'
+        : 'Ocurrió un error inesperado.';
+
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.cloud_off_rounded,
+              color: Colors.orangeAccent,
+              size: 48,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'No se pudieron cargar los datos',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.outfit(
+                color: Colors.white,
+                fontSize: 17,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              mensaje,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.inter(color: Colors.white70, fontSize: 12),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: reintentar,
+              icon: const Icon(Icons.refresh),
+              label: const Text('Reintentar'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildCountCard(String label, String collection, String? field, String? value, IconData icon, Color color) {
     Query query = _db.collection(collection);
     if (field != null && value != null) {
@@ -131,10 +330,14 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
       child: StreamBuilder<QuerySnapshot>(
         stream: query.snapshots(),
         builder: (context, snapshot) {
-          String count = '...';
-          if (snapshot.hasData) {
-            count = snapshot.data!.docs.length.toString();
+          if (snapshot.hasError) {
+            debugPrint('Error al contar $label: ${snapshot.error}');
           }
+          final String count = snapshot.hasError
+              ? '!'
+              : snapshot.hasData
+                  ? snapshot.data!.docs.length.toString()
+                  : '...';
           return GlassmorphicCard(
             glowColor: color,
             padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
@@ -143,7 +346,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
               children: [
                 Icon(icon, color: color, size: 22),
                 const SizedBox(height: 6),
-                Text(count, style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+                Text(count, style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: snapshot.hasError ? Colors.orangeAccent : Colors.white)),
                 Text(label, style: GoogleFonts.inter(fontSize: 10, color: Colors.white70)),
               ],
             ),
@@ -158,9 +361,14 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
     return StreamBuilder<QuerySnapshot>(
       stream: _db.collection('users').snapshots(),
       builder: (context, snapshot) {
-        if (!snapshot.hasData) return _buildShimmerList();
+        if (snapshot.hasError) {
+          return _buildStreamError(snapshot.error!, () => setState(() {}));
+        }
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return _buildShimmerList();
+        }
 
-        final docs = snapshot.data!.docs;
+        final docs = snapshot.data?.docs ?? [];
         final pendingApprovals = docs.where((doc) {
           final data = doc.data() as Map<String, dynamic>;
           final type = data['type'] ?? data['userType'] ?? '';
@@ -218,14 +426,44 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
                       ],
                     ),
                   ),
-                  ElevatedButton(
-                    onPressed: () => _approveUser(uid, type == 'empresa' ? 'Empresa' : 'Docente'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.primaryGreen,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(
+                      minWidth: 0,
+                      maxWidth: 124,
                     ),
-                    child: Text('APROBAR ✅', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 11, color: Colors.white)),
+                    child: ElevatedButton(
+                      onPressed: () => _approveUser(
+                        uid,
+                        type == 'empresa' ? 'Empresa' : 'Docente',
+                      ),
+                      // Fuerza un tamaño finito y evita heredar un ancho infinito
+                      // de ButtonStyle o de las restricciones del Row en Flutter Web.
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(0, 42),
+                        maximumSize: const Size(124, 42),
+                        backgroundColor: AppTheme.primaryGreen,
+                        foregroundColor: Colors.white,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 8,
+                      ),
+                      ),
+                      child: Text(
+                        'APROBAR',
+                        maxLines: 1,
+                        softWrap: false,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.outfit(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 11,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -241,9 +479,14 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
     return StreamBuilder<QuerySnapshot>(
       stream: _db.collection('activity_logs').snapshots(),
       builder: (context, snapshot) {
-        if (!snapshot.hasData) return _buildShimmerList();
+        if (snapshot.hasError) {
+          return _buildStreamError(snapshot.error!, () => setState(() {}));
+        }
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return _buildShimmerList();
+        }
 
-        final docs = snapshot.data!.docs.toList();
+        final docs = (snapshot.data?.docs ?? []).toList();
         docs.sort((a, b) {
           final aData = a.data() as Map<String, dynamic>;
           final bData = b.data() as Map<String, dynamic>;
@@ -297,7 +540,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
                       CircleAvatar(
                         radius: 20,
                         backgroundColor: Colors.white12,
-                        child: Text(userName[0], style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold)),
+                        child: Text(userName.isNotEmpty ? userName[0].toUpperCase() : '?', style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold)),
                       ),
                       Container(
                         width: 10,
@@ -343,9 +586,14 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
     return StreamBuilder<QuerySnapshot>(
       stream: _db.collection('users').where('type', isEqualTo: userType).snapshots(),
       builder: (context, snapshot) {
-        if (!snapshot.hasData) return _buildShimmerList();
+        if (snapshot.hasError) {
+          return _buildStreamError(snapshot.error!, () => setState(() {}));
+        }
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return _buildShimmerList();
+        }
 
-        final users = snapshot.data!.docs;
+        final users = snapshot.data?.docs ?? [];
         if (users.isEmpty) return Center(child: Text('No hay ${userType}s registrados.', style: GoogleFonts.inter(color: Colors.white)));
 
         return ListView.builder(
@@ -361,7 +609,12 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
                   CircleAvatar(
                     radius: 20,
                     backgroundColor: AppTheme.primaryColor.withOpacity(0.2),
-                    child: Text(data['name']?[0] ?? '?', style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold)),
+                    child: Text(
+                      (data['name'] is String && (data['name'] as String).isNotEmpty)
+                          ? (data['name'] as String)[0].toUpperCase()
+                          : '?',
+                      style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -391,8 +644,13 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
     return StreamBuilder<QuerySnapshot>(
       stream: _db.collection('vacancies').snapshots(),
       builder: (context, snapshot) {
-        if (!snapshot.hasData) return _buildShimmerList();
-        final vacancies = snapshot.data!.docs;
+        if (snapshot.hasError) {
+          return _buildStreamError(snapshot.error!, () => setState(() {}));
+        }
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return _buildShimmerList();
+        }
+        final vacancies = snapshot.data?.docs ?? [];
 
         return ListView.builder(
           padding: const EdgeInsets.all(16),
@@ -449,4 +707,13 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
       ),
     );
   }
+}
+
+
+/// Pantalla de destino después de cerrar sesión desde el panel de administración.
+class _AdminLogoutLoginRedirect extends StatelessWidget {
+  const _AdminLogoutLoginRedirect();
+
+  @override
+  Widget build(BuildContext context) => const LoginPage();
 }
