@@ -147,14 +147,19 @@ class _VacancyLocationMapWidgetState extends State<VacancyLocationMapWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBackground = isDark ? const Color(0xFF292027) : const Color(0xFFFFFCFA);
+    final mainText = isDark ? const Color(0xFFF4EDF1) : const Color(0xFF3A1725);
+    final mutedText = isDark ? const Color(0xFFB9AAB3) : const Color(0xFF75636B);
+    final borderColor = isDark ? const Color(0xFF493640) : const Color(0xFFE8DDE1);
     final targetLatLng = _resolveTargetLatLng();
     final isRemote = widget.locationName.toLowerCase().contains('remoto') || widget.distanceKm == 0;
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        color: cardBackground,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: borderColor),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
@@ -189,12 +194,12 @@ class _VacancyLocationMapWidgetState extends State<VacancyLocationMapWidget> {
                         style: GoogleFonts.outfit(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: const Color(0xFF0F172A),
+                          color: mainText,
                         ),
                       ),
                       Text(
                         isRemote ? 'Modalidad 100% Home Office' : widget.locationName,
-                        style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)),
+                        style: GoogleFonts.inter(fontSize: 12, color: mutedText),
                       ),
                     ],
                   ),
@@ -207,7 +212,7 @@ class _VacancyLocationMapWidgetState extends State<VacancyLocationMapWidget> {
           ClipRRect(
             borderRadius: const BorderRadius.vertical(bottom: Radius.circular(24)),
             child: SizedBox(
-              height: 240,
+              height: 250,
               width: double.infinity,
               child: Stack(
                 children: [
@@ -280,7 +285,7 @@ class _VacancyLocationMapWidgetState extends State<VacancyLocationMapWidget> {
                                 Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                                   decoration: BoxDecoration(
-                                    color: isRemote ? Colors.purple : Colors.redAccent,
+                                    color: isRemote ? AppTheme.accentColor : AppTheme.primaryColor,
                                     borderRadius: BorderRadius.circular(6),
                                     boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 4)],
                                   ),
@@ -291,7 +296,7 @@ class _VacancyLocationMapWidgetState extends State<VacancyLocationMapWidget> {
                                 ),
                                 Icon(
                                   isRemote ? Icons.home_work_rounded : Icons.business_center_rounded,
-                                  color: isRemote ? Colors.purple : Colors.redAccent,
+                                  color: isRemote ? AppTheme.accentColor : AppTheme.primaryColor,
                                   size: 28,
                                 ),
                               ],
@@ -309,7 +314,7 @@ class _VacancyLocationMapWidgetState extends State<VacancyLocationMapWidget> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF0F172A).withValues(alpha: 0.88),
+                        color: const Color(0xFF241820).withValues(alpha: 0.92),
                         borderRadius: BorderRadius.circular(14),
                         border: Border.all(color: AppTheme.accentColor.withValues(alpha: 0.5)),
                         boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 6)],
@@ -343,11 +348,11 @@ class _VacancyLocationMapWidgetState extends State<VacancyLocationMapWidget> {
                           child: Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: cardBackground,
                               shape: BoxShape.circle,
                               boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 4)],
                             ),
-                            child: const Icon(Icons.add_rounded, color: Color(0xFF0F172A), size: 20),
+                            child: Icon(Icons.add_rounded, color: mainText, size: 20),
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -358,11 +363,11 @@ class _VacancyLocationMapWidgetState extends State<VacancyLocationMapWidget> {
                           child: Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: cardBackground,
                               shape: BoxShape.circle,
                               boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 4)],
                             ),
-                            child: const Icon(Icons.remove_rounded, color: Color(0xFF0F172A), size: 20),
+                            child: Icon(Icons.remove_rounded, color: mainText, size: 20),
                           ),
                         ),
                       ],
@@ -376,7 +381,7 @@ class _VacancyLocationMapWidgetState extends State<VacancyLocationMapWidget> {
                     right: 0,
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                      color: const Color(0xFF0F172A).withValues(alpha: 0.92),
+                      color: const Color(0xFF241820).withValues(alpha: 0.94),
                       child: Row(
                         children: [
                           const Icon(Icons.alt_route_rounded, color: AppTheme.accentColor, size: 16),
@@ -483,11 +488,17 @@ class _LocationPickerModalState extends State<LocationPickerModal> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final modalBackground = isDark ? const Color(0xFF21191E) : const Color(0xFFFAF3E9);
+    final cardBackground = isDark ? const Color(0xFF292027) : const Color(0xFFFFFCFA);
+    final mainText = isDark ? const Color(0xFFF4EDF1) : const Color(0xFF3A1725);
+    final mutedText = isDark ? const Color(0xFFB9AAB3) : const Color(0xFF75636B);
+    final borderColor = isDark ? const Color(0xFF493640) : const Color(0xFFE8DDE1);
     return Container(
       height: MediaQuery.of(context).size.height * 0.88,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+      decoration: BoxDecoration(
+        color: modalBackground,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
       ),
       child: Column(
         children: [
@@ -509,11 +520,11 @@ class _LocationPickerModalState extends State<LocationPickerModal> {
                     children: [
                       Text(
                         'Seleccionar Ubicación Real en Mapa',
-                        style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A)),
+                        style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: mainText),
                       ),
                       Text(
                         'Toca el mapa para mover el Pin 📍 o elige un punto rápido',
-                        style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)),
+                        style: GoogleFonts.inter(fontSize: 12, color: mutedText),
                       ),
                     ],
                   ),
@@ -610,7 +621,7 @@ class _LocationPickerModalState extends State<LocationPickerModal> {
                           padding: const EdgeInsets.only(right: 8),
                           child: ChoiceChip(
                             avatar: Icon(preset.icon, size: 15, color: isSel ? Colors.white : AppTheme.primaryColor),
-                            label: Text(preset.title, style: GoogleFonts.inter(fontSize: 11.5, color: isSel ? Colors.white : const Color(0xFF0F172A), fontWeight: FontWeight.bold)),
+                            label: Text(preset.title, style: GoogleFonts.inter(fontSize: 11.5, color: isSel ? Colors.white : (isDark ? const Color(0xFFF4EDF1) : const Color(0xFF3A1725)), fontWeight: FontWeight.bold)),
                             selected: isSel,
                             selectedColor: AppTheme.primaryColor,
                             backgroundColor: Colors.white,
@@ -630,7 +641,7 @@ class _LocationPickerModalState extends State<LocationPickerModal> {
                   child: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF0F172A).withValues(alpha: 0.94),
+                      color: mainText.withValues(alpha: 0.94),
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 8)],
                     ),

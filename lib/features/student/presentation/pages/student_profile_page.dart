@@ -288,99 +288,185 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
     if (_isLoading) {
       return Scaffold(
         backgroundColor: _pageBackground,
-        body: Center(child: CircularProgressIndicator(color: _wine)),
+        body: Stack(
+          fit: StackFit.expand,
+          children: [
+            CustomPaint(painter: _ProfileAmbientPainter(isDark: _isDark)),
+            Center(child: CircularProgressIndicator(color: _gold)),
+          ],
+        ),
       );
     }
 
     return Scaffold(
       backgroundColor: _pageBackground,
-      body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(child: _buildAppBar()),
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 4, 20, 30),
-              sliver: SliverList(
-                delegate: SliverChildListDelegate([
-                  _buildHero(),
-                  const SizedBox(height: 24),
-                  _buildSectionTitle('Información académica', 'Mantén tus datos actualizados', Icons.school_rounded),
-                  const SizedBox(height: 12),
-                  _buildAcademicCard(),
-                  const SizedBox(height: 24),
-                  _buildSectionTitle('Habilidades técnicas', 'Destaca lo que sabes hacer', Icons.workspace_premium_rounded),
-                  const SizedBox(height: 12),
-                  _buildSkillsCard(),
-                  const SizedBox(height: 24),
-                  _buildSectionTitle('Prestigio y reseñas', 'Opiniones de las empresas', Icons.verified_rounded),
-                  const SizedBox(height: 12),
-                  _buildRealTimeEvaluations(),
-                  const SizedBox(height: 24),
-                  _buildSectionTitle('Documentos oficiales', 'CV y Kárdex académico', Icons.folder_open_rounded),
-                  const SizedBox(height: 12),
-                  _buildDocumentUploadCard('CV en PDF', _cvFileName, _cvUrl),
-                  const SizedBox(height: 12),
-                  _buildDocumentUploadCard('Kárdex Oficial', _kardexFileName, _kardexUrl),
-                  const SizedBox(height: 24),
-                  _buildSaveButton(),
-                  const SizedBox(height: 12),
-                  _buildLogoutButton(),
-                  const SizedBox(height: 16),
-                  Center(
-                    child: Text(
-                      'REDTESO · TU FUTURO PROFESIONAL',
-                      style: GoogleFonts.poppins(color: _mutedColor, fontSize: 10, letterSpacing: 1.2, fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                ]),
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: IgnorePointer(
+              child: CustomPaint(
+                painter: _ProfileAmbientPainter(isDark: _isDark),
               ),
             ),
-          ],
-        ),
+          ),
+          SafeArea(
+            bottom: false,
+            child: CustomScrollView(
+              slivers: [
+                // La barra ocupa todo el ancho, como en la página principal.
+                SliverToBoxAdapter(child: _buildAppBar()),
+                SliverToBoxAdapter(
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 1180),
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(28, 14, 28, 110),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            _buildHero(),
+                            const SizedBox(height: 24),
+                            _buildSectionTitle(
+                              'Información académica',
+                              'Mantén tus datos actualizados',
+                              Icons.school_rounded,
+                            ),
+                            const SizedBox(height: 12),
+                            _buildAcademicCard(),
+                            const SizedBox(height: 24),
+                            _buildSectionTitle(
+                              'Habilidades técnicas',
+                              'Destaca lo que sabes hacer',
+                              Icons.workspace_premium_rounded,
+                            ),
+                            const SizedBox(height: 12),
+                            _buildSkillsCard(),
+                            const SizedBox(height: 24),
+                            _buildSectionTitle(
+                              'Prestigio y reseñas',
+                              'Opiniones de las empresas',
+                              Icons.verified_rounded,
+                            ),
+                            const SizedBox(height: 12),
+                            _buildRealTimeEvaluations(),
+                            const SizedBox(height: 24),
+                            _buildSectionTitle(
+                              'Documentos oficiales',
+                              'CV y Kárdex académico',
+                              Icons.folder_open_rounded,
+                            ),
+                            const SizedBox(height: 12),
+                            _buildDocumentUploadCard('CV en PDF', _cvFileName, _cvUrl),
+                            const SizedBox(height: 12),
+                            _buildDocumentUploadCard(
+                              'Kárdex Oficial',
+                              _kardexFileName,
+                              _kardexUrl,
+                            ),
+                            const SizedBox(height: 24),
+                            _buildSaveButton(),
+                            const SizedBox(height: 12),
+                            _buildLogoutButton(),
+                            const SizedBox(height: 16),
+                            Center(
+                              child: Text(
+                                'REDTESO · TU FUTURO PROFESIONAL',
+                                style: GoogleFonts.poppins(
+                                  color: _mutedColor,
+                                  fontSize: 10,
+                                  letterSpacing: 1.2,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildAppBar() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 14, 20, 18),
-      child: Row(
-        children: [
-          Container(
-            width: 46,
-            height: 46,
-            decoration: BoxDecoration(color: _wine, borderRadius: BorderRadius.circular(15)),
-            child: const Icon(Icons.school_rounded, color: _gold, size: 26),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [_wine, _wineDark],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+        ),
+      ),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 1290),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(24, 8, 24, 8),
+            child: Row(
               children: [
-                Text('RedTESO', style: GoogleFonts.poppins(color: _wineDark, fontSize: 20, fontWeight: FontWeight.w800)),
-                Text('Perfil profesional', style: GoogleFonts.inter(color: _mutedColor, fontSize: 12)),
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: _gold,
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: const Icon(Icons.hub_rounded, color: _wineDark, size: 25),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'RedTESO',
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontSize: 20,
+                          height: 1.05,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      Text(
+                        'PORTAL ESTUDIANTIL',
+                        style: GoogleFonts.inter(
+                          color: _gold,
+                          fontSize: 9,
+                          letterSpacing: 1.8,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: _wineLight,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const ThemeToggleButton(),
+                ),
+                IconButton(
+                  tooltip: 'Guardar cambios',
+                  onPressed: _saveProfile,
+                  icon: const Icon(Icons.save_outlined, color: _gold, size: 23),
+                ),
+                IconButton(
+                  tooltip: 'Cerrar sesión',
+                  onPressed: _logout,
+                  icon: const Icon(Icons.logout_rounded, color: _gold, size: 22),
+                ),
               ],
             ),
           ),
-          Container(
-            decoration: BoxDecoration(
-              color: _wine,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const ThemeToggleButton(),
-          ),
-          const SizedBox(width: 4),
-          IconButton(
-            tooltip: 'Guardar cambios',
-            onPressed: _saveProfile,
-            icon: const Icon(Icons.save_outlined, color: _wine, size: 25),
-          ),
-          IconButton(
-            tooltip: 'Cerrar sesión',
-            onPressed: _logout,
-            icon: const Icon(Icons.logout_rounded, color: _wine, size: 23),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -699,7 +785,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
       decoration: BoxDecoration(
         color: _cardBackground,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: hasFile ? _wine.withValues(alpha: 0.35) : _border, width: hasFile ? 1.5 : 1),
+        border: Border.all(color: hasFile ? _wine.withValues(alpha: 0.55) : _borderColor, width: hasFile ? 1.5 : 1),
         boxShadow: [BoxShadow(color: _wineDark.withValues(alpha: 0.025), blurRadius: 12, offset: const Offset(0, 4))],
       ),
       child: Row(
@@ -719,7 +805,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                 if (isUploading)
                   ClipRRect(
                     borderRadius: BorderRadius.circular(5),
-                    child: LinearProgressIndicator(value: progress, minHeight: 5, color: _wine, backgroundColor: _border),
+                    child: LinearProgressIndicator(value: progress, minHeight: 5, color: _wine, backgroundColor: _borderColor),
                   )
                 else
                   Text(
@@ -776,7 +862,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
       height: 50,
       child: OutlinedButton.icon(
         onPressed: _logout,
-        style: OutlinedButton.styleFrom(foregroundColor: _wine, side: const BorderSide(color: _border), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
+        style: OutlinedButton.styleFrom(foregroundColor: _wine, side: BorderSide(color: _borderColor), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
         icon: const Icon(Icons.logout_rounded),
         label: Text('CERRAR SESIÓN', style: GoogleFonts.poppins(fontWeight: FontWeight.w700)),
       ),
@@ -810,10 +896,97 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
       decoration: BoxDecoration(
         color: _cardBackground,
         borderRadius: BorderRadius.circular(21),
-        border: Border.all(color: _border),
+        border: Border.all(color: _borderColor),
         boxShadow: [BoxShadow(color: _wineDark.withValues(alpha: 0.035), blurRadius: 15, offset: const Offset(0, 5))],
       ),
       child: child,
     );
   }
+}
+
+
+class _ProfileAmbientPainter extends CustomPainter {
+  final bool isDark;
+
+  const _ProfileAmbientPainter({required this.isDark});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rect = Offset.zero & size;
+
+    canvas.drawRect(
+      rect,
+      Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: isDark
+              ? const [Color(0xFF121016), Color(0xFF19141D), Color(0xFF211823)]
+              : const [Color(0xFFFFF9F1), Color(0xFFF7EEE5), Color(0xFFF1E4DD)],
+        ).createShader(rect),
+    );
+
+    _glow(
+      canvas,
+      Offset(size.width * 0.95, size.height * 0.18),
+      size.width * 0.45,
+      const Color(0x289D3458),
+    );
+
+    _glow(
+      canvas,
+      Offset(size.width * 0.05, size.height * 0.78),
+      size.width * 0.48,
+      const Color(0x28E6B968),
+    );
+
+    final ringPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.2
+      ..color = const Color(0x24741C3D);
+
+    canvas.drawCircle(
+      Offset(size.width * 0.95, size.height * 0.15),
+      size.width * 0.18,
+      ringPaint,
+    );
+
+    canvas.drawCircle(
+      Offset(size.width * 0.95, size.height * 0.15),
+      size.width * 0.23,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1
+        ..color = const Color(0x20B47A22),
+    );
+
+    final dotPaint = Paint()..color = const Color(0x66B47A22);
+
+    for (int i = 0; i < 26; i++) {
+      final x = ((i * 83 + 29) % 997) / 997 * size.width;
+      final y = ((i * 137 + 47) % 991) / 991 * size.height;
+      canvas.drawCircle(
+        Offset(x, y),
+        i % 4 == 0 ? 1.8 : 1,
+        dotPaint,
+      );
+    }
+  }
+
+  void _glow(Canvas canvas, Offset center, double radius, Color color) {
+    canvas.drawCircle(
+      center,
+      radius,
+      Paint()
+        ..shader = RadialGradient(
+          colors: [color, color.withValues(alpha: 0)],
+        ).createShader(
+          Rect.fromCircle(center: center, radius: radius),
+        ),
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant _ProfileAmbientPainter oldDelegate) =>
+      oldDelegate.isDark != isDark;
 }
