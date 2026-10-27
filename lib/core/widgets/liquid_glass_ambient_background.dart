@@ -48,17 +48,21 @@ class _LiquidGlassAmbientBackgroundState
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final blobAlpha = isDark ? 1.0 : 0.55;
 
     return Stack(
       fit: StackFit.expand,
       children: [
-        const Positioned.fill(
+        Positioned.fill(
           child: IgnorePointer(
-            child: ColoredBox(color: Color(0xFF090D16)),
+            child: ColoredBox(
+              color: isDark ? AppTheme.bgDark : AppTheme.surfaceLight,
+            ),
           ),
         ),
 
-        // Esfera guinda.
+        // Esfera turquesa.
         AnimatedBuilder(
           animation: _animController,
           child: IgnorePointer(
@@ -70,7 +74,7 @@ class _LiquidGlassAmbientBackgroundState
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      AppTheme.primaryColor.withValues(alpha: 0.40),
+                      AppTheme.primaryColor.withValues(alpha: 0.40 * blobAlpha),
                       AppTheme.primaryColor.withValues(alpha: 0),
                     ],
                   ),
@@ -88,7 +92,7 @@ class _LiquidGlassAmbientBackgroundState
           },
         ),
 
-        // Esfera verde.
+        // Esfera cian.
         AnimatedBuilder(
           animation: _animController,
           child: IgnorePointer(
@@ -100,8 +104,8 @@ class _LiquidGlassAmbientBackgroundState
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      AppTheme.primaryGreen.withValues(alpha: 0.35),
-                      AppTheme.primaryGreen.withValues(alpha: 0),
+                      AppTheme.accentCyan.withValues(alpha: 0.35 * blobAlpha),
+                      AppTheme.accentCyan.withValues(alpha: 0),
                     ],
                   ),
                 ),
@@ -118,7 +122,7 @@ class _LiquidGlassAmbientBackgroundState
           },
         ),
 
-        // Destello dorado.
+        // Destello menta.
         AnimatedBuilder(
           animation: _animController,
           child: IgnorePointer(
@@ -130,7 +134,7 @@ class _LiquidGlassAmbientBackgroundState
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      AppTheme.accentColor.withValues(alpha: 0.18),
+                      AppTheme.accentColor.withValues(alpha: 0.18 * blobAlpha),
                       AppTheme.accentColor.withValues(alpha: 0),
                     ],
                   ),
@@ -153,12 +157,16 @@ class _LiquidGlassAmbientBackgroundState
           child: IgnorePointer(
             child: kIsWeb
                 ? ColoredBox(
-                    color: Colors.black.withValues(alpha: 0.35),
+                    color: isDark
+                        ? Colors.black.withValues(alpha: 0.35)
+                        : Colors.white.withValues(alpha: 0.35),
                   )
                 : BackdropFilter(
                     filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
                     child: ColoredBox(
-                      color: Colors.black.withValues(alpha: 0.20),
+                      color: isDark
+                          ? Colors.black.withValues(alpha: 0.20)
+                          : Colors.white.withValues(alpha: 0.25),
                     ),
                   ),
           ),
@@ -204,14 +212,19 @@ class _GlassmorphicCardState extends State<GlassmorphicCard> {
   Widget build(BuildContext context) {
     final effectiveGlowColor =
         widget.glowColor ?? AppTheme.primaryColor;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final cardContent = Container(
       padding: widget.padding ?? const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: _isHovered ? 0.12 : 0.08),
+        color: isDark
+            ? Colors.white.withValues(alpha: _isHovered ? 0.12 : 0.08)
+            : Colors.white.withValues(alpha: _isHovered ? 0.95 : 0.85),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: Colors.white.withValues(alpha: _isHovered ? 0.40 : 0.20),
+          color: isDark
+              ? Colors.white.withValues(alpha: _isHovered ? 0.40 : 0.20)
+              : (_isHovered ? AppTheme.primaryTurquoise.withValues(alpha: 0.5) : AppTheme.borderLight),
           width: _isHovered ? 1.5 : 1,
         ),
       ),
@@ -249,7 +262,7 @@ class _GlassmorphicCardState extends State<GlassmorphicCard> {
             boxShadow: [
               BoxShadow(
                 color: effectiveGlowColor.withValues(
-                  alpha: _isHovered ? 0.35 : 0.18,
+                  alpha: (_isHovered ? 0.35 : 0.18) * (isDark ? 1 : 0.5),
                 ),
                 blurRadius: _isHovered ? 20 : 12,
                 spreadRadius: _isHovered ? 2 : 0,

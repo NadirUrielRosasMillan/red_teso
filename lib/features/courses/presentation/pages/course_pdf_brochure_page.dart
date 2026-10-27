@@ -223,8 +223,8 @@ class _CoursePdfBrochurePageState extends State<CoursePdfBrochurePage> with Sing
                                 decoration: BoxDecoration(
                                   gradient: const LinearGradient(
                                     colors: [
-                                      AppTheme.primaryColor,
-                                      Color(0xFF4A1022),
+                                      AppTheme.primaryTurquoise,
+                                      AppTheme.darkTurquoise,
                                     ],
                                   ),
                                   borderRadius: BorderRadius.circular(12),

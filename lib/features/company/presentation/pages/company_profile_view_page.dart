@@ -52,7 +52,7 @@ class CompanyProfileViewPage extends StatelessWidget {
                         ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(12),
-                          child: Image.asset('web/icons/logo_sis_color.png', fit: BoxFit.contain),
+                          child: Image.asset('web/icons/logo_sis_color.jpg', fit: BoxFit.contain),
                         ),
                       ),
                       const SizedBox(width: 16),

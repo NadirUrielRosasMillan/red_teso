@@ -435,8 +435,8 @@ class _CourseXRayPlayerPageState extends State<CourseXRayPlayerPage> {
                                           decoration: BoxDecoration(
                                             gradient: const LinearGradient(
                                               colors: [
-                                                AppTheme.primaryColor,
-                                                Color(0xFF8B1E3F),
+                                                AppTheme.primaryTurquoise,
+                                                AppTheme.darkTurquoise,
                                               ],
                                             ),
                                             borderRadius: BorderRadius.circular(12),

@@ -60,7 +60,9 @@ class LiquidGlassFloatingNavBar extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 6),
                   decoration: BoxDecoration(
                     // Cristal ultra-transparente y elegante estilo Liquid Glass
-                    color: const Color(0xFF121826).withOpacity(0.38),
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? AppTheme.surfaceDark.withValues(alpha: 0.55)
+                        : AppTheme.darkTurquoise.withValues(alpha: 0.82),
                     borderRadius: BorderRadius.circular(36),
                     border: Border.all(
                       color: Colors.white.withOpacity(0.25),
@@ -96,7 +98,11 @@ class LiquidGlassFloatingNavBar extends StatelessWidget {
                               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                               decoration: isSelected
                                   ? BoxDecoration(
-                                      color: AppTheme.primaryColor.withOpacity(0.88),
+                                      gradient: LinearGradient(
+                                        colors: [AppTheme.primaryColor, AppTheme.darkGreen.withOpacity(0.9)],
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                      ),
                                       borderRadius: BorderRadius.circular(24),
                                       boxShadow: [
                                         BoxShadow(
@@ -121,7 +127,7 @@ class LiquidGlassFloatingNavBar extends StatelessWidget {
                                     fit: BoxFit.scaleDown,
                                     child: Text(
                                       item.label,
-                                      style: GoogleFonts.outfit(
+                                      style: GoogleFonts.plusJakartaSans(
                                         fontSize: isSelected ? 10.5 : 10,
                                         fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                                         color: isSelected ? Colors.white : Colors.white.withOpacity(0.75),

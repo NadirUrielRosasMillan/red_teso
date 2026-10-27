@@ -174,7 +174,7 @@ class _VerificationSuccessDialogState extends State<VerificationSuccessDialog>
                           borderRadius: BorderRadius.circular(32),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFF691C32).withOpacity(0.18),
+                              color: AppTheme.primaryTurquoise.withOpacity(0.18),
                               blurRadius: 40,
                               spreadRadius: 4,
                               offset: const Offset(0, 16),
@@ -350,8 +350,8 @@ class _VerificationSuccessDialogState extends State<VerificationSuccessDialog>
                                   decoration: BoxDecoration(
                                     gradient: const LinearGradient(
                                       colors: [
-                                        AppTheme.primaryColor,
-                                        Color(0xFF8B1E3F),
+                                        AppTheme.primaryTurquoise,
+                                        AppTheme.darkTurquoise,
                                       ],
                                       begin: Alignment.topLeft,
                                       end: Alignment.bottomRight,

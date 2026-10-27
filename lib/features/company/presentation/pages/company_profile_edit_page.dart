@@ -164,7 +164,7 @@ class _CompanyProfileEditPageState extends State<CompanyProfileEditPage> {
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [AppTheme.primaryColor, Color(0xFF4A1022)],
+                    colors: [AppTheme.primaryTurquoise, AppTheme.darkTurquoise],
                   ),
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [

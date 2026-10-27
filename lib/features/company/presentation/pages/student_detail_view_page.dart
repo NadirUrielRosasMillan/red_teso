@@ -18,7 +18,7 @@ class StudentDetailViewPage extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1E293B),
+        backgroundColor: AppTheme.surfaceDark,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         title: Row(
           children: [
@@ -116,7 +116,7 @@ class StudentDetailViewPage extends StatelessWidget {
         ),
         title: Text('Perfil del Candidato', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white)),
         foregroundColor: Colors.white,
-        backgroundColor: const Color(0xFF090D16).withOpacity(0.85),
+        backgroundColor: AppTheme.bgDark.withOpacity(0.85),
         elevation: 0,
       ),
       body: LiquidGlassAmbientBackground(

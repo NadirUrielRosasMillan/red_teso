@@ -30,7 +30,7 @@ class _ProfessorDashboardPageState extends State<ProfessorDashboardPage> {
       backgroundColor: Colors.transparent,
       appBar: AppBar(
         title: Text('Panel de Docente TESOEM 🎓', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white)),
-        backgroundColor: const Color(0xFF090D16).withOpacity(0.85),
+        backgroundColor: AppTheme.bgDark.withOpacity(0.85),
         foregroundColor: Colors.white,
         elevation: 0,
         actions: [
@@ -198,7 +198,7 @@ class _ProfessorDashboardPageState extends State<ProfessorDashboardPage> {
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             gradient: const LinearGradient(
-              colors: [AppTheme.primaryColor, Color(0xFF4A1222)],
+              colors: [AppTheme.primaryTurquoise, AppTheme.darkTurquoise],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),

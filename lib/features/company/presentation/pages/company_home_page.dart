@@ -77,7 +77,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
           'Buscador de Talento',
           style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white),
         ),
-        backgroundColor: const Color(0xFF090D16).withOpacity(0.85),
+        backgroundColor: AppTheme.bgDark.withOpacity(0.85),
         foregroundColor: Colors.white,
         elevation: 0,
         actions: [
@@ -96,10 +96,10 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                 child: FloatingActionButton(
                   key: const ValueKey('floating_ai_talent_btn'),
                   onPressed: () => AiTalentAssistantModal.show(context, students: _sampleStudents),
-                  backgroundColor: const Color(0xFF0F172A),
+                  backgroundColor: AppTheme.primaryTurquoise,
                   elevation: 6,
                   tooltip: 'IA REDTESO 🤖',
-                  child: const Icon(Icons.psychology_rounded, color: AppTheme.accentColor, size: 24),
+                  child: const Icon(Icons.psychology_rounded, color: Colors.white, size: 24),
                 ),
               )
             : const SizedBox.shrink(key: ValueKey('empty_ai_talent_btn')),
@@ -132,8 +132,8 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
                             colors: [
-                              Color(0xFF0F172A),
-                              Color(0xFF1E293B),
+                              AppTheme.primaryTurquoise,
+                              AppTheme.darkTurquoise,
                             ],
                           ),
                           borderRadius: BorderRadius.circular(20),

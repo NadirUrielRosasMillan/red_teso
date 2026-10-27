@@ -73,7 +73,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
       context: context,
       barrierDismissible: true,
       builder: (dialogContext) => AlertDialog(
-        backgroundColor: const Color(0xFF171B27),
+        backgroundColor: AppTheme.surfaceDark,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         icon: const Icon(Icons.logout_rounded, color: Colors.redAccent, size: 34),
         title: Text(
@@ -145,14 +145,14 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
               height: 44,
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
-                  colors: [Color(0xFFE5BD78), Color(0xFF9B713A)],
+                  colors: [AppTheme.accentCyan, AppTheme.primaryTurquoise],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 borderRadius: BorderRadius.circular(15),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFFE5BD78).withValues(alpha: 0.22),
+                    color: AppTheme.primaryTurquoise.withValues(alpha: 0.25),
                     blurRadius: 16,
                     offset: const Offset(0, 5),
                   ),
@@ -160,7 +160,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
               ),
               child: const Icon(
                 Icons.account_balance_rounded,
-                color: Color(0xFF17131B),
+                color: Colors.white,
                 size: 24,
               ),
             ),
@@ -195,7 +195,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
             ),
           ],
         ),
-        backgroundColor: const Color(0xFF090D16).withValues(alpha: 0.96),
+        backgroundColor: AppTheme.bgDark.withValues(alpha: 0.96),
         foregroundColor: Colors.white,
         elevation: 0,
         actions: [
@@ -220,9 +220,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
         ],
         bottom: TabBar(
           controller: _tabController,
-          labelColor: const Color(0xFFE5BD78),
+          labelColor: AppTheme.accentCyan,
           unselectedLabelColor: Colors.white54,
-          indicatorColor: const Color(0xFFE5BD78),
+          indicatorColor: AppTheme.accentCyan,
           indicatorWeight: 3,
           indicatorSize: TabBarIndicatorSize.label,
           dividerColor: Colors.white10,
@@ -548,7 +548,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: status == 'Activo' ? Colors.greenAccent : Colors.grey,
-                          border: Border.all(color: const Color(0xFF090D16), width: 1.5),
+                          border: Border.all(color: AppTheme.bgDark, width: 1.5),
                         ),
                       ),
                     ],
