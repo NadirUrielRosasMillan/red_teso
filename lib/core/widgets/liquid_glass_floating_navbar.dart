@@ -67,14 +67,10 @@ class LiquidGlassFloatingNavBar extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 6),
                   decoration: BoxDecoration(
-<<<<<<< HEAD
-                    color: shellColor,
-=======
                     // Cristal ultra-transparente y elegante estilo Liquid Glass
                     color: Theme.of(context).brightness == Brightness.dark
                         ? AppTheme.surfaceDark.withValues(alpha: 0.55)
                         : AppTheme.darkTurquoise.withValues(alpha: 0.82),
->>>>>>> origin/main
                     borderRadius: BorderRadius.circular(36),
                     border: Border.all(
                       color: isDark
@@ -111,15 +107,11 @@ class LiquidGlassFloatingNavBar extends StatelessWidget {
                               padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 8),
                               decoration: isSelected
                                   ? BoxDecoration(
-<<<<<<< HEAD
-                                      color: AppTheme.primaryColor,
-=======
                                       gradient: LinearGradient(
                                         colors: [AppTheme.primaryColor, AppTheme.darkGreen.withOpacity(0.9)],
                                         begin: Alignment.topLeft,
                                         end: Alignment.bottomRight,
                                       ),
->>>>>>> origin/main
                                       borderRadius: BorderRadius.circular(24),
                                       boxShadow: [
                                         BoxShadow(

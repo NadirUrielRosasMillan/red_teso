@@ -179,19 +179,11 @@ class _VacancyDetailPageState extends State<VacancyDetailPage> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-<<<<<<< HEAD
-    final pageBackground = isDark ? const Color(0xFF0B1524) : const Color(0xFFF1F6FC);
-    final cardBackground = isDark ? const Color(0xFF15243A) : Colors.white;
-    final mainText = isDark ? const Color(0xFFEAF2FB) : const Color(0xFF16324F);
-    final mutedText = isDark ? const Color(0xFFB8C8DC) : const Color(0xFF64748B);
-    final borderColor = isDark ? const Color(0xFF294363) : const Color(0xFFDCE7F3);
-=======
     final pageBackground = isDark ? const Color(0xFF0A1922) : const Color(0xFFF4FAFC);
     final cardBackground = isDark ? const Color(0xFF112A36) : Colors.white;
     final mainText = isDark ? const Color(0xFFF4FAFC) : const Color(0xFF0D212C);
     final mutedText = isDark ? const Color(0xFFB8E2EC) : const Color(0xFF4A6572);
     final borderColor = isDark ? const Color(0xFF1B4B5F) : const Color(0xFFDCEBF0);
->>>>>>> origin/main
     final v = widget.vacancy;
     final puesto = v['puesto'] ?? 'Vacante';
     final empresa = v['empresa'] ?? 'Empresa Colaboradora';
@@ -226,15 +218,9 @@ class _VacancyDetailPageState extends State<VacancyDetailPage> {
           tooltip: 'Regresar',
           onPressed: () => safePop(),
         ),
-<<<<<<< HEAD
-        title: Text('Detalle de Vacante', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: mainText)),
-        foregroundColor: const Color(0xFF8DB9E8),
-        backgroundColor: AppTheme.primaryColor,
-=======
         title: Text('Detalle de Vacante', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white)),
         foregroundColor: Colors.white,
         backgroundColor: AppTheme.primaryTurquoise,
->>>>>>> origin/main
         elevation: 0,
         scrolledUnderElevation: 0,
       ),
@@ -269,13 +255,8 @@ class _VacancyDetailPageState extends State<VacancyDetailPage> {
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: isDark
-<<<<<<< HEAD
-                        ? const [Color(0xFF3679C9), Color(0xFF12366A)]
-                        : const [Color(0xFF3679C9), Color(0xFF164B91)],
-=======
                         ? const [Color(0xFF0793B8), Color(0xFF056C88)]
                         : const [Color(0xFF10BFD0), Color(0xFF0793B8)],
->>>>>>> origin/main
                   ),
                   borderRadius: BorderRadius.circular(22),
                   border: Border.all(color: AppTheme.accentColor.withValues(alpha: 0.85), width: 1.1),
@@ -308,26 +289,16 @@ class _VacancyDetailPageState extends State<VacancyDetailPage> {
                         children: [
                           Text(
                             puesto,
-<<<<<<< HEAD
-                            style: GoogleFonts.outfit(fontSize: 19, fontWeight: FontWeight.bold, color: const Color(0xFF8DB9E8)),
-=======
                             style: GoogleFonts.outfit(fontSize: 19, fontWeight: FontWeight.bold, color: Colors.white),
->>>>>>> origin/main
                           ),
                           const SizedBox(height: 2),
                           Row(
                             children: [
                               Text(
                                 empresa,
-<<<<<<< HEAD
-                                style: GoogleFonts.inter(fontSize: 13.5, color: const Color(0xFF8DB9E8), fontWeight: FontWeight.w600),
-                              ),
-                              const Icon(Icons.chevron_right_rounded, size: 18, color: Color(0xFF8DB9E8)),
-=======
                                 style: GoogleFonts.inter(fontSize: 13.5, color: Colors.white.withValues(alpha: 0.9), fontWeight: FontWeight.w600),
                               ),
                               const Icon(Icons.chevron_right_rounded, size: 18, color: Colors.white),
->>>>>>> origin/main
                             ],
                           ),
                         ],
@@ -345,17 +316,10 @@ class _VacancyDetailPageState extends State<VacancyDetailPage> {
               spacing: 8,
               runSpacing: 8,
               children: [
-<<<<<<< HEAD
-                _buildBadgeChip(Icons.category_rounded, tipo, AppTheme.primaryColor),
-                _buildBadgeChip(Icons.monetization_on_rounded, '\$$apoyo MXN/mes', const Color(0xFF3679C9)),
-                _buildBadgeChip(Icons.grade_rounded, 'GPA Mín: $gpa', AppTheme.accentColor),
-                if (ingles) _buildBadgeChip(Icons.translate_rounded, 'Inglés Requerido', AppTheme.primaryColor),
-=======
                 _buildBadgeChip(Icons.category_rounded, tipo, AppTheme.primaryTurquoise),
                 _buildBadgeChip(Icons.monetization_on_rounded, '\$$apoyo MXN/mes', const Color(0xFF10B981)),
                 _buildBadgeChip(Icons.grade_rounded, 'GPA Mín: $gpa', AppTheme.accentCyan),
                 if (ingles) _buildBadgeChip(Icons.translate_rounded, 'Inglés Requerido', AppTheme.primaryTurquoise),
->>>>>>> origin/main
               ],
             ),
 
@@ -423,11 +387,7 @@ class _VacancyDetailPageState extends State<VacancyDetailPage> {
                     width: double.infinity,
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-<<<<<<< HEAD
-                      color: isDark ? const Color(0xFF1B304A) : const Color(0xFFF7E8E9),
-=======
                       color: isDark ? const Color(0xFF153E50) : const Color(0xFFE0F4F8),
->>>>>>> origin/main
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(color: AppTheme.primaryTurquoise),
                     ),
@@ -438,11 +398,7 @@ class _VacancyDetailPageState extends State<VacancyDetailPage> {
                         const SizedBox(width: 10),
                         Text(
                           'Ya estás postulado a esta vacante',
-<<<<<<< HEAD
-                          style: GoogleFonts.outfit(color: isDark ? const Color(0xFF8DB9E8) : AppTheme.primaryColor, fontWeight: FontWeight.bold, fontSize: 15),
-=======
                           style: GoogleFonts.outfit(color: isDark ? Colors.white : AppTheme.primaryTurquoise, fontWeight: FontWeight.bold, fontSize: 15),
->>>>>>> origin/main
                         ),
                       ],
                     ),
@@ -475,13 +431,8 @@ class _VacancyDetailPageState extends State<VacancyDetailPage> {
                 child: ElevatedButton(
                   onPressed: _apply,
                   style: ElevatedButton.styleFrom(
-<<<<<<< HEAD
-                    backgroundColor: AppTheme.primaryColor,
-                    foregroundColor: const Color(0xFF8DB9E8),
-=======
                     backgroundColor: AppTheme.primaryTurquoise,
                     foregroundColor: Colors.white,
->>>>>>> origin/main
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   ),
                   child: Text(
@@ -542,15 +493,6 @@ class _VacancyAmbientPainter extends CustomPainter {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: isDark
-<<<<<<< HEAD
-              ? const [Color(0xFF0B1524), Color(0xFF101C2D), Color(0xFF15243A)]
-              : const [Color(0xFFF5F9FF), Color(0xFFEAF2FB), Color(0xFFDCEBFA)],
-        ).createShader(rect),
-    );
-
-    _glow(canvas, Offset(size.width * .96, size.height * .16), size.width * .44, const Color(0x283679C9));
-    _glow(canvas, Offset(size.width * .04, size.height * .78), size.width * .46, const Color(0x288DB9E8));
-=======
               ? const [Color(0xFF0A1922), Color(0xFF112A36), Color(0xFF0D212C)]
               : const [Color(0xFFF4FAFC), Color(0xFFE6F6FA), Color(0xFFDCEBF0)],
         ).createShader(rect),
@@ -558,31 +500,19 @@ class _VacancyAmbientPainter extends CustomPainter {
 
     _glow(canvas, Offset(size.width * .96, size.height * .16), size.width * .44, const Color(0x280793B8));
     _glow(canvas, Offset(size.width * .04, size.height * .78), size.width * .46, const Color(0x2810BFD0));
->>>>>>> origin/main
 
     canvas.drawCircle(
       Offset(size.width * .96, size.height * .16),
       size.width * .18,
-<<<<<<< HEAD
-      Paint()..style = PaintingStyle.stroke..strokeWidth = 1.2..color = const Color(0x24164B91),
-=======
       Paint()..style = PaintingStyle.stroke..strokeWidth = 1.2..color = const Color(0x240793B8),
->>>>>>> origin/main
     );
     canvas.drawCircle(
       Offset(size.width * .96, size.height * .16),
       size.width * .24,
-<<<<<<< HEAD
-      Paint()..style = PaintingStyle.stroke..strokeWidth = 1..color = const Color(0x206EA5E3),
-    );
-
-    final dots = Paint()..color = const Color(0x668DB9E8);
-=======
       Paint()..style = PaintingStyle.stroke..strokeWidth = 1..color = const Color(0x2010BFD0),
     );
 
     final dots = Paint()..color = const Color(0x6610BFD0);
->>>>>>> origin/main
     for (var i = 0; i < 26; i++) {
       final x = ((i * 83 + 29) % 997) / 997 * size.width;
       final y = ((i * 137 + 47) % 991) / 991 * size.height;
