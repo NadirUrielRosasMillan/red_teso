@@ -151,9 +151,9 @@ class _ContactStudentModalState extends State<ContactStudentModal> {
 
         // 3. Opción de abrir cliente de correo nativo si tiene email registrado
         if (studentEmail.isNotEmpty) {
-          final String subject = 'RedTESO - Invitación de ${_companyNameController.text.trim()}';
+          final String subject = 'ÁGORA Talento - Invitación de ${_companyNameController.text.trim()}';
           final String body = 'Hola $studentName,\n\n'
-              'Nos ponemos en contacto contigo a través de la plataforma RedTESO.\n\n'
+              'Nos ponemos en contacto contigo a través de la plataforma ÁGORA Talento.\n\n'
               'Motivo: $_contactReason\n'
               'Propuesta de fecha: $formattedDate a las $formattedTime\n\n'
               'Mensaje:\n${_messageController.text.trim()}\n\n'

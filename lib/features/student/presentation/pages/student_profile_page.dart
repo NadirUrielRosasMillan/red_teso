@@ -23,24 +23,24 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
   late final TextEditingController _phoneController;
   late final TextEditingController _skillController;
 
-  static const Color _wine = Color(0xFF791D40);
-  static const Color _wineDark = Color(0xFF481329);
-  static const Color _wineLight = Color(0xFF9C3158);
-  static const Color _gold = Color(0xFFE8BC68);
-  static const Color _cream = Color(0xFFFAF3E9);
-  static const Color _ink = Color(0xFF351B28);
-  static const Color _muted = Color(0xFF81717A);
-  static const Color _border = Color(0xFFECE1E4);
+  static const Color _wine = Color(0xFF164B91);
+  static const Color _wineDark = Color(0xFF12366A);
+  static const Color _wineLight = Color(0xFF3679C9);
+  static const Color _gold = Color(0xFF8DB9E8);
+  static const Color _cream = Color(0xFFF1F6FC);
+  static const Color _ink = Color(0xFF16324F);
+  static const Color _muted = Color(0xFF64748B);
+  static const Color _border = Color(0xFFDCE7F3);
   static const Color _green = Color(0xFF31805A);
   static const Color _red = Color(0xFFB42336);
 
   bool get _isDark => Theme.of(context).brightness == Brightness.dark;
-  Color get _pageBackground => _isDark ? const Color(0xFF121016) : _cream;
-  Color get _cardBackground => _isDark ? const Color(0xFF251F29) : Colors.white;
-  Color get _textColor => _isDark ? const Color(0xFFF4EDF1) : _ink;
-  Color get _mutedColor => _isDark ? const Color(0xFFB9AAB3) : _muted;
-  Color get _borderColor => _isDark ? const Color(0xFF403541) : _border;
-  Color get _fieldBackground => _isDark ? const Color(0xFF1B171F) : const Color(0xFFFFFCFA);
+  Color get _pageBackground => _isDark ? const Color(0xFF0B1524) : _cream;
+  Color get _cardBackground => _isDark ? const Color(0xFF15243A) : Colors.white;
+  Color get _textColor => _isDark ? const Color(0xFFEAF2FB) : _ink;
+  Color get _mutedColor => _isDark ? const Color(0xFFB8C8DC) : _muted;
+  Color get _borderColor => _isDark ? const Color(0xFF294363) : _border;
+  Color get _fieldBackground => _isDark ? const Color(0xFF15243A) : const Color(0xFFF8FBFF);
 
   double _gpa = 8.0;
   String _modality = 'Servicio Social';
@@ -370,7 +370,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                             const SizedBox(height: 16),
                             Center(
                               child: Text(
-                                'REDTESO · TU FUTURO PROFESIONAL',
+                                'ÁGORA TALENTO · TU FUTURO PROFESIONAL',
                                 style: GoogleFonts.poppins(
                                   color: _mutedColor,
                                   fontSize: 10,
@@ -414,10 +414,14 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                   width: 44,
                   height: 44,
                   decoration: BoxDecoration(
-                    color: _gold,
+                    color: const Color(0xFF12366A),
                     borderRadius: BorderRadius.circular(14),
                   ),
-                  child: const Icon(Icons.hub_rounded, color: _wineDark, size: 25),
+                  clipBehavior: Clip.antiAlias,
+                  child: Image.asset(
+                    'assets/images/branding/agora_icono_app.png',
+                    fit: BoxFit.cover,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -426,7 +430,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        'RedTESO',
+                        'ÁGORA Talento',
                         style: GoogleFonts.poppins(
                           color: Colors.white,
                           fontSize: 20,
@@ -435,7 +439,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                         ),
                       ),
                       Text(
-                        'PORTAL ESTUDIANTIL',
+                        'BOLSA DE TRABAJO',
                         style: GoogleFonts.inter(
                           color: _gold,
                           fontSize: 9,
@@ -692,7 +696,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
               children: _skills.map((skill) => Chip(
                 avatar: const Icon(Icons.check_circle_rounded, color: _wine, size: 17),
                 label: Text(skill, style: GoogleFonts.inter(color: _wineDark, fontSize: 12)),
-                backgroundColor: _isDark ? const Color(0xFF382633) : const Color(0xFFF8EAF0),
+                backgroundColor: _isDark ? const Color(0xFF1B304A) : const Color(0xFFEAF2FB),
                 side: BorderSide(color: _wine.withValues(alpha: 0.12)),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 deleteIcon: const Icon(Icons.close_rounded, color: _red, size: 16),
@@ -921,8 +925,8 @@ class _ProfileAmbientPainter extends CustomPainter {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: isDark
-              ? const [Color(0xFF121016), Color(0xFF19141D), Color(0xFF211823)]
-              : const [Color(0xFFFFF9F1), Color(0xFFF7EEE5), Color(0xFFF1E4DD)],
+              ? const [Color(0xFF0B1524), Color(0xFF101C2D), Color(0xFF15243A)]
+              : const [Color(0xFFF5F9FF), Color(0xFFEAF2FB), Color(0xFFDCEBFA)],
         ).createShader(rect),
     );
 
@@ -930,20 +934,20 @@ class _ProfileAmbientPainter extends CustomPainter {
       canvas,
       Offset(size.width * 0.95, size.height * 0.18),
       size.width * 0.45,
-      const Color(0x289D3458),
+      const Color(0x283679C9),
     );
 
     _glow(
       canvas,
       Offset(size.width * 0.05, size.height * 0.78),
       size.width * 0.48,
-      const Color(0x28E6B968),
+      const Color(0x288DB9E8),
     );
 
     final ringPaint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.2
-      ..color = const Color(0x24741C3D);
+      ..color = const Color(0x24164B91);
 
     canvas.drawCircle(
       Offset(size.width * 0.95, size.height * 0.15),
@@ -957,10 +961,10 @@ class _ProfileAmbientPainter extends CustomPainter {
       Paint()
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1
-        ..color = const Color(0x20B47A22),
+        ..color = const Color(0x206EA5E3),
     );
 
-    final dotPaint = Paint()..color = const Color(0x66B47A22);
+    final dotPaint = Paint()..color = const Color(0x668DB9E8);
 
     for (int i = 0; i < 26; i++) {
       final x = ((i * 83 + 29) % 997) / 997 * size.width;

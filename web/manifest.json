@@ -1,32 +1,32 @@
 {
-    "name": "RedTESO",
-    "short_name": "RedTESO",
+    "name": "ÁGORA",
+    "short_name": "ÁGORA",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#FFFFFF",
-    "theme_color": "#2E7D32",
-    "description": "Plataforma para conectar talento del TESOEM con empresas.",
+    "theme_color": "#12366A",
+    "description": "ÁGORA Talento: oportunidades profesionales para la comunidad TESOEM.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
         {
-            "src": "icons/logo_sis_color.png",
+            "src": "icons/agora_icon.png",
             "sizes": "192x192",
             "type": "image/png"
         },
         {
-            "src": "icons/logo_sis_color.png",
+            "src": "icons/agora_icon.png",
             "sizes": "512x512",
             "type": "image/png"
         },
         {
-            "src": "icons/logo_sis_color.png",
+            "src": "icons/agora_icon.png",
             "sizes": "192x192",
             "type": "image/png",
             "purpose": "maskable"
         },
         {
-            "src": "icons/logo_sis_color.png",
+            "src": "icons/agora_icon.png",
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "maskable"

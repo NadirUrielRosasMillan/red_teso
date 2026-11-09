@@ -64,7 +64,7 @@ class _ManageVacanciesPageState extends State<ManageVacanciesPage> {
     final user = _auth.currentUser;
     if (user == null) {
       return Scaffold(
-        backgroundColor: const Color(0xFF090D16),
+        backgroundColor: const Color(0xFF0B1524),
         body: Center(child: Text('Inicia sesión para ver tus publicaciones', style: GoogleFonts.inter(color: Colors.white))),
       );
     }
@@ -73,7 +73,7 @@ class _ManageVacanciesPageState extends State<ManageVacanciesPage> {
       backgroundColor: Colors.transparent,
       appBar: AppBar(
         title: Text('Mis Vacantes Publicadas', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white)),
-        backgroundColor: const Color(0xFF090D16).withOpacity(0.85),
+        backgroundColor: const Color(0xFF0B1524).withOpacity(0.85),
         foregroundColor: Colors.white,
         elevation: 0,
         actions: [

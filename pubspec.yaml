@@ -9,9 +9,10 @@ environment:
 
 dependencies:
   flutter:
+
     sdk: flutter
   cupertino_icons: ^1.0.6
-  
+
   # Firebase
   firebase_core: ^3.1.1
   firebase_auth: ^5.1.2
@@ -44,11 +45,15 @@ dev_dependencies:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "web/icons/logo_sis_color.png"
+  image_path: "assets/images/branding/agora_app_icon_1024.png"
+  remove_alpha_ios: true
   adaptive_icon_background: "#FFFFFF"
-  adaptive_icon_foreground: "web/icons/logo_sis_color.png"
+  adaptive_icon_foreground: "assets/images/branding/agora_app_icon_1024.png"
 
 flutter:
+
   uses-material-design: true
+
   assets:
-    - web/icons/logo_sis_color.png
+    - assets/images/branding/
+    - assets/images/experiences/

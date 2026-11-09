@@ -10,7 +10,8 @@ class SplashPage extends StatefulWidget {
   State<SplashPage> createState() => _SplashPageState();
 }
 
-class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateMixin {
+class _SplashPageState extends State<SplashPage>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
   late Animation<double> _opacityAnimation;
@@ -28,7 +29,9 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
     );
 
     _opacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _animationController, curve: const Interval(0.4, 1.0, curve: Curves.easeIn)),
+      CurvedAnimation(
+          parent: _animationController,
+          curve: const Interval(0.4, 1.0, curve: Curves.easeIn)),
     );
 
     _animationController.forward();
@@ -66,7 +69,6 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
               backgroundColor: AppTheme.primaryGreen.withValues(alpha: 0.03),
             ),
           ),
-          
           Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -77,22 +79,22 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
                     width: 250,
                     height: 250,
                     decoration: const BoxDecoration(
-                      color: Colors.transparent, // Cambiado a totalmente transparente
+                      color: Colors
+                          .transparent, // Cambiado a totalmente transparente
                     ),
                     child: Image.asset(
-                      'web/icons/logo_sis_color.png',
+                      'assets/images/branding/agora_logo_principal.png',
                       fit: BoxFit.contain,
                     ),
                   ),
                 ),
                 const SizedBox(height: 32),
-                
                 FadeTransition(
                   opacity: _opacityAnimation,
                   child: const Column(
                     children: [
                       Text(
-                        'RedTESO',
+                        'ÁGORA',
                         style: TextStyle(
                           fontSize: 38,
                           fontWeight: FontWeight.bold,
@@ -102,7 +104,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
                       ),
                       SizedBox(height: 8),
                       Text(
-                        'Conectando talento TESOEM',
+                        'Talento · Aprende · Impulsa',
                         style: TextStyle(
                           fontSize: 16,
                           color: Colors.grey,
@@ -115,7 +117,6 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
               ],
             ),
           ),
-          
           Positioned(
             bottom: 50,
             left: 0,
@@ -128,7 +129,8 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
                   height: 32,
                   child: CircularProgressIndicator(
                     strokeWidth: 2.5,
-                    valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryGreen),
+                    valueColor:
+                        AlwaysStoppedAnimation<Color>(AppTheme.primaryGreen),
                   ),
                 ),
               ),

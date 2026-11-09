@@ -8,9 +8,6 @@ import 'package:provider/provider.dart';
 import 'package:red_teso/features/auth/presentation/pages/register_page.dart';
 import 'package:red_teso/features/auth/presentation/providers/auth_provider.dart';
 import 'package:red_teso/features/admin/presentation/pages/admin_dashboard_page.dart';
-import 'package:red_teso/features/student/presentation/pages/student_dashboard_page.dart';
-import 'package:red_teso/features/company/presentation/pages/company_dashboard_page.dart';
-import 'package:red_teso/features/professor/presentation/pages/professor_dashboard_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -23,7 +20,6 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  late final AnimationController _backgroundController;
   late final AnimationController _buttonController;
 
   bool _isPasswordVisible = false;
@@ -31,18 +27,12 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   int _logoTapCount = 0;
   Timer? _logoTapResetTimer;
 
-  static const Color _darkWine = Color(0xFF210713);
-  static const Color _gold = Color(0xFFE7BD72);
-  static const Color _cream = Color(0xFFFFF8EF);
+  static const Color _navy = Color(0xFF123D78);
+  static const Color _aqua = Color(0xFF67D8FF);
 
   @override
   void initState() {
     super.initState();
-
-    _backgroundController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 18),
-    )..repeat();
 
     _buttonController = AnimationController(
       vsync: this,
@@ -58,7 +48,6 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     _logoTapResetTimer?.cancel();
     _emailController.dispose();
     _passwordController.dispose();
-    _backgroundController.dispose();
     _buttonController.dispose();
     super.dispose();
   }
@@ -130,38 +119,18 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         return;
       }
 
-      final Widget destination;
-      switch (auth.userType) {
-        case UserType.alumno:
-          destination = const StudentDashboardPage();
-          break;
-        case UserType.empresa:
-          destination = const CompanyDashboardPage();
-          break;
-        case UserType.profesor:
-          destination = const ProfessorDashboardPage();
-          break;
-        case UserType.admin:
-          destination = const AdminDashboardPage();
-          break;
-        case UserType.none:
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                'La sesión se validó, pero no se encontró un perfil válido. '
-                'Verifica el tipo de usuario en Firestore.',
-              ),
-              behavior: SnackBarBehavior.floating,
-              duration: Duration(seconds: 5),
+      if (auth.userType == UserType.none) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'La sesión se validó, pero no se encontró un perfil válido. '
+              'Verifica el tipo de usuario en Firestore.',
             ),
-          );
-          return;
+            behavior: SnackBarBehavior.floating,
+            duration: Duration(seconds: 5),
+          ),
+        );
       }
-
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute<void>(builder: (_) => destination),
-        (route) => false,
-      );
     } catch (e, stackTrace) {
       debugPrint('Error inesperado al iniciar sesión: $e\n$stackTrace');
 
@@ -191,41 +160,53 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _darkWine,
+      backgroundColor: Colors.white,
       body: Stack(
         children: [
-          // Fondo animado
           Positioned.fill(
-            child: AnimatedBuilder(
-              animation: _backgroundController,
-              builder: (context, child) {
-                return CustomPaint(
-                  painter: _PremiumBackgroundPainter(
-                    progress: _backgroundController.value,
-                  ),
-                );
-              },
+            child: DecoratedBox(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(0xFF092B57),
+                    Color(0xFF174E87),
+                    Color(0xFFB9D7F3),
+                    Color(0xFFFFFFFF),
+                  ],
+                  stops: [0, .28, .68, 1],
+                ),
+              ),
             ),
           ),
-
-          // Contenido principal
           SafeArea(
             child: LayoutBuilder(
               builder: (context, constraints) {
                 final isWide = constraints.maxWidth >= 850;
 
                 return Center(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 22,
-                      vertical: 28,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth: isWide ? 1080 : 470,
                     ),
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(
-                        maxWidth: isWide ? 1020 : 470,
+                    child: ListView(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isWide ? 24 : 18,
+                        vertical: 22,
                       ),
-                      child:
-                          isWide ? _buildDesktopLayout() : _buildMobileLayout(),
+                      children: [
+                        _buildBrand(compact: isWide),
+                        const SizedBox(height: 24),
+                        Center(
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 480),
+                            child: _buildLoginCard(),
+                          ),
+                        ),
+                        const SizedBox(height: 18),
+                        _buildFooter(),
+                      ],
                     ),
                   ),
                 );
@@ -237,74 +218,6 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     );
   }
 
-  // Diseño para celular
-  Widget _buildMobileLayout() {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        _buildBrand(),
-        const SizedBox(height: 34),
-        _buildLoginCard(),
-        const SizedBox(height: 24),
-        _buildFooter(),
-      ],
-    );
-  }
-
-  // Diseño de dos columnas para laptop
-  Widget _buildDesktopLayout() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.only(right: 40),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildBrand(compact: true),
-                const SizedBox(height: 42),
-                Text(
-                  'Tu siguiente\ncapítulo comienza aquí.',
-                  style: GoogleFonts.outfit(
-                    color: Colors.white,
-                    fontSize: 48,
-                    fontWeight: FontWeight.w800,
-                    height: 1.05,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  'Descubre oportunidades, conecta con empresas '
-                  'y construye el futuro profesional que imaginas.',
-                  style: GoogleFonts.inter(
-                    color: Colors.white.withValues(alpha: 0.72),
-                    fontSize: 16,
-                    height: 1.8,
-                  ),
-                ),
-                const SizedBox(height: 32),
-                _buildFeature(
-                  Icons.rocket_launch_rounded,
-                  'Impulsa tu talento',
-                ),
-                const SizedBox(height: 16),
-                _buildFeature(
-                  Icons.hub_rounded,
-                  'Conecta con nuevas oportunidades',
-                ),
-              ],
-            ),
-          ),
-        ),
-        SizedBox(
-          width: 420,
-          child: _buildLoginCard(),
-        ),
-      ],
-    );
-  }
-
   Widget _buildBrand({bool compact = false}) {
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -312,89 +225,35 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         GestureDetector(
           onTap: _handleLogoTap,
           child: Container(
-            width: compact ? 94 : 108,
-            height: compact ? 94 : 108,
-            decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: Colors.white.withValues(alpha: 0.07),
-            border: Border.all(
-              color: _gold.withValues(alpha: 0.85),
-              width: 1.5,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: _gold.withValues(alpha: 0.16),
-                blurRadius: 35,
-                spreadRadius: 2,
-              ),
-            ],
-          ),
-          child: Center(
-            child: ClipOval(
-              child: Image.asset(
-                'web/icons/logo_sis_color.png',
-                width: compact ? 68 : 78,
-                height: compact ? 68 : 78,
-                fit: BoxFit.contain,
-                errorBuilder: (_, __, ___) {
-                  return Icon(
-                    Icons.hub_rounded,
-                    color: _gold,
-                    size: compact ? 48 : 56,
-                  );
-                },
-              ),
-            ),
+            width: compact ? 210 : 190,
+            height: compact ? 132 : 120,
+            child: Image.asset(
+              'assets/images/branding/agora_logo_principal.png',
+              fit: BoxFit.contain,
             ),
           ),
         ),
         const SizedBox(height: 18),
-        Text(
-          'RedTESO',
-          style: GoogleFonts.outfit(
-            color: Colors.white,
-            fontSize: compact ? 42 : 38,
-            fontWeight: FontWeight.w800,
-            letterSpacing: 1.3,
-          ),
-        ),
-        const SizedBox(height: 5),
-        Text(
-          'TU TALENTO ABRE PUERTAS',
-          textAlign: TextAlign.center,
-          style: GoogleFonts.inter(
-            color: _gold,
-            fontSize: 10,
-            fontWeight: FontWeight.w700,
-            letterSpacing: 3,
-          ),
-        ),
       ],
     );
   }
 
   Widget _buildLoginCard() {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(30),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 22, sigmaY: 22),
-        child: Container(
-          padding: const EdgeInsets.all(28),
+    return Container(
+      padding: const EdgeInsets.all(28),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.075),
+            color: Colors.white.withValues(alpha: 0.96),
             borderRadius: BorderRadius.circular(30),
-            border: Border.all(
-              color: Colors.white.withValues(alpha: 0.16),
-            ),
+            border: Border.all(color: const Color(0xFFD8E8F8)),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.18),
-                blurRadius: 40,
-                offset: const Offset(0, 20),
+                color: const Color(0xFF315B8A).withValues(alpha: 0.12),
+                blurRadius: 38,
+                offset: const Offset(0, 18),
               ),
             ],
           ),
-          child: Column(
+      child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -402,7 +261,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                 width: 48,
                 height: 5,
                 decoration: BoxDecoration(
-                  color: _gold,
+                  color: _aqua,
                   borderRadius: BorderRadius.circular(20),
                 ),
               ),
@@ -410,16 +269,16 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
               Text(
                 '¡Bienvenido!',
                 style: GoogleFonts.outfit(
-                  color: Colors.white,
+                  color: _navy,
                   fontSize: 31,
                   fontWeight: FontWeight.w800,
                 ),
               ),
               const SizedBox(height: 8),
               Text(
-                'Inicia sesión y encuentra tu próxima oportunidad.',
+                'Inicia sesión y entra a tu ecosistema ÁGORA.',
                 style: GoogleFonts.inter(
-                  color: Colors.white.withValues(alpha: 0.68),
+                  color: const Color(0xFF647A96),
                   fontSize: 13,
                   height: 1.6,
                 ),
@@ -449,7 +308,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                     _isPasswordVisible
                         ? Icons.visibility_off_rounded
                         : Icons.visibility_rounded,
-                    color: Colors.white60,
+                    color: const Color(0xFF71839A),
                     size: 21,
                   ),
                 ),
@@ -470,15 +329,15 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                             decoration: BoxDecoration(
                               gradient: const LinearGradient(
                                 colors: [
-                                  Color(0xFFF2D69B),
-                                  Color(0xFFD8A74F),
-                                  Color(0xFFECC780),
+                                  Color(0xFF3D9EEB),
+                                  Color(0xFF1F67B2),
+                                  Color(0xFF438DCE),
                                 ],
                               ),
                               borderRadius: BorderRadius.circular(17),
                               boxShadow: [
                                 BoxShadow(
-                                  color: _gold.withValues(alpha: 0.23),
+                                  color: _aqua.withValues(alpha: 0.23),
                                   blurRadius: 22,
                                   offset: const Offset(0, 8),
                                 ),
@@ -496,7 +355,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                 backgroundColor: Colors.transparent,
                                 disabledBackgroundColor: Colors.white24,
                                 shadowColor: Colors.transparent,
-                                foregroundColor: _darkWine,
+                                foregroundColor: Colors.white,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(17),
                                 ),
@@ -507,7 +366,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                       height: 24,
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2.5,
-                                        color: _darkWine,
+                                        color: Colors.white,
                                       ),
                                     )
                                   : Row(
@@ -546,14 +405,14 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                     Text(
                       '¿Todavía no tienes cuenta? ',
                       style: GoogleFonts.inter(
-                        color: Colors.white70,
+                        color: const Color(0xFF647A96),
                         fontSize: 12,
                       ),
                     ),
                     TextButton(
                       onPressed: _openRegister,
                       style: TextButton.styleFrom(
-                        foregroundColor: _gold,
+                        foregroundColor: _navy,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 4,
                         ),
@@ -572,8 +431,6 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                 ),
               ),
             ],
-          ),
-        ),
       ),
     );
   }
@@ -596,7 +453,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
           child: Text(
             label,
             style: GoogleFonts.inter(
-              color: _cream,
+              color: _navy,
               fontSize: 12,
               fontWeight: FontWeight.w600,
             ),
@@ -608,24 +465,24 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
           keyboardType: keyboardType,
           onSubmitted: onSubmitted,
           style: GoogleFonts.inter(
-            color: Colors.white,
+            color: const Color(0xFF1D3553),
             fontSize: 14,
           ),
-          cursorColor: _gold,
+          cursorColor: _aqua,
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: GoogleFonts.inter(
-              color: Colors.white38,
+              color: const Color(0xFF91A1B5),
               fontSize: 12,
             ),
             prefixIcon: Icon(
               icon,
-              color: _gold,
+              color: _aqua,
               size: 21,
             ),
             suffixIcon: suffix,
             filled: true,
-            fillColor: Colors.black.withValues(alpha: 0.17),
+            fillColor: const Color(0xFFF5F9FE),
             contentPadding: const EdgeInsets.symmetric(
               vertical: 19,
               horizontal: 15,
@@ -633,49 +490,15 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(15),
               borderSide: BorderSide(
-                color: Colors.white.withValues(alpha: 0.10),
+                color: const Color(0xFFD7E3F0),
               ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(15),
               borderSide: const BorderSide(
-                color: _gold,
+                color: _aqua,
                 width: 1.4,
               ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildFeature(IconData icon, String text) {
-    return Row(
-      children: [
-        Container(
-          width: 42,
-          height: 42,
-          decoration: BoxDecoration(
-            color: _gold.withValues(alpha: 0.10),
-            borderRadius: BorderRadius.circular(13),
-            border: Border.all(
-              color: _gold.withValues(alpha: 0.24),
-            ),
-          ),
-          child: Icon(
-            icon,
-            color: _gold,
-            size: 21,
-          ),
-        ),
-        const SizedBox(width: 14),
-        Expanded(
-          child: Text(
-            text,
-            style: GoogleFonts.inter(
-              color: Colors.white.withValues(alpha: 0.85),
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
             ),
           ),
         ),
@@ -688,7 +511,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
       'PLATAFORMA ACADÉMICA TESOEM',
       textAlign: TextAlign.center,
       style: GoogleFonts.inter(
-        color: Colors.white38,
+      color: const Color(0xFF7387A1),
         fontSize: 9,
         fontWeight: FontWeight.w600,
         letterSpacing: 2,
@@ -709,8 +532,8 @@ class _AdminAccessDialogState extends State<_AdminAccessDialog> {
   bool _obscurePassword = true;
   String? _errorMessage;
 
-  static const Color _darkWine = Color(0xFF210713);
-  static const Color _gold = Color(0xFFE7BD72);
+  static const Color _navy = Color(0xFF07172F);
+  static const Color _aqua = Color(0xFF67D8FF);
 
   @override
   void dispose() {
@@ -730,14 +553,14 @@ class _AdminAccessDialogState extends State<_AdminAccessDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       scrollable: true,
-      backgroundColor: const Color(0xFF2A1821),
+      backgroundColor: const Color(0xFF102A4A),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(24),
-        side: BorderSide(color: _gold.withValues(alpha: 0.35)),
+        side: BorderSide(color: _aqua.withValues(alpha: 0.35)),
       ),
       title: Row(
         children: [
-          const Icon(Icons.admin_panel_settings_rounded, color: _gold),
+          const Icon(Icons.admin_panel_settings_rounded, color: _aqua),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
@@ -768,7 +591,7 @@ class _AdminAccessDialogState extends State<_AdminAccessDialog> {
             decoration: InputDecoration(
               hintText: 'Contraseña',
               hintStyle: GoogleFonts.inter(color: Colors.white38),
-              prefixIcon: const Icon(Icons.lock_outline_rounded, color: _gold),
+              prefixIcon: const Icon(Icons.lock_outline_rounded, color: _aqua),
               suffixIcon: IconButton(
                 onPressed: () => setState(
                   () => _obscurePassword = !_obscurePassword,
@@ -790,7 +613,7 @@ class _AdminAccessDialogState extends State<_AdminAccessDialog> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
-                borderSide: const BorderSide(color: _gold, width: 1.4),
+                borderSide: const BorderSide(color: _aqua, width: 1.4),
               ),
             ),
           ),
@@ -813,8 +636,8 @@ class _AdminAccessDialogState extends State<_AdminAccessDialog> {
         ),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: _gold,
-            foregroundColor: _darkWine,
+            backgroundColor: _aqua,
+            foregroundColor: _navy,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
@@ -835,9 +658,9 @@ class _PremiumBackgroundPainter extends CustomPainter {
 
   _PremiumBackgroundPainter({required this.progress});
 
-  static const Color _wine = Color(0xFF650D2B);
-  static const Color _darkWine = Color(0xFF210713);
-  static const Color _gold = Color(0xFFE7BD72);
+  static const Color _wine = Color(0xFF1357A6);
+  static const Color _navy = Color(0xFF07172F);
+  static const Color _aqua = Color(0xFF67D8FF);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -848,10 +671,10 @@ class _PremiumBackgroundPainter extends CustomPainter {
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
         colors: [
-          Color(0xFF10050D),
-          Color(0xFF3A091C),
-          Color(0xFF170610),
-          Color(0xFF080408),
+          Color(0xFF061326),
+          Color(0xFF123F78),
+          Color(0xFF0A2342),
+          Color(0xFF040B17),
         ],
         stops: [0, 0.38, 0.72, 1],
       ).createShader(rect);
@@ -876,7 +699,7 @@ class _PremiumBackgroundPainter extends CustomPainter {
         size.height * 0.76,
       ),
       size.width * 0.48,
-      _gold.withValues(alpha: 0.10),
+      _aqua.withValues(alpha: 0.10),
     );
 
     // Trazos diagonales luminosos
@@ -886,7 +709,7 @@ class _PremiumBackgroundPainter extends CustomPainter {
       ..shader = LinearGradient(
         colors: [
           Colors.transparent,
-          _gold.withValues(alpha: 0.34),
+          _aqua.withValues(alpha: 0.34),
           _wine.withValues(alpha: 0.72),
           Colors.transparent,
         ],
@@ -918,7 +741,7 @@ class _PremiumBackgroundPainter extends CustomPainter {
     canvas.drawPath(path2, ribbonPaint);
 
     // Partículas doradas
-    final particlePaint = Paint()..color = _gold.withValues(alpha: 0.44);
+    final particlePaint = Paint()..color = _aqua.withValues(alpha: 0.44);
 
     for (int i = 0; i < 45; i++) {
       final x = ((i * 73.7) % 997) / 997 * size.width;
@@ -941,7 +764,7 @@ class _PremiumBackgroundPainter extends CustomPainter {
         ..shader = RadialGradient(
           colors: [
             Colors.transparent,
-            _darkWine.withValues(alpha: 0.40),
+            _navy.withValues(alpha: 0.40),
           ],
           stops: const [0.35, 1],
         ).createShader(rect),

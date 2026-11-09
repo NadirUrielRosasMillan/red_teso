@@ -84,7 +84,7 @@ class _CompanyApplicantsPageState extends State<CompanyApplicantsPage> {
     final user = _auth.currentUser;
     if (user == null) {
       return Scaffold(
-        backgroundColor: const Color(0xFF090D16),
+        backgroundColor: const Color(0xFF0B1524),
         body: Center(child: Text('Inicia sesión para ver los postulados', style: GoogleFonts.inter(color: Colors.white))),
       );
     }
@@ -93,7 +93,7 @@ class _CompanyApplicantsPageState extends State<CompanyApplicantsPage> {
       backgroundColor: Colors.transparent,
       appBar: AppBar(
         title: Text('Postulaciones Recibidas', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white)),
-        backgroundColor: const Color(0xFF090D16).withOpacity(0.85),
+        backgroundColor: const Color(0xFF0B1524).withOpacity(0.85),
         foregroundColor: Colors.white,
         elevation: 0,
       ),

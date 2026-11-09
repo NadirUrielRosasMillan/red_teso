@@ -148,10 +148,10 @@ class _VacancyLocationMapWidgetState extends State<VacancyLocationMapWidget> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardBackground = isDark ? const Color(0xFF292027) : const Color(0xFFFFFCFA);
-    final mainText = isDark ? const Color(0xFFF4EDF1) : const Color(0xFF3A1725);
-    final mutedText = isDark ? const Color(0xFFB9AAB3) : const Color(0xFF75636B);
-    final borderColor = isDark ? const Color(0xFF493640) : const Color(0xFFE8DDE1);
+    final cardBackground = isDark ? const Color(0xFF15243A) : const Color(0xFFF8FBFF);
+    final mainText = isDark ? const Color(0xFFEAF2FB) : const Color(0xFF16324F);
+    final mutedText = isDark ? const Color(0xFFB8C8DC) : const Color(0xFF64748B);
+    final borderColor = isDark ? const Color(0xFF294363) : const Color(0xFFDCE7F3);
     final targetLatLng = _resolveTargetLatLng();
     final isRemote = widget.locationName.toLowerCase().contains('remoto') || widget.distanceKm == 0;
 
@@ -314,7 +314,7 @@ class _VacancyLocationMapWidgetState extends State<VacancyLocationMapWidget> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF241820).withValues(alpha: 0.92),
+                        color: const Color(0xFF0B1524).withValues(alpha: 0.92),
                         borderRadius: BorderRadius.circular(14),
                         border: Border.all(color: AppTheme.accentColor.withValues(alpha: 0.5)),
                         boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 6)],
@@ -381,7 +381,7 @@ class _VacancyLocationMapWidgetState extends State<VacancyLocationMapWidget> {
                     right: 0,
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                      color: const Color(0xFF241820).withValues(alpha: 0.94),
+                      color: const Color(0xFF0B1524).withValues(alpha: 0.94),
                       child: Row(
                         children: [
                           const Icon(Icons.alt_route_rounded, color: AppTheme.accentColor, size: 16),
@@ -489,11 +489,11 @@ class _LocationPickerModalState extends State<LocationPickerModal> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final modalBackground = isDark ? const Color(0xFF21191E) : const Color(0xFFFAF3E9);
-    final cardBackground = isDark ? const Color(0xFF292027) : const Color(0xFFFFFCFA);
-    final mainText = isDark ? const Color(0xFFF4EDF1) : const Color(0xFF3A1725);
-    final mutedText = isDark ? const Color(0xFFB9AAB3) : const Color(0xFF75636B);
-    final borderColor = isDark ? const Color(0xFF493640) : const Color(0xFFE8DDE1);
+    final modalBackground = isDark ? const Color(0xFF101C2D) : const Color(0xFFF1F6FC);
+    final cardBackground = isDark ? const Color(0xFF15243A) : const Color(0xFFF8FBFF);
+    final mainText = isDark ? const Color(0xFFEAF2FB) : const Color(0xFF16324F);
+    final mutedText = isDark ? const Color(0xFFB8C8DC) : const Color(0xFF64748B);
+    final borderColor = isDark ? const Color(0xFF294363) : const Color(0xFFDCE7F3);
     return Container(
       height: MediaQuery.of(context).size.height * 0.88,
       decoration: BoxDecoration(
@@ -621,7 +621,7 @@ class _LocationPickerModalState extends State<LocationPickerModal> {
                           padding: const EdgeInsets.only(right: 8),
                           child: ChoiceChip(
                             avatar: Icon(preset.icon, size: 15, color: isSel ? Colors.white : AppTheme.primaryColor),
-                            label: Text(preset.title, style: GoogleFonts.inter(fontSize: 11.5, color: isSel ? Colors.white : (isDark ? const Color(0xFFF4EDF1) : const Color(0xFF3A1725)), fontWeight: FontWeight.bold)),
+                            label: Text(preset.title, style: GoogleFonts.inter(fontSize: 11.5, color: isSel ? Colors.white : (isDark ? const Color(0xFFEAF2FB) : const Color(0xFF16324F)), fontWeight: FontWeight.bold)),
                             selected: isSel,
                             selectedColor: AppTheme.primaryColor,
                             backgroundColor: Colors.white,

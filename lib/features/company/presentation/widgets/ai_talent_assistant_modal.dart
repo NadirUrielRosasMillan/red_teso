@@ -67,7 +67,7 @@ class _AiTalentAssistantModalState extends State<AiTalentAssistantModal>
 
     _chatMessages.add(
       TalentChatMessage(
-        text: '¡Hola! 👋 Soy el Asistente IA de Talento RedTESO.\n\nPuedo ayudarte a encontrar alumnos y candidatos universitarios según sus habilidades técnicas, ubicación, promedio o modalidad. ¿Qué tipo de talento busca tu empresa hoy?',
+        text: '¡Hola! 👋 Soy el Asistente IA de Talento ÁGORA Talento.\n\nPuedo ayudarte a encontrar alumnos y candidatos universitarios según sus habilidades técnicas, ubicación, promedio o modalidad. ¿Qué tipo de talento busca tu empresa hoy?',
         isUser: false,
       ),
     );
@@ -141,9 +141,9 @@ class _AiTalentAssistantModalState extends State<AiTalentAssistantModal>
       await Future.delayed(const Duration(milliseconds: 400));
       String response = '';
       if (isGreeting) {
-        response = '¡Hola! 👋 Soy el Asistente IA de Talento RedTESO. ¿Qué tipo de candidato o habilidad busca tu empresa hoy?';
+        response = '¡Hola! 👋 Soy el Asistente IA de Talento ÁGORA Talento. ¿Qué tipo de candidato o habilidad busca tu empresa hoy?';
       } else if (isWhoAreYou) {
-        response = '🤖 ¡Hola! Soy el Asistente IA de Talento RedTESO.\n\nPuedo analizar los perfiles de estudiantes de TESOEM y recomendarte candidatos por habilidades (ej. SQL, Flutter, Python, Ciberseguridad), promedio o zona geográfica.\n\n¡Prueba consultando algo como "Alumnos en Ciberseguridad con promedio alto"!';
+        response = '🤖 ¡Hola! Soy el Asistente IA de Talento ÁGORA Talento.\n\nPuedo analizar los perfiles de estudiantes de TESOEM y recomendarte candidatos por habilidades (ej. SQL, Flutter, Python, Ciberseguridad), promedio o zona geográfica.\n\n¡Prueba consultando algo como "Alumnos en Ciberseguridad con promedio alto"!';
       } else {
         response = '¡Con gusto! 😊 Quedo a tu disposición para ayudarte a conectar con el mejor talento de TESOEM.';
       }
