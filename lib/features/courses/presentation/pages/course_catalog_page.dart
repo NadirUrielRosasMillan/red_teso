@@ -24,7 +24,9 @@ class CourseCatalogPage extends StatefulWidget {
 
 class _CourseCatalogPageState extends State<CourseCatalogPage> {
   final ScrollController _scrollController = ScrollController();
+  final TextEditingController _searchController = TextEditingController();
 
+  String _searchQuery = '';
   String _selectedCategory = 'Todos';
   String _selectedLevel = 'Todos';
   bool _isScrolled = false;
@@ -44,11 +46,14 @@ class _CourseCatalogPageState extends State<CourseCatalogPage> {
   @override
   void dispose() {
     _scrollController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
   void _clearFilters() {
     setState(() {
+      _searchQuery = '';
+      _searchController.clear();
       _selectedCategory = 'Todos';
       _selectedLevel = 'Todos';
     });
@@ -115,27 +120,32 @@ class _CourseCatalogPageState extends State<CourseCatalogPage> {
         debugPrint('>>> allCourses.length: ${allCourses.length}');
 
         final filteredCourses = allCourses.where((course) {
+          final matchesSearch = _searchQuery.isEmpty ||
+              course.title.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+              course.description.toLowerCase().contains(_searchQuery.toLowerCase());
+
           final matchesCategory = _selectedCategory == 'Todos' ||
               course.category.toLowerCase().contains(_selectedCategory.toLowerCase());
 
           final matchesLevel = _selectedLevel == 'Todos' ||
               course.level.toLowerCase().contains(_selectedLevel.toLowerCase());
 
-          return matchesCategory && matchesLevel;
+          return matchesSearch && matchesCategory && matchesLevel;
         }).toList();
 
         return Scaffold(
-          backgroundColor: Colors.transparent,
+          backgroundColor: Colors.white,
           appBar: AppBar(
-            backgroundColor: const Color(0xFF090D16).withOpacity(0.85),
-            foregroundColor: Colors.white,
+            backgroundColor: Colors.white,
+            foregroundColor: AppTheme.textPrimaryLight,
             elevation: 0,
+            scrolledUnderElevation: 0,
             title: Text(
               'Cursos TESOEM para Empresas',
-              style: GoogleFonts.outfit(
+              style: GoogleFonts.spaceGrotesk(
                 fontWeight: FontWeight.bold,
                 fontSize: 20,
-                color: Colors.white,
+                color: AppTheme.textPrimaryLight,
               ),
             ),
             actions: [
@@ -143,7 +153,7 @@ class _CourseCatalogPageState extends State<CourseCatalogPage> {
                 padding: const EdgeInsets.only(right: 12.0),
                 child: Center(
                   child: InkWell(
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(8),
                     onTap: () {
                       Navigator.push(
                         context,
@@ -155,27 +165,21 @@ class _CourseCatalogPageState extends State<CourseCatalogPage> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                       decoration: BoxDecoration(
-                        color: AppTheme.accentColor,
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppTheme.accentColor.withOpacity(0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 3),
-                          ),
-                        ],
+                        color: AppTheme.surfaceLight,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: AppTheme.borderLight),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.movie_filter_rounded, size: 18, color: Colors.white),
+                          const Icon(Icons.movie_filter_rounded, size: 16, color: AppTheme.primaryTurquoise),
                           const SizedBox(width: 6),
                           Text(
                             'CLIPS 🎬',
-                            style: GoogleFonts.outfit(
+                            style: GoogleFonts.plusJakartaSans(
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                              color: AppTheme.primaryTurquoise,
                               letterSpacing: 0.5,
                             ),
                           ),
@@ -197,129 +201,160 @@ class _CourseCatalogPageState extends State<CourseCatalogPage> {
               child: FloatingActionButton(
                 key: const ValueKey('floating_ai_btn'),
                 onPressed: () => AiCourseAssistantModal.show(context, courses: allCourses),
-                backgroundColor: const Color(0xFF0F172A),
-                elevation: 6,
+                backgroundColor: AppTheme.surfaceLight,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  side: const BorderSide(color: AppTheme.borderLight),
+                ),
                 tooltip: 'IA REDTESO 🤖',
-                child: const Icon(Icons.psychology_rounded, color: AppTheme.accentColor, size: 24),
+                child: const Icon(Icons.psychology_rounded, color: AppTheme.primaryTurquoise, size: 24),
               ),
             )
                 : const SizedBox.shrink(key: ValueKey('empty_ai_btn')),
           ),
 
-          body: LiquidGlassAmbientBackground(
-            child: CustomScrollView(
-              controller: _scrollController,
-              physics: const BouncingScrollPhysics(),
-              slivers: [
-                SliverToBoxAdapter(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 12),
+          body: CustomScrollView(
+            controller: _scrollController,
+            physics: const BouncingScrollPhysics(),
+            slivers: [
+              SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 12),
 
-                      AnimatedOpacity(
-                        duration: const Duration(milliseconds: 250),
-                        opacity: _isScrolled ? 0.3 : 1.0,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
-                          child: GestureDetector(
-                            onTap: () {
-                              AiCourseAssistantModal.show(context, courses: allCourses);
-                            },
-                            child: Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  colors: [
-                                    Color(0xFF0F172A),
-                                    Color(0xFF1E293B),
-                                  ],
+                    AnimatedOpacity(
+                      duration: const Duration(milliseconds: 250),
+                      opacity: _isScrolled ? 0.3 : 1.0,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+                        child: GestureDetector(
+                          onTap: () {
+                            AiCourseAssistantModal.show(context, courses: allCourses);
+                          },
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                            decoration: BoxDecoration(
+                              color: AppTheme.surfaceLight,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: AppTheme.borderLight, width: 1),
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: AppTheme.primaryTurquoise.withAlpha(20),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(Icons.psychology_rounded, color: AppTheme.primaryTurquoise, size: 22),
                                 ),
-                                borderRadius: BorderRadius.circular(20),
-                                border: Border.all(color: AppTheme.accentColor.withOpacity(0.5), width: 1.2),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: AppTheme.accentColor.withOpacity(0.2),
-                                    blurRadius: 10,
-                                    offset: const Offset(0, 4),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Asistente IA para Cursos',
+                                        style: GoogleFonts.spaceGrotesk(color: AppTheme.textPrimaryLight, fontSize: 14, fontWeight: FontWeight.w600),
+                                      ),
+                                      Text(
+                                        'Busca de forma natural: "curso de AWS o Ciberseguridad"',
+                                        style: GoogleFonts.plusJakartaSans(color: AppTheme.textSecondaryLight, fontSize: 11.5),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.all(8),
-                                    decoration: const BoxDecoration(
-                                      gradient: LinearGradient(colors: [AppTheme.primaryColor, AppTheme.accentColor]),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: const Icon(Icons.psychology_rounded, color: Colors.white, size: 22),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'Asistente IA para Cursos 🤖✨',
-                                          style: GoogleFonts.outfit(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
-                                        ),
-                                        Text(
-                                          'Escribe en lenguaje cotidiano: "Quiero un curso de AWS o Ciberseguridad"',
-                                          style: GoogleFonts.inter(color: Colors.white70, fontSize: 11.5),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const Icon(Icons.arrow_forward_ios_rounded, color: AppTheme.accentColor, size: 14),
-                                ],
-                              ),
+                                ),
+                                const Icon(Icons.arrow_forward_ios_rounded, color: AppTheme.textSecondaryLight, size: 14),
+                              ],
                             ),
                           ),
                         ),
                       ),
+                    ),
 
-                      const SizedBox(height: 10),
+                    const SizedBox(height: 16),
 
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Row(
-                          children: ['Todos', 'Sistemas', 'IA', 'Seguridad', 'Móvil', 'Gestión'].map((category) {
-                            final isSelected = _selectedCategory == category;
-                            return Padding(
-                              padding: const EdgeInsets.only(right: 8.0),
-                              child: ChoiceChip(
-                                label: Text(category),
-                                selected: isSelected,
-                                selectedColor: AppTheme.primaryColor,
-                                labelStyle: GoogleFonts.inter(
-                                  color: isSelected ? Colors.white : const Color(0xFF475569),
-                                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                                  fontSize: 12.5,
-                                ),
-                                onSelected: (val) {
-                                  setState(() {
-                                    _selectedCategory = category;
-                                  });
-                                },
-                              ),
-                            );
-                          }).toList(),
+                    // --- SEARCH BAR (Laravel Style) ---
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: TextField(
+                        controller: _searchController,
+                        onChanged: (value) {
+                          setState(() {
+                            _searchQuery = value;
+                          });
+                        },
+                        style: GoogleFonts.plusJakartaSans(color: AppTheme.textPrimaryLight, fontSize: 14),
+                        decoration: InputDecoration(
+                          hintText: 'Buscar por título o descripción...',
+                          hintStyle: GoogleFonts.plusJakartaSans(color: AppTheme.textSecondaryLight, fontSize: 14),
+                          prefixIcon: const Icon(Icons.search_rounded, color: AppTheme.textSecondaryLight, size: 20),
+                          filled: true,
+                          fillColor: AppTheme.surfaceLight,
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: const BorderSide(color: AppTheme.borderLight),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: const BorderSide(color: AppTheme.borderLight),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: const BorderSide(color: AppTheme.primaryTurquoise),
+                          ),
                         ),
                       ),
+                    ),
 
-                      const SizedBox(height: 8),
+                    const SizedBox(height: 16),
 
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Row(
-                          children: [
-                            Text('Nivel: ', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF64748B))),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Row(
+                        children: ['Todos', 'Sistemas', 'IA', 'Seguridad', 'Móvil', 'Gestión'].map((category) {
+                          final isSelected = _selectedCategory == category;
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: ChoiceChip(
+                              label: Text(category),
+                              selected: isSelected,
+                              backgroundColor: AppTheme.bgWhite,
+                              selectedColor: AppTheme.primaryTurquoise,
+                              side: BorderSide(color: isSelected ? AppTheme.primaryTurquoise : AppTheme.borderLight),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                              labelStyle: GoogleFonts.plusJakartaSans(
+                                color: isSelected ? Colors.white : AppTheme.textPrimaryLight,
+                                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                                fontSize: 12.5,
+                              ),
+                              showCheckmark: false,
+                              onSelected: (val) {
+                                setState(() {
+                                  _selectedCategory = category;
+                                });
+                              },
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Row(
+                        children: [
+                          Text('Nivel: ', style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.bold, color: AppTheme.textSecondaryLight)),
                             ...['Todos', 'Básico', 'Intermedio', 'Avanzado'].map((level) {
                               final isSelected = _selectedLevel == level;
                               return Padding(
@@ -327,11 +362,14 @@ class _CourseCatalogPageState extends State<CourseCatalogPage> {
                                 child: FilterChip(
                                   label: Text(level),
                                   selected: isSelected,
-                                  selectedColor: AppTheme.accentColor,
+                                  backgroundColor: AppTheme.bgWhite,
+                                  selectedColor: AppTheme.primaryTurquoise,
                                   checkmarkColor: Colors.white,
-                                  labelStyle: GoogleFonts.inter(
-                                    color: isSelected ? Colors.white : const Color(0xFF475569),
-                                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                  side: BorderSide(color: isSelected ? AppTheme.primaryTurquoise : AppTheme.borderLight),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                  labelStyle: GoogleFonts.plusJakartaSans(
+                                    color: isSelected ? Colors.white : AppTheme.textPrimaryLight,
+                                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                                     fontSize: 12,
                                   ),
                                   onSelected: (val) {
@@ -357,33 +395,33 @@ class _CourseCatalogPageState extends State<CourseCatalogPage> {
                       margin: const EdgeInsets.all(32),
                       padding: const EdgeInsets.all(28),
                       decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(24),
-                        border: Border.all(color: const Color(0xFFE2E8F0)),
+                        color: AppTheme.surfaceLight,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: AppTheme.borderLight),
                       ),
                       child: Column(
                         children: [
-                          const Icon(Icons.manage_search_rounded, size: 64, color: Colors.grey),
+                          const Icon(Icons.manage_search_rounded, size: 64, color: AppTheme.textSecondaryLight),
                           const SizedBox(height: 16),
                           Text(
                             'No se encontraron cursos',
-                            style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A)),
+                            style: GoogleFonts.spaceGrotesk(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textPrimaryLight),
                           ),
                           const SizedBox(height: 6),
                           Text(
-                            'No hay cursos que coincidan con los filtros seleccionados.',
+                            'No hay cursos que coincidan con tu búsqueda y filtros.',
                             textAlign: TextAlign.center,
-                            style: GoogleFonts.inter(fontSize: 13, color: const Color(0xFF64748B)),
+                            style: GoogleFonts.plusJakartaSans(fontSize: 13, color: AppTheme.textSecondaryLight),
                           ),
                           const SizedBox(height: 20),
                           ElevatedButton.icon(
                             onPressed: _clearFilters,
-                            icon: const Icon(Icons.refresh_rounded, size: 18),
-                            label: const Text('Limpiar Filtros'),
+                            icon: const Icon(Icons.refresh_rounded, size: 18, color: Colors.white),
+                            label: Text('Limpiar Búsqueda', style: GoogleFonts.plusJakartaSans(color: Colors.white, fontWeight: FontWeight.w600)),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: AppTheme.primaryColor,
+                              backgroundColor: AppTheme.primaryTurquoise,
                               foregroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                             ),
                           ),
                         ],
@@ -432,11 +470,10 @@ class _CourseCatalogPageState extends State<CourseCatalogPage> {
                     ),
                   ),
 
-                const SliverToBoxAdapter(
-                  child: SizedBox(height: 100),
-                ),
-              ],
-            ),
+              const SliverToBoxAdapter(
+                child: SizedBox(height: 100),
+              ),
+            ],
           ),
         );
       },
@@ -445,11 +482,8 @@ class _CourseCatalogPageState extends State<CourseCatalogPage> {
 
   Widget _buildCompactCourseCard(CourseModel course) {
     return SizedBox(
-      height: 370,
-      child: GlassmorphicCard(
-        glowColor: AppTheme.primaryColor,
-        padding: EdgeInsets.zero,
-        margin: EdgeInsets.zero,
+      height: 420,
+      child: GestureDetector(
         onTap: () {
           Navigator.push(
             context,
@@ -458,143 +492,194 @@ class _CourseCatalogPageState extends State<CourseCatalogPage> {
             ),
           );
         },
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Stack(
-              children: [
-                ClipRRect(
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-                  child: _buildCourseBannerImage(course.bannerUrl, height: 150),
-                ),
-                Positioned(
-                  top: 10,
-                  left: 10,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: AppTheme.primaryColor.withOpacity(0.9),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
-                      course.level,
-                      style: GoogleFonts.inter(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
-                    ),
+        child: Container(
+          decoration: BoxDecoration(
+            color: AppTheme.bgWhite,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppTheme.borderLight, width: 1),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // --- PORTADA (IMAGEN) ---
+              Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(11)),
+                    child: _buildCourseBannerImage(course.bannerUrl, height: 160),
                   ),
-                ),
-                Positioned(
-                  top: 10,
-                  right: 10,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.75),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.star_rounded, color: Colors.amber, size: 13),
-                        const SizedBox(width: 3),
-                        Text(
-                          '${course.rating}',
-                          style: GoogleFonts.inter(color: Colors.white, fontSize: 11.5, fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Positioned.fill(
-                  child: Center(
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => CourseXRayPlayerPage(course: course),
-                          ),
-                        );
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.55),
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 1.5),
-                        ),
-                        child: const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 28),
+                  // Nivel del curso
+                  Positioned(
+                    top: 12,
+                    left: 12,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: AppTheme.bgWhite.withValues(alpha: 0.9),
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(color: AppTheme.borderLight),
+                      ),
+                      child: Text(
+                        course.level.toUpperCase(),
+                        style: GoogleFonts.plusJakartaSans(color: AppTheme.textPrimaryLight, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 0.5),
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
-
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(14.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      course.title,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.white, height: 1.25),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      '${course.category} • ${course.duration}',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.inter(fontSize: 11.5, color: Colors.white70),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      course.price,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.bold, color: AppTheme.accentColor),
-                    ),
-                    const Spacer(),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: OutlinedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => CourseDetailPage(course: course)),
-                              );
-                            },
-                            style: OutlinedButton.styleFrom(
-                              side: const BorderSide(color: Colors.white38),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                              padding: const EdgeInsets.symmetric(vertical: 8),
+                  // Botón de Play Centro
+                  Positioned.fill(
+                    child: Center(
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CourseXRayPlayerPage(course: course),
                             ),
-                            child: Text('Ficha 📄', style: GoogleFonts.inter(color: Colors.white, fontSize: 11)),
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: AppTheme.bgWhite.withValues(alpha: 0.8),
+                            shape: BoxShape.circle,
+                            border: Border.all(color: AppTheme.primaryTurquoise, width: 1.5),
                           ),
+                          child: const Icon(Icons.play_arrow_rounded, color: AppTheme.primaryTurquoise, size: 28),
                         ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () {
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+              // --- CONTENIDO DE LA TARJETA ---
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Categoría y flecha superior
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: AppTheme.surfaceLight,
+                              borderRadius: BorderRadius.circular(4),
+                              border: Border.all(color: AppTheme.borderLight),
+                            ),
+                            child: Text(
+                              course.category,
+                              style: GoogleFonts.plusJakartaSans(fontSize: 10, fontWeight: FontWeight.w600, color: AppTheme.primaryTurquoise),
+                            ),
+                          ),
+                          const Icon(Icons.arrow_outward_rounded, color: AppTheme.textSecondaryLight, size: 16),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+
+                      // Título
+                      Text(
+                        course.title,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.bold, fontSize: 16, color: AppTheme.textPrimaryLight, height: 1.2),
+                      ),
+                      const SizedBox(height: 6),
+
+                      // Resumen / Descripción corta
+                      Text(
+                        course.description,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.plusJakartaSans(fontSize: 12, color: AppTheme.textSecondaryLight, height: 1.4),
+                      ),
+                      
+                      const Spacer(),
+
+                      // Valoración y Precio
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              const Icon(Icons.star_rounded, color: Colors.amber, size: 16),
+                              const SizedBox(width: 4),
+                              Text(
+                                '${course.rating}',
+                                style: GoogleFonts.plusJakartaSans(color: AppTheme.textPrimaryLight, fontSize: 13, fontWeight: FontWeight.bold),
+                              ),
+                              Text(
+                                ' (24)', // Simulación de reseñas
+                                style: GoogleFonts.plusJakartaSans(color: AppTheme.textSecondaryLight, fontSize: 12),
+                              ),
+                            ],
+                          ),
+                          Text(
+                            course.price,
+                            style: GoogleFonts.plusJakartaSans(fontSize: 15, fontWeight: FontWeight.bold, color: AppTheme.primaryTurquoise),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 12),
+                      const Divider(color: AppTheme.borderLight, height: 1),
+                      const SizedBox(height: 12),
+
+                      // Footer: Metadata y Botón de Acción
+                      Row(
+                        children: [
+                          // Meta: Duración
+                          const Icon(Icons.schedule_rounded, size: 14, color: AppTheme.textSecondaryLight),
+                          const SizedBox(width: 4),
+                          Text(
+                            course.duration.split(' ').first + 'h',
+                            style: GoogleFonts.plusJakartaSans(fontSize: 11, color: AppTheme.textSecondaryLight),
+                          ),
+                          const SizedBox(width: 12),
+                          // Meta: Inscritos
+                          const Icon(Icons.people_outline_rounded, size: 14, color: AppTheme.textSecondaryLight),
+                          const SizedBox(width: 4),
+                          Text(
+                            '120+',
+                            style: GoogleFonts.plusJakartaSans(fontSize: 11, color: AppTheme.textSecondaryLight),
+                          ),
+                          const Spacer(),
+                          // Botón Cotizar Limpio
+                          InkWell(
+                            onTap: () {
                               CourseQuoteModal.show(context, course: course);
                             },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppTheme.primaryColor,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                              padding: const EdgeInsets.symmetric(vertical: 8),
+                            borderRadius: BorderRadius.circular(6),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: AppTheme.primaryTurquoise,
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                'Cotizar',
+                                style: GoogleFonts.plusJakartaSans(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                              ),
                             ),
-                            child: Text('Cotizar 💼', style: GoogleFonts.inter(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -627,7 +712,7 @@ class _CourseCatalogPageState extends State<CourseCatalogPage> {
       width: double.infinity,
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppTheme.primaryColor, Color(0xFF4A1022)],
+          colors: [AppTheme.primaryTurquoise, AppTheme.darkTurquoise],
         ),
       ),
       child: const Center(

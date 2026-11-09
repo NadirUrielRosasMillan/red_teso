@@ -84,7 +84,11 @@ class _CompanyApplicantsPageState extends State<CompanyApplicantsPage> {
     final user = _auth.currentUser;
     if (user == null) {
       return Scaffold(
+<<<<<<< HEAD
         backgroundColor: const Color(0xFF0B1524),
+=======
+        backgroundColor: AppTheme.bgDark,
+>>>>>>> origin/main
         body: Center(child: Text('Inicia sesión para ver los postulados', style: GoogleFonts.inter(color: Colors.white))),
       );
     }
@@ -93,7 +97,11 @@ class _CompanyApplicantsPageState extends State<CompanyApplicantsPage> {
       backgroundColor: Colors.transparent,
       appBar: AppBar(
         title: Text('Postulaciones Recibidas', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white)),
+<<<<<<< HEAD
         backgroundColor: const Color(0xFF0B1524).withOpacity(0.85),
+=======
+        backgroundColor: AppTheme.bgDark.withOpacity(0.85),
+>>>>>>> origin/main
         foregroundColor: Colors.white,
         elevation: 0,
       ),
@@ -372,7 +380,7 @@ class _CompanyApplicantsPageState extends State<CompanyApplicantsPage> {
         ),
         selected: isSelected,
         selectedColor: AppTheme.primaryColor,
-        backgroundColor: const Color(0xFF1E293B),
+        backgroundColor: AppTheme.surfaceDark,
         shape: StadiumBorder(
           side: BorderSide(
             color: isSelected ? AppTheme.primaryColor : Colors.white.withOpacity(0.25),

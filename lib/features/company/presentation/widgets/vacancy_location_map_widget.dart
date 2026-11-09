@@ -148,10 +148,17 @@ class _VacancyLocationMapWidgetState extends State<VacancyLocationMapWidget> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+<<<<<<< HEAD
     final cardBackground = isDark ? const Color(0xFF15243A) : const Color(0xFFF8FBFF);
     final mainText = isDark ? const Color(0xFFEAF2FB) : const Color(0xFF16324F);
     final mutedText = isDark ? const Color(0xFFB8C8DC) : const Color(0xFF64748B);
     final borderColor = isDark ? const Color(0xFF294363) : const Color(0xFFDCE7F3);
+=======
+    final cardBackground = isDark ? const Color(0xFF112A36) : Colors.white;
+    final mainText = isDark ? const Color(0xFFF4FAFC) : const Color(0xFF0D212C);
+    final mutedText = isDark ? const Color(0xFFB8E2EC) : const Color(0xFF4A6572);
+    final borderColor = isDark ? const Color(0xFF1B4B5F) : const Color(0xFFDCEBF0);
+>>>>>>> origin/main
     final targetLatLng = _resolveTargetLatLng();
     final isRemote = widget.locationName.toLowerCase().contains('remoto') || widget.distanceKm == 0;
 
@@ -314,7 +321,11 @@ class _VacancyLocationMapWidgetState extends State<VacancyLocationMapWidget> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                       decoration: BoxDecoration(
+<<<<<<< HEAD
                         color: const Color(0xFF0B1524).withValues(alpha: 0.92),
+=======
+                        color: const Color(0xFF0A1922).withValues(alpha: 0.92),
+>>>>>>> origin/main
                         borderRadius: BorderRadius.circular(14),
                         border: Border.all(color: AppTheme.accentColor.withValues(alpha: 0.5)),
                         boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 6)],
@@ -381,7 +392,11 @@ class _VacancyLocationMapWidgetState extends State<VacancyLocationMapWidget> {
                     right: 0,
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+<<<<<<< HEAD
                       color: const Color(0xFF0B1524).withValues(alpha: 0.94),
+=======
+                      color: const Color(0xFF0A1922).withValues(alpha: 0.94),
+>>>>>>> origin/main
                       child: Row(
                         children: [
                           const Icon(Icons.alt_route_rounded, color: AppTheme.accentColor, size: 16),
@@ -489,11 +504,19 @@ class _LocationPickerModalState extends State<LocationPickerModal> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+<<<<<<< HEAD
     final modalBackground = isDark ? const Color(0xFF101C2D) : const Color(0xFFF1F6FC);
     final cardBackground = isDark ? const Color(0xFF15243A) : const Color(0xFFF8FBFF);
     final mainText = isDark ? const Color(0xFFEAF2FB) : const Color(0xFF16324F);
     final mutedText = isDark ? const Color(0xFFB8C8DC) : const Color(0xFF64748B);
     final borderColor = isDark ? const Color(0xFF294363) : const Color(0xFFDCE7F3);
+=======
+    final modalBackground = isDark ? const Color(0xFF0A1922) : const Color(0xFFF4FAFC);
+    final cardBackground = isDark ? const Color(0xFF112A36) : Colors.white;
+    final mainText = isDark ? const Color(0xFFF4FAFC) : const Color(0xFF0D212C);
+    final mutedText = isDark ? const Color(0xFFB8E2EC) : const Color(0xFF4A6572);
+    final borderColor = isDark ? const Color(0xFF1B4B5F) : const Color(0xFFDCEBF0);
+>>>>>>> origin/main
     return Container(
       height: MediaQuery.of(context).size.height * 0.88,
       decoration: BoxDecoration(

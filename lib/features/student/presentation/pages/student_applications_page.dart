@@ -13,6 +13,7 @@ import 'package:red_teso/core/widgets/theme_toggle_button.dart';
 class StudentApplicationsPage extends StatelessWidget {
   const StudentApplicationsPage({super.key});
 
+<<<<<<< HEAD
   static const Color _background = Color(0xFFF1F6FC);
   static const Color _wine = Color(0xFF164B91);
   static const Color _wineLight = Color(0xFF3679C9);
@@ -23,6 +24,18 @@ class StudentApplicationsPage extends StatelessWidget {
   static const Color _green = Color(0xFF31805A);
   static const Color _blue = Color(0xFF3478B9);
   static const Color _orange = Color(0xFFB77922);
+=======
+  static const Color _background = Color(0xFFF4FAFC);
+  static const Color _wine = Color(0xFF0793B8);
+  static const Color _wineLight = Color(0xFF10BFD0);
+  static const Color _gold = Color(0xFF6BE7C8);
+  static const Color _text = Color(0xFF0D212C);
+  static const Color _muted = Color(0xFF4A6572);
+  static const Color _border = Color(0xFFDCEBF0);
+  static const Color _green = Color(0xFF10B981);
+  static const Color _blue = Color(0xFF0793B8);
+  static const Color _orange = Color(0xFFF59E0B);
+>>>>>>> origin/main
   static const Color _red = Color(0xFFC64B54);
 
   DateTime? _getDateTime(dynamic value) {
@@ -49,7 +62,11 @@ class StudentApplicationsPage extends StatelessWidget {
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
+<<<<<<< HEAD
           backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF15243A) : Colors.white,
+=======
+          backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF112A36) : Colors.white,
+>>>>>>> origin/main
           surfaceTintColor: Colors.transparent,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(22),
@@ -70,7 +87,11 @@ class StudentApplicationsPage extends StatelessWidget {
             '¿Eliminar postulación?',
             textAlign: TextAlign.center,
             style: GoogleFonts.outfit(
+<<<<<<< HEAD
               color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFEAF2FB) : _text,
+=======
+              color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFF4FAFC) : _text,
+>>>>>>> origin/main
               fontWeight: FontWeight.w800,
             ),
           ),
@@ -79,7 +100,11 @@ class StudentApplicationsPage extends StatelessWidget {
             'Esta acción la quitará de tu historial.',
             textAlign: TextAlign.center,
             style: GoogleFonts.inter(
+<<<<<<< HEAD
               color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFB8C8DC) : _muted,
+=======
+              color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFB8E2EC) : _muted,
+>>>>>>> origin/main
               fontSize: 13,
               height: 1.5,
             ),
@@ -91,7 +116,11 @@ class StudentApplicationsPage extends StatelessWidget {
               child: Text(
                 'Cancelar',
                 style: GoogleFonts.inter(
+<<<<<<< HEAD
                   color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFB8C8DC) : _muted,
+=======
+                  color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFB8E2EC) : _muted,
+>>>>>>> origin/main
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -164,7 +193,11 @@ class StudentApplicationsPage extends StatelessWidget {
 
     if (user == null) {
       return Scaffold(
+<<<<<<< HEAD
         backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF0B1524) : _background,
+=======
+        backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF0A1922) : _background,
+>>>>>>> origin/main
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(24),
@@ -181,7 +214,11 @@ class StudentApplicationsPage extends StatelessWidget {
                   'Inicia sesión para ver tus postulaciones',
                   textAlign: TextAlign.center,
                   style: GoogleFonts.outfit(
+<<<<<<< HEAD
                     color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFEAF2FB) : _text,
+=======
+                    color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFF4FAFC) : _text,
+>>>>>>> origin/main
                     fontSize: 19,
                     fontWeight: FontWeight.w800,
                   ),
@@ -196,7 +233,11 @@ class StudentApplicationsPage extends StatelessWidget {
     ActivityLogService.logActivity(action: 'Checó sus postulaciones activas');
 
     return Scaffold(
+<<<<<<< HEAD
       backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF0B1524) : _background,
+=======
+      backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF0A1922) : _background,
+>>>>>>> origin/main
       appBar: AppBar(
         backgroundColor: _wine,
         foregroundColor: Colors.white,
@@ -391,7 +432,11 @@ class StudentApplicationsPage extends StatelessWidget {
                                         Text(
                                           'Actividad reciente',
                                           style: GoogleFonts.outfit(
+<<<<<<< HEAD
                                             color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFEAF2FB) : _text,
+=======
+                                            color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFF4FAFC) : _text,
+>>>>>>> origin/main
                                             fontWeight: FontWeight.w800,
                                             fontSize: wide ? 23 : 20,
                                           ),
@@ -399,7 +444,11 @@ class StudentApplicationsPage extends StatelessWidget {
                                         Text(
                                           'Consulta el estado de tus oportunidades.',
                                           style: GoogleFonts.inter(
+<<<<<<< HEAD
                                             color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFB8C8DC) : _muted,
+=======
+                                            color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFB8E2EC) : _muted,
+>>>>>>> origin/main
                                             fontSize: 11,
                                           ),
                                         ),
@@ -481,7 +530,11 @@ class StudentApplicationsPage extends StatelessWidget {
       padding: const EdgeInsets.all(19),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
+<<<<<<< HEAD
           colors: [_wineLight, _wine, Color(0xFF12366A)],
+=======
+          colors: [_wineLight, _wine, Color(0xFF056C88)],
+>>>>>>> origin/main
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -565,9 +618,15 @@ class StudentApplicationsPage extends StatelessWidget {
         vertical: 13,
       ),
       decoration: BoxDecoration(
+<<<<<<< HEAD
         color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF15243A) : Colors.white,
         borderRadius: BorderRadius.circular(17),
         border: Border.all(color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF294363) : _border),
+=======
+        color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF112A36) : Colors.white,
+        borderRadius: BorderRadius.circular(17),
+        border: Border.all(color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1B4B5F) : _border),
+>>>>>>> origin/main
         boxShadow: [
           BoxShadow(
             color: _wine.withValues(alpha: 0.045),
@@ -596,7 +655,11 @@ class StudentApplicationsPage extends StatelessWidget {
           Text(
             '$count',
             style: GoogleFonts.outfit(
+<<<<<<< HEAD
               color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFEAF2FB) : _text,
+=======
+              color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFF4FAFC) : _text,
+>>>>>>> origin/main
               fontSize: 25,
               fontWeight: FontWeight.w800,
               height: 1,
@@ -608,7 +671,11 @@ class StudentApplicationsPage extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: GoogleFonts.inter(
+<<<<<<< HEAD
               color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFB8C8DC) : _muted,
+=======
+              color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFB8E2EC) : _muted,
+>>>>>>> origin/main
               fontSize: 10,
               fontWeight: FontWeight.w700,
             ),
@@ -640,9 +707,15 @@ class StudentApplicationsPage extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 15),
       decoration: BoxDecoration(
+<<<<<<< HEAD
         color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF15243A) : Colors.white,
         borderRadius: BorderRadius.circular(21),
         border: Border.all(color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF294363) : _border),
+=======
+        color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF112A36) : Colors.white,
+        borderRadius: BorderRadius.circular(21),
+        border: Border.all(color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1B4B5F) : _border),
+>>>>>>> origin/main
         boxShadow: [
           BoxShadow(
             color: _wine.withValues(alpha: 0.065),
@@ -684,7 +757,11 @@ class StudentApplicationsPage extends StatelessWidget {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: GoogleFonts.outfit(
+<<<<<<< HEAD
                           color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFEAF2FB) : _text,
+=======
+                          color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFF4FAFC) : _text,
+>>>>>>> origin/main
                           fontSize: 16,
                           fontWeight: FontWeight.w800,
                         ),
@@ -695,7 +772,11 @@ class StudentApplicationsPage extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: GoogleFonts.inter(
+<<<<<<< HEAD
                           color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFB8C8DC) : _muted,
+=======
+                          color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFB8E2EC) : _muted,
+>>>>>>> origin/main
                           fontSize: 12,
                         ),
                       ),
@@ -710,7 +791,11 @@ class StudentApplicationsPage extends StatelessWidget {
             Divider(
               height: 1,
               color: Theme.of(context).brightness == Brightness.dark
+<<<<<<< HEAD
                   ? const Color(0xFF294363)
+=======
+                  ? const Color(0xFF1B4B5F)
+>>>>>>> origin/main
                   : _border,
             ),
             const SizedBox(height: 12),
@@ -726,7 +811,11 @@ class StudentApplicationsPage extends StatelessWidget {
                   child: Text(
                     'Fecha de postulación: $dateText',
                     style: GoogleFonts.inter(
+<<<<<<< HEAD
                       color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFB8C8DC) : _muted,
+=======
+                      color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFB8E2EC) : _muted,
+>>>>>>> origin/main
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
                     ),
@@ -776,7 +865,11 @@ class StudentApplicationsPage extends StatelessWidget {
                     child: Text(
                       _getStatusMessage(status),
                       style: GoogleFonts.inter(
+<<<<<<< HEAD
                         color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFEAF2FB) : _text,
+=======
+                        color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFF4FAFC) : _text,
+>>>>>>> origin/main
                         fontSize: 11,
                         height: 1.5,
                       ),
@@ -914,8 +1007,13 @@ class StudentApplicationsPage extends StatelessWidget {
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
                         colors: [
+<<<<<<< HEAD
                           Color(0xFFDCEBFA),
                           Color(0xFFF1F6FC),
+=======
+                          Color(0xFFE0F4F8),
+                          Color(0xFFF4FAFC),
+>>>>>>> origin/main
                         ],
                       ),
                       shape: BoxShape.circle,
@@ -935,7 +1033,11 @@ class StudentApplicationsPage extends StatelessWidget {
                     'Tu próxima oportunidad te espera',
                     textAlign: TextAlign.center,
                     style: GoogleFonts.outfit(
+<<<<<<< HEAD
                       color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFEAF2FB) : _text,
+=======
+                      color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFF4FAFC) : _text,
+>>>>>>> origin/main
                       fontSize: 21,
                       fontWeight: FontWeight.w800,
                     ),
@@ -947,7 +1049,11 @@ class StudentApplicationsPage extends StatelessWidget {
                     'una oportunidad para comenzar tu camino profesional.',
                     textAlign: TextAlign.center,
                     style: GoogleFonts.inter(
+<<<<<<< HEAD
                       color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFB8C8DC) : _muted,
+=======
+                      color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFB8E2EC) : _muted,
+>>>>>>> origin/main
                       fontSize: 12,
                       height: 1.6,
                     ),
@@ -971,7 +1077,11 @@ class StudentApplicationsPage extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(17),
               decoration: const BoxDecoration(
+<<<<<<< HEAD
                 color: Color(0xFFDCEBFA),
+=======
+                color: Color(0xFFE0F4F8),
+>>>>>>> origin/main
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -985,7 +1095,11 @@ class StudentApplicationsPage extends StatelessWidget {
               'No pudimos cargar tus postulaciones',
               textAlign: TextAlign.center,
               style: GoogleFonts.outfit(
+<<<<<<< HEAD
                 color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFEAF2FB) : _text,
+=======
+                color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFF4FAFC) : _text,
+>>>>>>> origin/main
                 fontSize: 19,
                 fontWeight: FontWeight.w800,
               ),
@@ -995,7 +1109,11 @@ class StudentApplicationsPage extends StatelessWidget {
               'Comprueba tu conexión e inténtalo de nuevo.',
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(
+<<<<<<< HEAD
                 color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFB8C8DC) : _muted,
+=======
+                color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFB8E2EC) : _muted,
+>>>>>>> origin/main
                 fontSize: 12,
               ),
             ),
@@ -1011,8 +1129,13 @@ class StudentApplicationsPage extends StatelessWidget {
       children: List.generate(
         3,
         (index) => Shimmer.fromColors(
+<<<<<<< HEAD
           baseColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF294363) : const Color(0xFFDCE7F3),
           highlightColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF3A5574) : Colors.white,
+=======
+          baseColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF153443) : const Color(0xFFDCEBF0),
+          highlightColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1F495E) : Colors.white,
+>>>>>>> origin/main
           child: Container(
             height: 170,
             margin: const EdgeInsets.only(bottom: 14),
@@ -1043,15 +1166,24 @@ class _ApplicationsBackgroundPainter extends CustomPainter {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: isDark
+<<<<<<< HEAD
               ? const [Color(0xFF0B1524), Color(0xFF101C2D), Color(0xFF15243A)]
               : const [Color(0xFFF5F9FF), Color(0xFFEAF2FB), Color(0xFFDCEBFA)],
+=======
+              ? const [Color(0xFF0A1922), Color(0xFF112A36), Color(0xFF0D212C)]
+              : const [Color(0xFFF4FAFC), Color(0xFFE6F6FA), Color(0xFFDCEBF0)],
+>>>>>>> origin/main
         ).createShader(rect),
     );
 
     final ringPaint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.2
+<<<<<<< HEAD
       ..color = const Color(0x24164B91);
+=======
+      ..color = const Color(0x240793B8);
+>>>>>>> origin/main
 
     canvas.drawCircle(
       Offset(size.width * 0.98, size.height * 0.12),
@@ -1065,10 +1197,17 @@ class _ApplicationsBackgroundPainter extends CustomPainter {
       Paint()
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1
+<<<<<<< HEAD
         ..color = const Color(0x206EA5E3),
     );
 
     final dotPaint = Paint()..color = const Color(0x668DB9E8);
+=======
+        ..color = const Color(0x2010BFD0),
+    );
+
+    final dotPaint = Paint()..color = const Color(0x6610BFD0);
+>>>>>>> origin/main
 
     for (int i = 0; i < 24; i++) {
       final x = ((i * 83 + 29) % 997) / 997 * size.width;

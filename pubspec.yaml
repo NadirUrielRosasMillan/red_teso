@@ -45,15 +45,25 @@ dev_dependencies:
 flutter_launcher_icons:
   android: true
   ios: true
+<<<<<<< HEAD
   image_path: "assets/images/branding/agora_app_icon_1024.png"
   remove_alpha_ios: true
   adaptive_icon_background: "#FFFFFF"
   adaptive_icon_foreground: "assets/images/branding/agora_app_icon_1024.png"
+=======
+  image_path: "web/icons/logo_sis_color.jpg"
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "web/icons/logo_sis_color.jpg"
+>>>>>>> origin/main
 
 flutter:
 
   uses-material-design: true
 
   assets:
+<<<<<<< HEAD
     - assets/images/branding/
     - assets/images/experiences/
+=======
+    - web/icons/logo_sis_color.jpg
+>>>>>>> origin/main
