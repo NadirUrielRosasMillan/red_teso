@@ -1,20 +1,15 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:red_teso/core/services/fcm_notification_service.dart';
 import 'package:red_teso/core/services/gemini_ai_service.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
 import 'package:red_teso/core/theme/theme_provider.dart';
 import 'package:red_teso/features/auth/presentation/pages/login_page.dart';
-import 'package:red_teso/features/auth/presentation/pages/onboarding_page.dart';
-import 'package:red_teso/features/auth/presentation/pages/splash_page.dart';
 import 'package:red_teso/features/auth/presentation/providers/auth_provider.dart';
-import 'package:red_teso/features/student/presentation/pages/student_dashboard_page.dart';
-import 'package:red_teso/features/company/presentation/pages/company_dashboard_page.dart';
 import 'package:red_teso/features/admin/presentation/pages/admin_dashboard_page.dart';
-import 'package:red_teso/features/professor/presentation/pages/professor_dashboard_page.dart';
+import 'package:red_teso/features/ecosystem/presentation/pages/ecosystem_selector_page.dart';
 
 import 'firebase_options.dart';
 
@@ -28,9 +23,6 @@ Future<void> main() async {
   await GeminiAiService.init();
   await FcmNotificationService.init();
 
-  final prefs = await SharedPreferences.getInstance();
-  final bool showOnboarding = prefs.getBool('showOnboarding') ?? true;
-
   runApp(
     MultiProvider(
       providers: [
@@ -41,32 +33,25 @@ Future<void> main() async {
           create: (_) => ThemeProvider(),
         ),
       ],
-      child: RedTESOApp(showOnboarding: showOnboarding),
+      child: const RedTESOApp(),
     ),
   );
 }
 
 class RedTESOApp extends StatefulWidget {
-  final bool showOnboarding;
-
-  const RedTESOApp({
-    super.key,
-    required this.showOnboarding,
-  });
+  const RedTESOApp({super.key});
 
   @override
   State<RedTESOApp> createState() => _RedTESOAppState();
 }
 
 class _RedTESOAppState extends State<RedTESOApp> {
-  String _currentStep = 'splash';
-
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, child) {
         return MaterialApp(
-          title: 'RedTESO',
+          title: 'ÁGORA',
           debugShowCheckedModeBanner: false,
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
@@ -81,8 +66,7 @@ class _RedTESOAppState extends State<RedTESOApp> {
   Widget _buildCurrentScreen() {
     return Consumer<AuthProvider>(
       builder: (context, authProvider, child) {
-        // No mostrar splash/onboarding mientras Firebase está resolviendo
-        // una sesión existente.
+        // Espera a que Firebase restaure una sesión existente.
         if (authProvider.isInitializing) {
           return const Scaffold(
             body: Center(
@@ -94,36 +78,13 @@ class _RedTESOAppState extends State<RedTESOApp> {
           );
         }
 
-        // AuthWrapper decide qué dashboard corresponde y escucha al provider.
+        // AuthWrapper decide el destino según el rol del usuario.
         if (authProvider.isLoggedIn) {
           return const AuthWrapper();
         }
 
-        if (_currentStep == 'splash') {
-          return SplashPage(
-            onInitializationComplete: () {
-              if (!mounted) return;
-              setState(() {
-                _currentStep =
-                    widget.showOnboarding ? 'onboarding' : 'auth';
-              });
-            },
-          );
-        }
-
-        if (_currentStep == 'onboarding') {
-          return OnboardingPage(
-            onFinish: () async {
-              final prefs = await SharedPreferences.getInstance();
-              await prefs.setBool('showOnboarding', false);
-
-              if (!mounted) return;
-              setState(() => _currentStep = 'auth');
-            },
-          );
-        }
-
-        return const AuthWrapper();
+        // La única entrada para usuarios sin sesión es el login de ÁGORA.
+        return const LoginPage();
       },
     );
   }
@@ -153,13 +114,13 @@ class AuthWrapper extends StatelessWidget {
 
         switch (authProvider.userType) {
           case UserType.alumno:
-            return const StudentDashboardPage();
+          case UserType.profesor:
           case UserType.empresa:
-            return const CompanyDashboardPage();
+            // El selector filtra las experiencias según el rol.
+            // Las empresas únicamente verán ÁGORA Talento.
+            return const EcosystemSelectorPage();
           case UserType.admin:
             return const AdminDashboardPage();
-          case UserType.profesor:
-            return const ProfessorDashboardPage();
           case UserType.none:
             return const LoginPage();
         }

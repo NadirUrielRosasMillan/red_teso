@@ -134,7 +134,7 @@ class _CreateVacancyPageState extends State<CreateVacancyPage> {
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    widget.vacancyToEdit != null ? '¡Vacante actualizada!' : '¡Vacante publicada exitosamente en RedTESO!',
+                    widget.vacancyToEdit != null ? '¡Vacante actualizada!' : '¡Vacante publicada exitosamente en ÁGORA Talento!',
                     style: GoogleFonts.inter(),
                   ),
                 ),
@@ -408,7 +408,7 @@ class _CreateVacancyPageState extends State<CreateVacancyPage> {
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                           ),
                           child: Text(
-                            isEditing ? 'GUARDAR CAMBIOS' : 'PUBLICAR VACANTE EN REDTESO',
+                            isEditing ? 'GUARDAR CAMBIOS' : 'PUBLICAR VACANTE EN ÁGORA TALENTO',
                             style: GoogleFonts.outfit(fontWeight: FontWeight.bold, letterSpacing: 0.8),
                           ),
                         ),

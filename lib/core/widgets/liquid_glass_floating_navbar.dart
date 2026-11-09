@@ -44,9 +44,17 @@ class LiquidGlassFloatingNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final shellColor = isDark
+        ? const Color(0xFF101C2D).withValues(alpha: 0.88)
+        : const Color(0xFFF8FBFF).withValues(alpha: 0.9);
+    final inactiveColor = isDark
+        ? Colors.white.withValues(alpha: 0.72)
+        : const Color(0xFF64748B);
+
     return Container(
-      margin: const EdgeInsets.fromLTRB(14, 0, 14, 20),
-      height: 68,
+      margin: const EdgeInsets.fromLTRB(18, 0, 18, 20),
+      height: 76,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(36),
         child: BackdropFilter(
@@ -59,21 +67,26 @@ class LiquidGlassFloatingNavBar extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 6),
                   decoration: BoxDecoration(
+<<<<<<< HEAD
+                    color: shellColor,
+=======
                     // Cristal ultra-transparente y elegante estilo Liquid Glass
                     color: Theme.of(context).brightness == Brightness.dark
                         ? AppTheme.surfaceDark.withValues(alpha: 0.55)
                         : AppTheme.darkTurquoise.withValues(alpha: 0.82),
+>>>>>>> origin/main
                     borderRadius: BorderRadius.circular(36),
                     border: Border.all(
-                      color: Colors.white.withOpacity(0.25),
-                      width: 1.2,
+                      color: isDark
+                          ? Colors.white.withValues(alpha: 0.24)
+                          : const Color(0xFF64748B).withValues(alpha: 0.28),
+                      width: 1,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.25),
-                        blurRadius: 20,
-                        spreadRadius: 2,
-                        offset: const Offset(0, 8),
+                        color: Colors.black.withValues(alpha: isDark ? 0.24 : 0.1),
+                        blurRadius: 18,
+                        offset: const Offset(0, 5),
                       ),
                     ],
                   ),
@@ -95,20 +108,24 @@ class LiquidGlassFloatingNavBar extends StatelessWidget {
                             child: AnimatedContainer(
                               duration: const Duration(milliseconds: 200),
                               curve: Curves.easeOutCubic,
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                              padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 8),
                               decoration: isSelected
                                   ? BoxDecoration(
+<<<<<<< HEAD
+                                      color: AppTheme.primaryColor,
+=======
                                       gradient: LinearGradient(
                                         colors: [AppTheme.primaryColor, AppTheme.darkGreen.withOpacity(0.9)],
                                         begin: Alignment.topLeft,
                                         end: Alignment.bottomRight,
                                       ),
+>>>>>>> origin/main
                                       borderRadius: BorderRadius.circular(24),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: AppTheme.primaryColor.withOpacity(0.45),
-                                          blurRadius: 12,
-                                          offset: const Offset(0, 3),
+                                          color: AppTheme.primaryColor.withValues(alpha: 0.3),
+                                          blurRadius: 10,
+                                          offset: const Offset(0, 2),
                                         ),
                                       ],
                                     )
@@ -119,7 +136,7 @@ class LiquidGlassFloatingNavBar extends StatelessWidget {
                                 children: [
                                   Icon(
                                     isSelected ? item.activeIcon : item.icon,
-                                    color: isSelected ? Colors.white : Colors.white.withOpacity(0.75),
+                                    color: isSelected ? Colors.white : inactiveColor,
                                     size: isSelected ? 22 : 20,
                                   ),
                                   const SizedBox(height: 3),
@@ -130,7 +147,7 @@ class LiquidGlassFloatingNavBar extends StatelessWidget {
                                       style: GoogleFonts.plusJakartaSans(
                                         fontSize: isSelected ? 10.5 : 10,
                                         fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                                        color: isSelected ? Colors.white : Colors.white.withOpacity(0.75),
+                                        color: isSelected ? Colors.white : inactiveColor,
                                         letterSpacing: 0.2,
                                       ),
                                     ),

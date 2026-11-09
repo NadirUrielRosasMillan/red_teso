@@ -51,7 +51,7 @@ class StudentDetailViewPage extends StatelessWidget {
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      'Documento verificado y autenticado por el alumno en RedTESO.',
+                      'Documento verificado y autenticado por el alumno en ÁGORA Talento.',
                       style: GoogleFonts.inter(fontSize: 12, color: Colors.white, fontWeight: FontWeight.w600),
                     ),
                   ),
@@ -116,7 +116,11 @@ class StudentDetailViewPage extends StatelessWidget {
         ),
         title: Text('Perfil del Candidato', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white)),
         foregroundColor: Colors.white,
+<<<<<<< HEAD
+        backgroundColor: const Color(0xFF0B1524).withOpacity(0.85),
+=======
         backgroundColor: AppTheme.bgDark.withOpacity(0.85),
+>>>>>>> origin/main
         elevation: 0,
       ),
       body: LiquidGlassAmbientBackground(

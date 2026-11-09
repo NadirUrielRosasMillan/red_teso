@@ -164,7 +164,11 @@ class _CompanyProfileEditPageState extends State<CompanyProfileEditPage> {
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
+<<<<<<< HEAD
+                    colors: [AppTheme.primaryColor, Color(0xFF12366A)],
+=======
                     colors: [AppTheme.primaryTurquoise, AppTheme.darkTurquoise],
+>>>>>>> origin/main
                   ),
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
@@ -195,7 +199,7 @@ class _CompanyProfileEditPageState extends State<CompanyProfileEditPage> {
                             style: GoogleFonts.outfit(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                           Text(
-                            'Configuración de cuenta institucional en RedTESO',
+                            'Configuración de cuenta institucional en ÁGORA Talento',
                             style: GoogleFonts.inter(color: Colors.white.withOpacity(0.85), fontSize: 12),
                           ),
                         ],

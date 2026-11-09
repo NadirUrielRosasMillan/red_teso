@@ -62,7 +62,7 @@ class _AiVacancyAssistantModalState extends State<AiVacancyAssistantModal>
     // Saludo inicial de bienvenida de la IA
     _chatMessages.add(
       AiChatMessage(
-        text: '¡Hola! 👋 Soy tu Asistente Inteligente de RedTESO.\n\nPuedo ayudarte a encontrar vacantes de Servicio Social, Residencias Profesionales o Empleos para egresados. ¿En qué área o tecnología te gustaría buscar hoy?',
+        text: '¡Hola! 👋 Soy tu Asistente Inteligente de ÁGORA Talento.\n\nPuedo ayudarte a encontrar vacantes de Servicio Social, Residencias Profesionales o Empleos para egresados. ¿En qué área o tecnología te gustaría buscar hoy?',
         isUser: false,
       ),
     );
@@ -114,7 +114,7 @@ class _AiVacancyAssistantModalState extends State<AiVacancyAssistantModal>
       if (isGreeting) {
         response = '¡Hola! 👋 Qué gusto saludarte. ¿Qué tipo de vacante o tecnología te gustaría consultar hoy?';
       } else if (isWhoAreYou) {
-        response = '🤖 ¡Hola! Soy el Asistente IA de RedTESO.\n\nPuedo analizar la oferta de empresas vinculadas con TESOEM y recomendarte las mejores vacantes por área (ej. Flutter, Python, SQL, Ciberseguridad).\n\n¡Prueba escribiendo "Vacantes de Servicio Social en desarrollo web"!';
+        response = '🤖 ¡Hola! Soy el Asistente IA de ÁGORA Talento.\n\nPuedo analizar la oferta de empresas vinculadas con TESOEM y recomendarte las mejores vacantes por área (ej. Flutter, Python, SQL, Ciberseguridad).\n\n¡Prueba escribiendo "Vacantes de Servicio Social en desarrollo web"!';
       } else {
         response = '¡Con mucho gusto! 😊 Estoy aquí para ayudarte a impulsar tu carrera profesional en TESOEM.';
       }

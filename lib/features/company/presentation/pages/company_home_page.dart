@@ -77,7 +77,11 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
           'Buscador de Talento',
           style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white),
         ),
+<<<<<<< HEAD
+        backgroundColor: const Color(0xFF0B1524).withOpacity(0.85),
+=======
         backgroundColor: AppTheme.bgDark.withOpacity(0.85),
+>>>>>>> origin/main
         foregroundColor: Colors.white,
         elevation: 0,
         actions: [
@@ -98,8 +102,13 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                   onPressed: () => AiTalentAssistantModal.show(context, students: _sampleStudents),
                   backgroundColor: AppTheme.primaryTurquoise,
                   elevation: 6,
+<<<<<<< HEAD
+                  tooltip: 'IA ÁGORA TALENTO 🤖',
+                  child: const Icon(Icons.psychology_rounded, color: AppTheme.accentColor, size: 24),
+=======
                   tooltip: 'IA REDTESO 🤖',
                   child: const Icon(Icons.psychology_rounded, color: Colors.white, size: 24),
+>>>>>>> origin/main
                 ),
               )
             : const SizedBox.shrink(key: ValueKey('empty_ai_talent_btn')),
@@ -116,7 +125,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
               children: [
                 const SizedBox(height: 12),
 
-                // 1. BOTÓN DE BÚSQUEDA SEMÁNTICA CON IA REDTESO 🤖✨
+                // 1. BOTÓN DE BÚSQUEDA SEMÁNTICA CON IA ÁGORA TALENTO 🤖✨
                 AnimatedOpacity(
                   duration: const Duration(milliseconds: 250),
                   opacity: _isScrolled ? 0.3 : 1.0,
@@ -162,7 +171,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Búsqueda Semántica con IA RedTESO 🤖✨',
+                                    'Búsqueda Semántica con IA ÁGORA Talento 🤖✨',
                                     style: GoogleFonts.outfit(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
                                   ),
                                   Text(
