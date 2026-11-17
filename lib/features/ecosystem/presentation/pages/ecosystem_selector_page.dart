@@ -12,7 +12,13 @@ class EcosystemSelectorPage extends StatefulWidget {
   @override
   State<EcosystemSelectorPage> createState() => _EcosystemSelectorPageState();
 }
+
 class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
+  static const Color _greenPrimary = Color(0xFF0B5D3B);
+  static const Color _greenSecondary = Color(0xFF1E8449);
+  static const Color _greenLight = Color(0xFFA8D5A2);
+  static const Color _textMuted = Color(0xFF6B7280);
+
   late final PageController _controller;
   int _selectedIndex = 0;
 
@@ -26,7 +32,7 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
           'Encuentra vacantes, presenta tu perfil y conecta con empresas.',
       icon: Icons.work_rounded,
       image: 'assets/images/experiences/talento.png',
-      colors: [Color(0xFF12366A), Color(0xFF2467B5)],
+      colors: [Color(0xFF0B5D3B), Color(0xFF1E8449)],
       available: true,
     ),
     _Experience(
@@ -38,7 +44,7 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
           'Explora cursos prácticos y desarrolla habilidades para tu futuro.',
       icon: Icons.school_rounded,
       image: 'assets/images/experiences/aprende.png',
-      colors: [Color(0xFF147A9D), Color(0xFF61BFEA)],
+      colors: [Color(0xFF1E8449), Color(0xFFA8D5A2)],
       available: true,
     ),
     _Experience(
@@ -50,7 +56,7 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
           'Dona o adopta código para ayudar a crecer proyectos de la comunidad.',
       icon: Icons.rocket_launch_rounded,
       image: 'assets/images/experiences/impulsa.png',
-      colors: [Color(0xFF157C83), Color(0xFF5EBF9C)],
+      colors: [Color(0xFF0B5D3B), Color(0xFFA8D5A2)],
       available: false,
     ),
   ];
@@ -104,11 +110,11 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
 
     if (experiences.isEmpty) {
       return const Scaffold(
-        backgroundColor: Color(0xFF071A36),
+        backgroundColor: Colors.white,
         body: Center(
           child: Text(
             'No tienes experiencias disponibles.',
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(color: _greenPrimary),
           ),
         ),
       );
@@ -124,84 +130,75 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
     final isWide = MediaQuery.sizeOf(context).width >= 940;
 
     return Scaffold(
-      body: DecoratedBox(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF092B57),
-              Color(0xFF174E87),
-              Color(0xFFB9D7F3),
-              Color(0xFFFFFFFF),
-            ],
-            stops: [0, .28, .68, 1],
+      backgroundColor: Colors.white,
+      body: Stack(
+        children: [
+          const Positioned.fill(
+            child: IgnorePointer(
+              child: CustomPaint(painter: _EcosystemBackgroundPainter()),
+            ),
           ),
-        ),
-        child: Stack(
-          children: [
-            SafeArea(
-              child: Column(
-                children: [
-                  _buildHeader(context),
-                  const SizedBox(height: 16),
-                  _buildIntro(greeting),
-                  const SizedBox(height: 18),
-                  Expanded(
-                    child: isWide
-                        ? _buildDesktopCards(experiences, selected, userType)
-                        : _buildMobileCards(experiences, selected, userType),
+          SafeArea(
+            child: Column(
+              children: [
+                _buildHeader(context),
+                const SizedBox(height: 16),
+                _buildIntro(greeting),
+                const SizedBox(height: 18),
+                Expanded(
+                  child: isWide
+                      ? _buildDesktopCards(experiences, selected, userType)
+                      : _buildMobileCards(experiences, selected, userType),
+                ),
+                const SizedBox(height: 8),
+                _buildPageIndicators(experiences, selectedIndex),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    isWide ? 32 : 20,
+                    14,
+                    isWide ? 32 : 20,
+                    18,
                   ),
-                  const SizedBox(height: 8),
-                  _buildPageIndicators(experiences, selectedIndex),
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(
-                      isWide ? 32 : 20,
-                      14,
-                      isWide ? 32 : 20,
-                      18,
-                    ),
-                    child: SizedBox(
-                      width: double.infinity,
-                      height: 56,
-                      child: FilledButton.icon(
-                        onPressed: selected.available
-                            ? () => _openExperience(selected, userType)
-                            : null,
-                        icon: Icon(
-                          selected.available
-                              ? Icons.play_arrow_rounded
-                              : Icons.lock_outline_rounded,
-                          size: 24,
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 56,
+                    child: FilledButton.icon(
+                      onPressed: selected.available
+                          ? () => _openExperience(selected, userType)
+                          : null,
+                      icon: Icon(
+                        selected.available
+                            ? Icons.play_arrow_rounded
+                            : Icons.lock_outline_rounded,
+                        size: 24,
+                      ),
+                      label: Text(
+                        selected.available
+                            ? 'ENTRAR A ${selected.title.toUpperCase()}'
+                            : 'ÁGORA IMPULSA · PRÓXIMAMENTE',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: .8,
                         ),
-                        label: Text(
-                          selected.available
-                              ? 'ENTRAR A ${selected.title.toUpperCase()}'
-                              : 'ÁGORA IMPULSA · PRÓXIMAMENTE',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: .8,
-                          ),
-                        ),
-                        style: FilledButton.styleFrom(
-                          backgroundColor: const Color(0xFF6AD7FF),
-                          disabledBackgroundColor:
-                              Colors.white.withValues(alpha: .16),
-                          foregroundColor: const Color(0xFF071A36),
-                          disabledForegroundColor:
-                              Colors.white.withValues(alpha: .65),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
+                      ),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: _greenPrimary,
+                        disabledBackgroundColor:
+                            Colors.white.withValues(alpha: .16),
+                        foregroundColor: Colors.white,
+                        disabledForegroundColor:
+                            Colors.white.withValues(alpha: .65),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
                         ),
                       ),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -213,12 +210,12 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
         children: [
           Image.asset(
             'assets/images/branding/agora_icono_app.png',
-            width: 58,
-            height: 58,
+            width: 54,
+            height: 54,
             fit: BoxFit.contain,
             errorBuilder: (_, __, ___) => const Icon(
               Icons.hub_rounded,
-              color: Color(0xFF6AD7FF),
+              color: _greenPrimary,
               size: 46,
             ),
           ),
@@ -230,7 +227,7 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
                 Text(
                   'ÁGORA',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: _greenPrimary,
                     fontSize: 23,
                     height: 1,
                     fontWeight: FontWeight.w900,
@@ -241,7 +238,7 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
                 Text(
                   'ECOSISTEMA UNIVERSITARIO',
                   style: TextStyle(
-                    color: Color(0xFFB7D8FF),
+                    color: _greenSecondary,
                     fontSize: 9,
                     letterSpacing: 1.2,
                     fontWeight: FontWeight.w700,
@@ -254,8 +251,8 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
             tooltip: 'Cerrar sesión',
             onPressed: () => context.read<AuthProvider>().logout(),
             style: IconButton.styleFrom(
-              backgroundColor: Colors.white.withValues(alpha: .12),
-              foregroundColor: Colors.white,
+              backgroundColor: _greenLight.withValues(alpha: .35),
+              foregroundColor: _greenPrimary,
             ),
             icon: const Icon(Icons.logout_rounded),
           ),
@@ -272,7 +269,7 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
           Text(
             '¡Bienvenido, $greeting!',
             style: const TextStyle(
-              color: Color(0xFFB7D8FF),
+              color: _greenSecondary,
               fontSize: 14,
               fontWeight: FontWeight.w600,
             ),
@@ -282,7 +279,7 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
             'ELIGE TU SIGUIENTE PASO',
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: Colors.white,
+              color: _greenPrimary,
               fontSize: 27,
               fontWeight: FontWeight.w900,
               letterSpacing: .8,
@@ -293,7 +290,7 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
             'Tres experiencias. Un solo ecosistema.',
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: Colors.white.withValues(alpha: .72),
+              color: _textMuted,
               fontSize: 13,
             ),
           ),
@@ -401,14 +398,67 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
           height: 7,
           decoration: BoxDecoration(
             color: index == selectedIndex
-                ? const Color(0xFF6AD7FF)
-                : Colors.white.withValues(alpha: .38),
+                ? _greenPrimary
+                : _greenLight,
             borderRadius: BorderRadius.circular(8),
           ),
         ),
       ),
     );
   }
+}
+
+class _EcosystemBackgroundPainter extends CustomPainter {
+  const _EcosystemBackgroundPainter();
+
+  static const _green = Color(0xFF1E8449);
+  static const _lightGreen = Color(0xFFA8D5A2);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final upperRight = Path()
+      ..moveTo(size.width * .78, 0)
+      ..lineTo(size.width, 0)
+      ..lineTo(size.width, size.height * .28)
+      ..cubicTo(size.width * .91, size.height * .24, size.width * .84,
+          size.height * .12, size.width * .78, 0)
+      ..close();
+    canvas.drawPath(
+      upperRight,
+      Paint()..color = _lightGreen.withValues(alpha: .4),
+    );
+
+    final lowerLeft = Path()
+      ..moveTo(0, size.height * .74)
+      ..cubicTo(size.width * .12, size.height * .78, size.width * .2,
+          size.height * .9, size.width * .33, size.height)
+      ..lineTo(0, size.height)
+      ..close();
+    canvas.drawPath(
+      lowerLeft,
+      Paint()..color = _lightGreen.withValues(alpha: .48),
+    );
+
+    final linePaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2
+      ..color = _green.withValues(alpha: .18);
+    final topLine = Path()
+      ..moveTo(size.width * .81, 0)
+      ..cubicTo(size.width * .86, size.height * .08, size.width * .93,
+          size.height * .13, size.width, size.height * .12);
+    final bottomLine = Path()
+      ..moveTo(0, size.height * .84)
+      ..cubicTo(size.width * .12, size.height * .87, size.width * .18,
+          size.height * .96, size.width * .27, size.height);
+    canvas
+      ..drawPath(topLine, linePaint)
+      ..drawPath(bottomLine, linePaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _EcosystemBackgroundPainter oldDelegate) =>
+      false;
 }
 
 class _Experience {
@@ -463,14 +513,14 @@ class _ExperienceCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(selected ? 27 : 23),
         border: Border.all(
           color: selected
-              ? const Color(0xFF8DE4FF)
-              : Colors.white.withValues(alpha: .46),
+              ? const Color(0xFFA8D5A2)
+              : Colors.white.withValues(alpha: .72),
           width: selected ? 3 : 1.2,
         ),
         boxShadow: [
           BoxShadow(
             color: selected
-                ? const Color(0xFF3FC8FF).withValues(alpha: .32)
+                ? const Color(0xFF0B5D3B).withValues(alpha: .22)
                 : Colors.black.withValues(alpha: .30),
             blurRadius: selected ? 32 : 18,
             offset: const Offset(0, 15),
@@ -622,7 +672,7 @@ class _ExperienceCard extends StatelessWidget {
                               experience.available
                                   ? Icons.touch_app_rounded
                                   : Icons.schedule_rounded,
-                              color: const Color(0xFF8DE4FF),
+                              color: const Color(0xFFA8D5A2),
                               size: 16,
                             ),
                             const SizedBox(width: 6),
@@ -631,7 +681,7 @@ class _ExperienceCard extends StatelessWidget {
                                   ? 'SELECCIONAR EXPERIENCIA'
                                   : 'PRÓXIMAMENTE',
                               style: const TextStyle(
-                                color: Color(0xFF8DE4FF),
+                                color: Color(0xFFA8D5A2),
                                 fontSize: 9,
                                 fontWeight: FontWeight.w900,
                                 letterSpacing: .7,

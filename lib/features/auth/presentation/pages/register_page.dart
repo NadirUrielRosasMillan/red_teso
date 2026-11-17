@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:red_teso/core/theme/app_theme.dart';
 import 'package:red_teso/features/auth/presentation/providers/auth_provider.dart';
 import 'package:red_teso/features/auth/presentation/widgets/verification_success_dialog.dart';
 
@@ -12,6 +11,11 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  static const Color _greenPrimary = Color(0xFF0B5D3B);
+  static const Color _greenSecondary = Color(0xFF1E8449);
+  static const Color _greenLight = Color(0xFFA8D5A2);
+  static const Color _textMuted = Color(0xFF6B7280);
+
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _nameController = TextEditingController();
@@ -90,111 +94,436 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Registro de Usuario'),
+        title: const Text('Crear cuenta'),
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        foregroundColor: _greenPrimary,
+        elevation: 0,
+        scrolledUnderElevation: 0,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          children: [
-            const Text(
-              'Únete a RedTESO',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppTheme.primaryGreen),
-            ),
-            const SizedBox(height: 20),
-
-            SegmentedButton<String>(
-              segments: const [
-                ButtonSegment(value: 'Alumno', label: Text('Alumno'), icon: Icon(Icons.school)),
-                ButtonSegment(value: 'Empresa', label: Text('Empresa'), icon: Icon(Icons.business)),
-                ButtonSegment(value: 'Profesor', label: Text('Profesor'), icon: Icon(Icons.co_present_rounded)),
-              ],
-              selected: {_userType},
-              onSelectionChanged: (val) => setState(() => _userType = val.first),
-            ),
-
-            const SizedBox(height: 24),
-            TextField(
-              controller: _nameController,
-              decoration: const InputDecoration(labelText: 'Nombre Completo', prefixIcon: Icon(Icons.person_outline)),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _emailController,
-              decoration: const InputDecoration(labelText: 'Correo Institucional', prefixIcon: Icon(Icons.email_outlined)),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _passwordController,
-              obscureText: true,
-              decoration: const InputDecoration(labelText: 'Contraseña', prefixIcon: Icon(Icons.lock_outline)),
-            ),
-
-            if (_userType == 'Alumno') ...[
-              const SizedBox(height: 32),
-              const Divider(),
-              const Text('Información Académica (Sistemas)', style: TextStyle(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 16),
-
-              DropdownButtonFormField<String>(
-                initialValue: _modality,
-                decoration: const InputDecoration(labelText: 'Estado / Modalidad'),
-                items: ['Servicio Social', 'Residencias', 'Recién Egresado']
-                    .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                    .toList(),
-                onChanged: (val) => setState(() => _modality = val!),
-              ),
-              const SizedBox(height: 16),
-
-              Row(
-                children: [
-                  const Text('Género: '),
-                  Radio<String>(
-                    value: 'Femenino',
-                    groupValue: _gender,
-                    onChanged: (val) => setState(() => _gender = val!),
+      backgroundColor: Colors.white,
+      body: Stack(
+        children: [
+          const Positioned.fill(
+            child: IgnorePointer(child: CustomPaint(painter: _RegisterBgPainter())),
+          ),
+          SafeArea(
+            child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 480),
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 20),
+                          child: Column(
+                            children: [
+                              Image.asset(
+                                'assets/images/branding/agora_icono_app.png',
+                                width: 58,
+                                height: 58,
+                                fit: BoxFit.contain,
+                              ),
+                              const SizedBox(height: 8),
+                              const Text(
+                                'ÁGORA',
+                                style: TextStyle(
+                                  color: _greenPrimary,
+                                  fontSize: 25,
+                                  height: 1.1,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: 1,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              const Text(
+                                'ÚNETE A NUESTRA COMUNIDAD',
+                                style: TextStyle(
+                                  color: _greenSecondary,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 1.5,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Card(
+                          margin: EdgeInsets.zero,
+                          color: Colors.white.withValues(alpha: .96),
+                          elevation: 10,
+                          shadowColor: _greenPrimary.withValues(alpha: .10),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(26),
+                            side: BorderSide(
+                              color: _greenLight.withValues(alpha: .75),
+                            ),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(24),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  width: 42,
+                                  height: 5,
+                                  decoration: BoxDecoration(
+                                    color: _greenPrimary,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                                const SizedBox(height: 18),
+                                const Text(
+                                  'Crea tu cuenta',
+                                  style: TextStyle(
+                                    color: _greenPrimary,
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                                const SizedBox(height: 5),
+                                const Text(
+                                  'Completa tus datos para comenzar.',
+                                  style: TextStyle(
+                                    color: _textMuted,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                                const SizedBox(height: 22),
+                                const Text(
+                                  'Tipo de cuenta',
+                                  style: TextStyle(
+                                    color: _greenPrimary,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                SegmentedButton<String>(
+                                  showSelectedIcon: false,
+                                  style: SegmentedButton.styleFrom(
+                                    foregroundColor: _greenPrimary,
+                                    selectedForegroundColor: Colors.white,
+                                    selectedBackgroundColor: _greenPrimary,
+                                    textStyle: const TextStyle(fontSize: 12),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 10,
+                                    ),
+                                  ),
+                                  segments: const [
+                                    ButtonSegment(
+                                      value: 'Alumno',
+                                      label: Text('Alumno'),
+                                      icon: Icon(Icons.school_outlined),
+                                    ),
+                                    ButtonSegment(
+                                      value: 'Empresa',
+                                      label: Text('Empresa'),
+                                      icon: Icon(Icons.business_outlined),
+                                    ),
+                                    ButtonSegment(
+                                      value: 'Profesor',
+                                      label: Text('Profesor'),
+                                      icon: Icon(Icons.co_present_outlined),
+                                    ),
+                                  ],
+                                  selected: {_userType},
+                                  onSelectionChanged: (value) => setState(
+                                    () => _userType = value.first,
+                                  ),
+                                ),
+                                const SizedBox(height: 18),
+                                _buildTextField(
+                                  controller: _nameController,
+                                  label: 'Nombre completo',
+                                  icon: Icons.person_outline_rounded,
+                                ),
+                                const SizedBox(height: 14),
+                                _buildTextField(
+                                  controller: _emailController,
+                                  label: 'Correo institucional',
+                                  icon: Icons.alternate_email_rounded,
+                                  keyboardType: TextInputType.emailAddress,
+                                ),
+                                const SizedBox(height: 14),
+                                _buildTextField(
+                                  controller: _passwordController,
+                                  label: 'Contraseña',
+                                  icon: Icons.lock_outline_rounded,
+                                  obscureText: true,
+                                ),
+                                if (_userType == 'Alumno') ...[
+                                  const SizedBox(height: 20),
+                                  const Divider(height: 1),
+                                  const SizedBox(height: 16),
+                                  const Text(
+                                    'Información académica',
+                                    style: TextStyle(
+                                      color: _greenPrimary,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  DropdownButtonFormField<String>(
+                                    initialValue: _modality,
+                                    isExpanded: true,
+                                    decoration: _inputDecoration(
+                                      'Estado / modalidad',
+                                      Icons.school_outlined,
+                                    ),
+                                    items: [
+                                      'Servicio Social',
+                                      'Residencias',
+                                      'Recién Egresado',
+                                    ].map((item) {
+                                      return DropdownMenuItem(
+                                        value: item,
+                                        child: Text(item),
+                                      );
+                                    }).toList(),
+                                    onChanged: (value) {
+                                      if (value != null) {
+                                        setState(() => _modality = value);
+                                      }
+                                    },
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Wrap(
+                                    crossAxisAlignment:
+                                        WrapCrossAlignment.center,
+                                    spacing: 4,
+                                    children: [
+                                      const Text(
+                                        'Género',
+                                        style: TextStyle(
+                                          color: _textMuted,
+                                          fontSize: 13,
+                                        ),
+                                      ),
+                                      Radio<String>(
+                                        value: 'Femenino',
+                                        groupValue: _gender,
+                                        activeColor: _greenPrimary,
+                                        onChanged: (value) => setState(
+                                          () => _gender = value!,
+                                        ),
+                                      ),
+                                      const Text('Femenino'),
+                                      Radio<String>(
+                                        value: 'Masculino',
+                                        groupValue: _gender,
+                                        activeColor: _greenPrimary,
+                                        onChanged: (value) => setState(
+                                          () => _gender = value!,
+                                        ),
+                                      ),
+                                      const Text('Masculino'),
+                                    ],
+                                  ),
+                                  SwitchListTile(
+                                    contentPadding: EdgeInsets.zero,
+                                    dense: true,
+                                    title: const Text(
+                                      '¿Hablas inglés?',
+                                      style: TextStyle(fontSize: 14),
+                                    ),
+                                    value: _speaksEnglish,
+                                    activeThumbColor: _greenPrimary,
+                                    onChanged: (value) => setState(
+                                      () => _speaksEnglish = value,
+                                    ),
+                                  ),
+                                  Row(
+                                    children: [
+                                      const Text(
+                                        'Promedio',
+                                        style: TextStyle(
+                                          color: _textMuted,
+                                          fontSize: 13,
+                                        ),
+                                      ),
+                                      const Spacer(),
+                                      Text(
+                                        _gpa.toStringAsFixed(1),
+                                        style: const TextStyle(
+                                          color: _greenPrimary,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SliderTheme(
+                                    data: SliderTheme.of(context).copyWith(
+                                      activeTrackColor: _greenPrimary,
+                                      inactiveTrackColor: _greenLight,
+                                      thumbColor: _greenPrimary,
+                                      overlayColor:
+                                          _greenPrimary.withValues(alpha: .12),
+                                      trackHeight: 4,
+                                    ),
+                                    child: Slider(
+                                      value: _gpa,
+                                      min: 6,
+                                      max: 10,
+                                      divisions: 40,
+                                      label: _gpa.toStringAsFixed(1),
+                                      onChanged: (value) => setState(
+                                        () => _gpa = value,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                                const SizedBox(height: 18),
+                                Consumer<AuthProvider>(
+                                  builder: (context, auth, _) {
+                                    return SizedBox(
+                                      width: double.infinity,
+                                      height: 52,
+                                      child: auth.isLoading
+                                          ? const Center(
+                                              child:
+                                                  CircularProgressIndicator(),
+                                            )
+                                          : FilledButton.icon(
+                                              onPressed: _register,
+                                              icon: const Icon(
+                                                Icons.arrow_forward_rounded,
+                                              ),
+                                              label: const Text(
+                                                'FINALIZAR REGISTRO',
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w800,
+                                                  letterSpacing: .5,
+                                                ),
+                                              ),
+                                              style: FilledButton.styleFrom(
+                                                backgroundColor: _greenPrimary,
+                                                foregroundColor: Colors.white,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(14),
+                                                ),
+                                              ),
+                                            ),
+                                    );
+                                  },
+                                ),
+                                const SizedBox(height: 12),
+                                Center(
+                                  child: TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: const Text('Volver a iniciar sesión'),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  const Text('Fem'),
-                  Radio<String>(
-                    value: 'Masculino',
-                    groupValue: _gender,
-                    onChanged: (val) => setState(() => _gender = val!),
-                  ),
-                  const Text('Mas'),
-                ],
-              ),
-              
-              SwitchListTile(
-                title: const Text('¿Hablas Inglés?'),
-                value: _speaksEnglish,
-                onChanged: (val) => setState(() => _speaksEnglish = val),
-                activeThumbColor: AppTheme.primaryGreen,
-              ),
-
-              const Text('Promedio (GPA)'),
-              Slider(
-                value: _gpa,
-                min: 6.0,
-                max: 10.0,
-                divisions: 40,
-                label: _gpa.toStringAsFixed(1),
-                onChanged: (val) => setState(() => _gpa = val),
-              ),
-            ],
-
-            const SizedBox(height: 40),
-            Consumer<AuthProvider>(
-              builder: (context, auth, _) {
-                return auth.isLoading
-                    ? const CircularProgressIndicator()
-                    : ElevatedButton(
-                        onPressed: _register,
-                        child: const Text('FINALIZAR REGISTRO'),
-                      );
-              },
+                ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
+
+  InputDecoration _inputDecoration(String label, IconData icon) {
+    return InputDecoration(
+      labelText: label,
+      prefixIcon: Icon(icon, color: _greenSecondary, size: 20),
+      filled: true,
+      fillColor: const Color(0xFFF6F9F7),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 15),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: Color(0xFFDCE9DF)),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: Color(0xFFDCE9DF)),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: _greenPrimary, width: 1.5),
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    TextInputType? keyboardType,
+    bool obscureText = false,
+  }) {
+    return TextField(
+      controller: controller,
+      keyboardType: keyboardType,
+      obscureText: obscureText,
+      decoration: _inputDecoration(label, icon),
+    );
+  }
+}
+
+class _RegisterBgPainter extends CustomPainter {
+  const _RegisterBgPainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    const lightGreen = Color(0xFFA8D5A2);
+    const green = Color(0xFF1E8449);
+
+    final topRight = Path()
+      ..moveTo(size.width * .78, 0)
+      ..lineTo(size.width, 0)
+      ..lineTo(size.width, size.height * .3)
+      ..cubicTo(size.width * .9, size.height * .24, size.width * .84,
+          size.height * .12, size.width * .78, 0)
+      ..close();
+    final bottomLeft = Path()
+      ..moveTo(0, size.height * .78)
+      ..cubicTo(size.width * .12, size.height * .82, size.width * .2,
+          size.height * .92, size.width * .32, size.height)
+      ..lineTo(0, size.height)
+      ..close();
+
+    canvas
+      ..drawPath(
+        topRight,
+        Paint()..color = lightGreen.withValues(alpha: .38),
+      )
+      ..drawPath(
+        bottomLeft,
+        Paint()..color = lightGreen.withValues(alpha: .45),
+      );
+
+    final line = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2
+      ..color = green.withValues(alpha: .16);
+    canvas
+      ..drawPath(
+        Path()
+          ..moveTo(size.width * .82, 0)
+          ..cubicTo(size.width * .87, size.height * .09, size.width * .94,
+              size.height * .13, size.width, size.height * .12),
+        line,
+      )
+      ..drawPath(
+        Path()
+          ..moveTo(0, size.height * .86)
+          ..cubicTo(size.width * .11, size.height * .88, size.width * .2,
+              size.height * .96, size.width * .27, size.height),
+        line,
+      );
+  }
+
+  @override
+  bool shouldRepaint(covariant _RegisterBgPainter oldDelegate) => false;
 }

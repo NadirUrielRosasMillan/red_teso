@@ -27,11 +27,12 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   int _logoTapCount = 0;
   Timer? _logoTapResetTimer;
 
-  static const Color _bgWhite = Colors.white; // Fondo blanco puro
-  static const Color _primaryTurquoise = Color(0xFF0793B8); // Turquesa / Cian Oscuro
-  static const Color _cyan = Color(0xFF10BFD0); // Cian claro
-  static const Color _textDark = Color(0xFF0D1330); // Gris-950 (Oscuro)
-  static const Color _textMuted = Color(0xFF566080); // Gris-600
+  static const Color _bgWhite = Colors.white;
+  static const Color _greenPrimary = Color(0xFF0B5D3B);
+  static const Color _greenSecondary = Color(0xFF1E8449);
+  static const Color _greenLight = Color(0xFFA8D5A2);
+  static const Color _textDark = Color(0xFF0B5D3B);
+  static const Color _textMuted = Color(0xFF6B7280);
 
   @override
   void initState() {
@@ -168,20 +169,11 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         children: [
           Positioned.fill(
             child: DecoratedBox(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Color(0xFF092B57),
-                    Color(0xFF174E87),
-                    Color(0xFFB9D7F3),
-                    Color(0xFFFFFFFF),
-                  ],
-                  stops: [0, .28, .68, 1],
-                ),
-              ),
+              decoration: const BoxDecoration(color: Colors.white),
             ),
+          ),
+          const Positioned.fill(
+            child: IgnorePointer(child: CustomPaint(painter: _LoginGreenBackgroundPainter())),
           ),
           SafeArea(
             child: LayoutBuilder(
@@ -303,12 +295,12 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
               shape: BoxShape.circle,
               color: Colors.white,
               border: Border.all(
-                color: _primaryTurquoise.withValues(alpha: 0.2),
+                color: _greenPrimary.withValues(alpha: 0.2),
                 width: 1.5,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: _primaryTurquoise.withValues(alpha: 0.15),
+                  color: _greenPrimary.withValues(alpha: 0.15),
                   blurRadius: 30,
                   spreadRadius: 2,
                   offset: const Offset(0, 8),
@@ -339,7 +331,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
           'TU TALENTO ABRE PUERTAS',
           textAlign: TextAlign.center,
           style: GoogleFonts.inter(
-            color: _primaryTurquoise,
+            color: _greenPrimary,
             fontSize: 10,
             fontWeight: FontWeight.w700,
             letterSpacing: 3,
@@ -357,15 +349,15 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         child: Container(
           padding: const EdgeInsets.all(32),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.6), // Cristal claro
+            color: Colors.white.withValues(alpha: 0.92),
             borderRadius: BorderRadius.circular(32),
             border: Border.all(
-              color: Colors.white.withValues(alpha: 0.8),
+              color: _greenLight.withValues(alpha: 0.8),
               width: 1.2,
             ),
             boxShadow: [
               BoxShadow(
-                color: _primaryTurquoise.withValues(alpha: 0.08),
+                color: _greenPrimary.withValues(alpha: 0.08),
                 blurRadius: 40,
                 offset: const Offset(0, 20),
               ),
@@ -379,7 +371,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                 width: 48,
                 height: 5,
                 decoration: BoxDecoration(
-                  color: _primaryTurquoise,
+                  color: _greenPrimary,
                   borderRadius: BorderRadius.circular(20),
                 ),
               ),
@@ -448,14 +440,14 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                             decoration: BoxDecoration(
                               gradient: const LinearGradient(
                                 colors: [
-                                  Color(0xFF00B8F0), // _cyan
-                                  Color(0xFF0793B8), // _primaryTurquoise
+                                  _greenSecondary,
+                                  _greenPrimary,
                                 ],
                               ),
                               borderRadius: BorderRadius.circular(16),
                               boxShadow: [
                                 BoxShadow(
-                                  color: _primaryTurquoise.withValues(alpha: 0.35),
+                                  color: _greenPrimary.withValues(alpha: 0.35),
                                   blurRadius: 15,
                                   offset: const Offset(0, 6),
                                 ),
@@ -530,7 +522,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                     TextButton(
                       onPressed: _openRegister,
                       style: TextButton.styleFrom(
-                        foregroundColor: _primaryTurquoise,
+                        foregroundColor: _greenPrimary,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 4,
                         ),
@@ -593,7 +585,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                 color: _textDark,
                 fontSize: 14,
               ),
-              cursorColor: _primaryTurquoise,
+              cursorColor: _greenPrimary,
               decoration: InputDecoration(
                 hintText: hint,
                 hintStyle: GoogleFonts.inter(
@@ -602,12 +594,12 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                 ),
                 prefixIcon: Icon(
                   icon,
-                  color: _primaryTurquoise,
+                  color: _greenPrimary,
                   size: 20,
                 ),
                 suffixIcon: suffix,
                 filled: true,
-                fillColor: Colors.black.withValues(alpha: 0.03),
+                fillColor: const Color(0xFF6B7280).withValues(alpha: 0.06),
                 contentPadding: const EdgeInsets.symmetric(
                   vertical: 18,
                   horizontal: 16,
@@ -615,14 +607,14 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
                   borderSide: BorderSide(
-                    color: _primaryTurquoise.withValues(alpha: 0.15),
+                    color: _greenPrimary.withValues(alpha: 0.15),
                     width: 1.2,
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
                   borderSide: const BorderSide(
-                    color: _primaryTurquoise,
+                    color: _greenPrimary,
                     width: 1.5,
                   ),
                 ),
@@ -641,15 +633,15 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
           width: 42,
           height: 42,
           decoration: BoxDecoration(
-            color: _primaryTurquoise.withValues(alpha: 0.1),
+            color: _greenPrimary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(13),
             border: Border.all(
-              color: _primaryTurquoise.withValues(alpha: 0.2),
+              color: _greenPrimary.withValues(alpha: 0.2),
             ),
           ),
           child: Icon(
             icon,
-            color: _primaryTurquoise,
+            color: _greenPrimary,
             size: 21,
           ),
         ),
@@ -682,6 +674,90 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   }
 }
 
+class _LoginGreenBackgroundPainter extends CustomPainter {
+  const _LoginGreenBackgroundPainter();
+
+  static const _deepGreen = Color(0xFF0B5D3B);
+  static const _midGreen = Color(0xFF1E8449);
+  static const _softGreen = Color(0xFFA8D5A2);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    // Large, soft organic shapes stay at the edges so the login remains clear.
+    final topRight = Path()
+      ..moveTo(size.width * 0.72, 0)
+      ..lineTo(size.width, 0)
+      ..lineTo(size.width, size.height * 0.34)
+      ..cubicTo(
+        size.width * 0.88,
+        size.height * 0.28,
+        size.width * 0.82,
+        size.height * 0.14,
+        size.width * 0.72,
+        0,
+      )
+      ..close();
+    canvas.drawPath(
+      topRight,
+      Paint()..color = _softGreen.withValues(alpha: 0.42),
+    );
+
+    final bottomLeft = Path()
+      ..moveTo(0, size.height * 0.68)
+      ..cubicTo(
+        size.width * 0.13,
+        size.height * 0.72,
+        size.width * 0.19,
+        size.height * 0.86,
+        size.width * 0.35,
+        size.height,
+      )
+      ..lineTo(0, size.height)
+      ..close();
+    canvas.drawPath(
+      bottomLeft,
+      Paint()..color = _softGreen.withValues(alpha: 0.48),
+    );
+
+    final accent = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2
+      ..color = _midGreen.withValues(alpha: 0.2);
+    final upperArc = Path()
+      ..moveTo(size.width * 0.76, 0)
+      ..cubicTo(
+        size.width * 0.84,
+        size.height * 0.10,
+        size.width * 0.92,
+        size.height * 0.14,
+        size.width,
+        size.height * 0.13,
+      );
+    final lowerArc = Path()
+      ..moveTo(0, size.height * 0.82)
+      ..cubicTo(
+        size.width * 0.12,
+        size.height * 0.85,
+        size.width * 0.18,
+        size.height * 0.95,
+        size.width * 0.26,
+        size.height,
+      );
+    canvas
+      ..drawPath(upperArc, accent)
+      ..drawPath(lowerArc, accent);
+
+    final dotPaint = Paint()..color = _deepGreen.withValues(alpha: 0.2);
+    canvas
+      ..drawCircle(Offset(size.width * 0.91, size.height * 0.25), 4, dotPaint)
+      ..drawCircle(Offset(size.width * 0.83, size.height * 0.20), 2.5, dotPaint)
+      ..drawCircle(Offset(size.width * 0.13, size.height * 0.78), 3, dotPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _LoginGreenBackgroundPainter oldDelegate) => false;
+}
+
 class _AdminAccessDialog extends StatefulWidget {
   const _AdminAccessDialog();
 
@@ -694,8 +770,8 @@ class _AdminAccessDialogState extends State<_AdminAccessDialog> {
   bool _obscurePassword = true;
   String? _errorMessage;
 
-  static const Color _bgDark = Color(0xFF0A1922);
-  static const Color _cyan = Color(0xFF10BFD0);
+  static const Color _bgDark = Color(0xFF0B5D3B);
+  static const Color _greenLight = Color(0xFFA8D5A2);
 
   @override
   void dispose() {
@@ -718,11 +794,11 @@ class _AdminAccessDialogState extends State<_AdminAccessDialog> {
       backgroundColor: _bgDark,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(24),
-        side: BorderSide(color: _cyan.withValues(alpha: 0.35)),
+        side: BorderSide(color: _greenLight.withValues(alpha: 0.35)),
       ),
       title: Row(
         children: [
-          const Icon(Icons.admin_panel_settings_rounded, color: _cyan),
+          const Icon(Icons.admin_panel_settings_rounded, color: _greenLight),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
@@ -753,7 +829,7 @@ class _AdminAccessDialogState extends State<_AdminAccessDialog> {
             decoration: InputDecoration(
               hintText: 'Contraseña',
               hintStyle: GoogleFonts.inter(color: Colors.white38),
-              prefixIcon: const Icon(Icons.lock_outline_rounded, color: _cyan),
+              prefixIcon: const Icon(Icons.lock_outline_rounded, color: _greenLight),
               suffixIcon: IconButton(
                 onPressed: () => setState(
                   () => _obscurePassword = !_obscurePassword,
@@ -766,7 +842,7 @@ class _AdminAccessDialogState extends State<_AdminAccessDialog> {
                 ),
               ),
               filled: true,
-              fillColor: Colors.black.withValues(alpha: 0.20),
+              fillColor: const Color(0xFF6B7280).withValues(alpha: 0.24),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
                 borderSide: BorderSide(
@@ -775,7 +851,7 @@ class _AdminAccessDialogState extends State<_AdminAccessDialog> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
-                borderSide: const BorderSide(color: _cyan, width: 1.4),
+                borderSide: const BorderSide(color: _greenLight, width: 1.4),
               ),
             ),
           ),
@@ -798,7 +874,7 @@ class _AdminAccessDialogState extends State<_AdminAccessDialog> {
         ),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: _cyan,
+            backgroundColor: _greenLight,
             foregroundColor: _bgDark,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
@@ -859,19 +935,19 @@ class _LogoVectorPainter extends CustomPainter {
 
   _LogoVectorPainter({required this.progress});
 
-  static const Color _primaryTurquoise = Color(0xFF0793B8);
+  static const Color _greenPrimary = Color(0xFF0B5D3B);
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = _primaryTurquoise.withValues(alpha: 0.85)
+      ..color = _greenPrimary.withValues(alpha: 0.85)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3.5
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round;
 
     final shadowPaint = Paint()
-      ..color = _primaryTurquoise.withValues(alpha: 0.15)
+      ..color = _greenPrimary.withValues(alpha: 0.15)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 6.0
       ..strokeCap = StrokeCap.round
@@ -961,10 +1037,10 @@ class _PremiumBackgroundPainter extends CustomPainter {
 
   _PremiumBackgroundPainter({required this.progress});
 
-  static const Color _noche800 = Color(0xFFF8FBFF);
+  static const Color _noche800 = Color(0xFFA8D5A2);
   static const Color _noche950 = Color(0xFFFFFFFF);
-  static const Color _primaryTurquoise = Color(0xFF0793B8);
-  static const Color _cyan = Color(0xFF10BFD0);
+  static const Color _greenPrimary = Color(0xFF0B5D3B);
+  static const Color _greenLight = Color(0xFFA8D5A2);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -976,9 +1052,9 @@ class _PremiumBackgroundPainter extends CustomPainter {
         end: Alignment.bottomRight,
         colors: [
           Color(0xFFFFFFFF),
-          Color(0xFFF4FAFC),
-          Color(0xFFE6F6FA),
-          Color(0xFFDCEBF0),
+          Color(0xFFA8D5A2),
+          Color(0xFFA8D5A2),
+          Color(0xFFFFFFFF),
         ],
         stops: [0, 0.38, 0.72, 1],
       ).createShader(rect);
@@ -993,7 +1069,7 @@ class _PremiumBackgroundPainter extends CustomPainter {
         size.height * 0.18,
       ),
       size.width * 0.42,
-      _primaryTurquoise.withValues(alpha: 0.1),
+      _greenPrimary.withValues(alpha: 0.1),
     );
 
     _drawGlow(
@@ -1003,7 +1079,7 @@ class _PremiumBackgroundPainter extends CustomPainter {
         size.height * 0.76,
       ),
       size.width * 0.48,
-      _cyan.withValues(alpha: 0.08),
+      _greenLight.withValues(alpha: 0.08),
     );
 
     // Trazos diagonales luminosos
@@ -1013,8 +1089,8 @@ class _PremiumBackgroundPainter extends CustomPainter {
       ..shader = LinearGradient(
         colors: [
           Colors.transparent,
-          _cyan.withValues(alpha: 0.15),
-          _primaryTurquoise.withValues(alpha: 0.25),
+          _greenLight.withValues(alpha: 0.15),
+          _greenPrimary.withValues(alpha: 0.25),
           Colors.transparent,
         ],
       ).createShader(rect);
@@ -1045,7 +1121,7 @@ class _PremiumBackgroundPainter extends CustomPainter {
     canvas.drawPath(path2, ribbonPaint);
 
     // Partículas luminosas estilo cian
-    final particlePaint = Paint()..color = _cyan.withValues(alpha: 0.3);
+    final particlePaint = Paint()..color = _greenLight.withValues(alpha: 0.3);
 
     for (int i = 0; i < 45; i++) {
       final x = ((i * 73.7) % 997) / 997 * size.width;
