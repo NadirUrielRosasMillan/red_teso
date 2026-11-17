@@ -1,5 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
+import 'package:red_teso/features/company/presentation/widgets/vacancy_location_map_widget.dart';
 
 class CreateVacancyPage extends StatefulWidget {
   final Map<String, dynamic>? vacancyToEdit;
@@ -12,41 +16,45 @@ class CreateVacancyPage extends StatefulWidget {
 
 class _CreateVacancyPageState extends State<CreateVacancyPage> {
   final _formKey = GlobalKey<FormState>();
-  
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
   late TextEditingController _titleController;
   late TextEditingController _descriptionController;
   late TextEditingController _locationController;
   late TextEditingController _supportController;
-  
+
   String _opportunityType = 'Residencias';
   double _requiredGpa = 8.0;
   bool _requiresEnglish = false;
-  
+  bool _isPublishing = false;
+
+  double _distanceKm = 5.2;
+  int _commuteMinutes = 15;
+  String _transportTip = 'Combi directa desde TESOEM o Metro Santa Marta';
+  double _lat = 19.3621;
+  double _lng = -98.9806;
+
   final List<String> _requirementsList = ['Proactivo', 'Trabajo en equipo'];
-  final _newRequirementController = TextEditingController();
+  final TextEditingController _newRequirementController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     final isEditing = widget.vacancyToEdit != null;
-    
-    _titleController = TextEditingController(
-      text: isEditing ? widget.vacancyToEdit!['puesto'] : '',
-    );
-    _descriptionController = TextEditingController(
-      text: isEditing ? widget.vacancyToEdit!['descripcion'] : '',
-    );
-    _locationController = TextEditingController(
-      text: isEditing ? widget.vacancyToEdit!['ubicacion'] ?? 'Remoto / Edo de México' : '',
-    );
-    _supportController = TextEditingController(
-      text: isEditing ? widget.vacancyToEdit!['apoyo'] ?? '\$4,000 Mensual' : '',
-    );
+
+    _titleController = TextEditingController(text: isEditing ? widget.vacancyToEdit!['puesto'] : '');
+    _descriptionController = TextEditingController(text: isEditing ? widget.vacancyToEdit!['descripcion'] : '');
+    _locationController = TextEditingController(text: isEditing ? widget.vacancyToEdit!['ubicacion'] ?? 'Cerca de TESOEM / Los Reyes La Paz' : 'Cerca de TESOEM / Los Reyes La Paz');
+    _supportController = TextEditingController(text: isEditing ? widget.vacancyToEdit!['apoyo']?.toString() : '5000');
 
     if (isEditing) {
       _opportunityType = widget.vacancyToEdit!['tipo'] ?? 'Residencias';
-      _requiredGpa = widget.vacancyToEdit!['gpa'] ?? 8.0;
+      _requiredGpa = (widget.vacancyToEdit!['gpa'] ?? 8.0).toDouble();
       _requiresEnglish = widget.vacancyToEdit!['ingles'] ?? false;
+      _distanceKm = (widget.vacancyToEdit!['distanceKm'] ?? 5.2).toDouble();
+      _commuteMinutes = (widget.vacancyToEdit!['commuteMinutes'] ?? 15).toInt();
+      _transportTip = widget.vacancyToEdit!['transportTip'] ?? 'Combi directa desde TESOEM o Metro Santa Marta';
       if (widget.vacancyToEdit!['requisitos'] != null) {
         _requirementsList.clear();
         _requirementsList.addAll(List<String>.from(widget.vacancyToEdit!['requisitos']));
@@ -64,30 +72,116 @@ class _CreateVacancyPageState extends State<CreateVacancyPage> {
     super.dispose();
   }
 
-  void _addRequirement() {
-    final text = _newRequirementController.text.trim();
-    if (text.isNotEmpty && !_requirementsList.contains(text)) {
+  void _submitVacancy() async {
+    if (_formKey.currentState!.validate()) {
+      setState(() => _isPublishing = true);
+      try {
+        final userId = _auth.currentUser?.uid;
+        if (userId == null) throw Exception('Sesión no iniciada. Por favor inicie sesión nuevamente.');
+
+        // Obtener el nombre real registrado de la empresa desde Firestore
+        String companyName = 'Empresa Colaboradora';
+        try {
+          final companyDoc = await _db.collection('users').doc(userId).get();
+          if (companyDoc.exists) {
+            final data = companyDoc.data();
+            final fetchedName = data?['name'] ?? data?['companyName'] ?? data?['empresa'];
+            if (fetchedName != null && fetchedName.toString().trim().isNotEmpty) {
+              companyName = fetchedName.toString().trim();
+            }
+          }
+        } catch (e) {
+          debugPrint('Error obteniendo nombre de la empresa: $e');
+        }
+
+        if (companyName == 'Empresa Colaboradora' && _auth.currentUser?.displayName != null && _auth.currentUser!.displayName!.isNotEmpty) {
+          companyName = _auth.currentUser!.displayName!;
+        }
+
+        final vacancyData = <String, dynamic>{
+          'puesto': _titleController.text.trim(),
+          'tipo': _opportunityType,
+          'ubicacion': _locationController.text.trim(),
+          'apoyo': int.tryParse(_supportController.text.trim()) ?? 0,
+          'descripcion': _descriptionController.text.trim(),
+          'gpa': _requiredGpa,
+          'ingles': _requiresEnglish,
+          'requisitos': _requirementsList,
+          'companyId': userId,
+          'empresa': companyName,
+          'distanceKm': _distanceKm,
+          'commuteMinutes': _commuteMinutes,
+          'transportTip': _transportTip,
+          'lat': _lat,
+          'lng': _lng,
+          'updatedAt': FieldValue.serverTimestamp(),
+        };
+
+        if (widget.vacancyToEdit != null) {
+          await _db.collection('vacancies').doc(widget.vacancyToEdit!['id']).update(vacancyData);
+        } else {
+          vacancyData['createdAt'] = FieldValue.serverTimestamp();
+          await _db.collection('vacancies').add(vacancyData);
+        }
+
+        if (!mounted) return;
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.check_circle_outline_rounded, color: Colors.white),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    widget.vacancyToEdit != null ? '¡Vacante actualizada!' : '¡Vacante publicada exitosamente en ÁGORA Talento!',
+                    style: GoogleFonts.inter(),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: AppTheme.primaryColor,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+
+        Navigator.pop(context);
+      } catch (e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error al guardar vacante: $e'),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      } finally {
+        if (mounted) setState(() => _isPublishing = false);
+      }
+    }
+  }
+
+  void _openLocationPicker() async {
+    final selected = await LocationPickerModal.show(context, current: _locationController.text);
+    if (selected != null) {
       setState(() {
-        _requirementsList.add(text);
-        _newRequirementController.clear();
+        _locationController.text = selected.title;
+        _distanceKm = selected.distanceKm;
+        _commuteMinutes = selected.commuteMinutes;
+        _transportTip = selected.transportTip;
+        _lat = selected.coordinates.latitude;
+        _lng = selected.coordinates.longitude;
       });
     }
   }
 
-  void _submitVacancy() {
-    if (_formKey.currentState!.validate()) {
-      final isEditing = widget.vacancyToEdit != null;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(isEditing 
-            ? '¡Vacante modificada con éxito visualmente!' 
-            : '¡Nueva vacante publicada con éxito en RedTESO!'),
-          backgroundColor: AppTheme.primaryGreen,
-        ),
-      );
-      if (isEditing) {
-        Navigator.pop(context);
-      }
+  void _addRequirement() {
+    final text = _newRequirementController.text.trim();
+    if (text.isNotEmpty) {
+      setState(() {
+        _requirementsList.add(text);
+        _newRequirementController.clear();
+      });
     }
   }
 
@@ -96,177 +190,234 @@ class _CreateVacancyPageState extends State<CreateVacancyPage> {
     final isEditing = widget.vacancyToEdit != null;
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: isEditing 
-          ? AppBar(
-              title: const Text('Modificar Vacante'),
-              foregroundColor: AppTheme.primaryGreen,
-              backgroundColor: Colors.white,
-              elevation: 0,
-            )
-          : null,
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (!isEditing) ...[
-                const Text(
-                  'Publicar Vacante',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black87),
-                ),
-                const Text(
-                  'Atrae el mejor talento de ingeniería rellenando el formulario:',
-                  style: TextStyle(color: Colors.grey, fontSize: 14),
-                ),
-                const SizedBox(height: 24),
-              ],
-              
-              TextFormField(
-                controller: _titleController,
-                decoration: const InputDecoration(
-                  labelText: 'Título del Puesto (ej: Desarrollador Backend)',
-                  prefixIcon: Icon(Icons.badge_outlined),
-                ),
-                validator: (val) => val == null || val.isEmpty ? 'Por favor ingresa el título' : null,
-              ),
-              const SizedBox(height: 16),
-
-              DropdownButtonFormField<String>(
-                value: _opportunityType,
-                decoration: const InputDecoration(
-                  labelText: 'Tipo de Oportunidad',
-                  prefixIcon: Icon(Icons.layers_outlined),
-                ),
-                items: ['Servicio Social', 'Residencias', 'Empleo Egresados']
-                    .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                    .toList(),
-                onChanged: (val) => setState(() => _opportunityType = val!),
-              ),
-              const SizedBox(height: 16),
-
-              Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      controller: _locationController,
-                      decoration: const InputDecoration(
-                        labelText: 'Ubicación',
-                        prefixIcon: Icon(Icons.location_on_outlined),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: TextFormField(
-                      controller: _supportController,
-                      decoration: const InputDecoration(
-                        labelText: 'Apoyo / Salario',
-                        prefixIcon: Icon(Icons.monetization_on),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-
-              TextFormField(
-                controller: _descriptionController,
-                maxLines: 4,
-                decoration: const InputDecoration(
-                  labelText: 'Descripción de las actividades y responsabilidades',
-                  alignLabelWithHint: true,
-                ),
-                validator: (val) => val == null || val.isEmpty ? 'Por favor ingresa la descripción' : null,
-              ),
-              const SizedBox(height: 24),
-
-              const Divider(),
-              const SizedBox(height: 12),
-              const Text('Criterios de Filtro Solicitados', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-              const SizedBox(height: 16),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Promedio mínimo exigido:', style: TextStyle(color: Colors.grey[700])),
-                  Text(
-                    _requiredGpa.toStringAsFixed(1),
-                    style: const TextStyle(fontWeight: FontWeight.bold, color: AppTheme.primaryGreen, fontSize: 16),
-                  ),
-                ],
-              ),
-              Slider(
-                value: _requiredGpa,
-                min: 7.0,
-                max: 10.0,
-                divisions: 30,
-                activeColor: AppTheme.primaryGreen,
-                onChanged: (val) => setState(() => _requiredGpa = val),
-              ),
-
-              SwitchListTile(
-                title: const Text('¿Es obligatorio el idioma Inglés?'),
-                subtitle: const Text('Filtrará perfiles con inglés básico'),
-                value: _requiresEnglish,
-                activeColor: AppTheme.primaryGreen,
-                contentPadding: EdgeInsets.zero,
-                onChanged: (val) => setState(() => _requiresEnglish = val),
-              ),
-              const SizedBox(height: 16),
-
-              const Text('Habilidades deseadas (Tags):', style: TextStyle(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _newRequirementController,
-                      decoration: const InputDecoration(
-                        hintText: 'ej: React, Linux, Scrum',
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  ElevatedButton(
-                    onPressed: _addRequirement,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.primaryGreen,
-                      minimumSize: const Size(54, 50),
-                    ),
-                    child: const Icon(Icons.add, color: Colors.white),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Wrap(
-                spacing: 8,
-                runSpacing: 4,
-                children: _requirementsList.map((req) {
-                  return Chip(
-                    label: Text(req),
-                    onDeleted: () {
-                      setState(() {
-                        _requirementsList.remove(req);
-                      });
-                    },
-                    deleteIconColor: Colors.red,
-                  );
-                }).toList(),
-              ),
-
-              const SizedBox(height: 40),
-
-              ElevatedButton(
-                onPressed: _submitVacancy,
-                child: Text(isEditing ? 'GUARDAR MODIFICACIONES' : 'PUBLICAR OFERTA'),
-              ),
-            ],
-          ),
+      backgroundColor: const Color(0xFFF8FAFC),
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded),
+          tooltip: 'Regresar',
+          onPressed: () => Navigator.pop(context),
         ),
+        title: Text(isEditing ? 'Editar Vacante' : 'Publicar Oportunidad', style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
+        backgroundColor: Colors.white,
+        foregroundColor: const Color(0xFF0F172A),
+        elevation: 0,
       ),
+      body: _isPublishing
+          ? const Center(child: CircularProgressIndicator(color: AppTheme.primaryColor))
+          : SingleChildScrollView(
+              padding: const EdgeInsets.all(20.0),
+              child: Form(
+                key: _formKey,
+                child: Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(24),
+                    boxShadow: [
+                      BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 16, offset: const Offset(0, 6)),
+                    ],
+                    border: Border.all(color: const Color(0xFFE2E8F0)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Detalles de la Vacante', style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A))),
+                      const SizedBox(height: 20),
+
+                      TextFormField(
+                        controller: _titleController,
+                        style: GoogleFonts.inter(fontSize: 14.5),
+                        decoration: InputDecoration(
+                          labelText: 'Título de la Vacante / Puesto',
+                          prefixIcon: const Icon(Icons.work_outline_rounded, color: AppTheme.primaryColor),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+                        ),
+                        validator: (val) => val == null || val.trim().isEmpty ? 'Ingresa el puesto' : null,
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      DropdownButtonFormField<String>(
+                        initialValue: _opportunityType,
+                        decoration: InputDecoration(
+                          labelText: 'Modalidad de la Oportunidad',
+                          prefixIcon: const Icon(Icons.category_outlined, color: AppTheme.primaryColor),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+                        ),
+                        items: ['Residencias', 'Servicio Social', 'Recién Egresado', 'Empleo Fijo']
+                            .map((e) => DropdownMenuItem(value: e, child: Text(e, style: GoogleFonts.inter())))
+                            .toList(),
+                        onChanged: (val) => setState(() => _opportunityType = val!),
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              controller: _locationController,
+                              style: GoogleFonts.inter(fontSize: 14.5),
+                              decoration: InputDecoration(
+                                labelText: 'Ubicación / Mapa 📍',
+                                prefixIcon: const Icon(Icons.place_outlined, color: AppTheme.primaryColor),
+                                suffixIcon: IconButton(
+                                  icon: const Icon(Icons.map_rounded, color: AppTheme.primaryColor),
+                                  tooltip: 'Seleccionar en Mapa',
+                                  onPressed: _openLocationPicker,
+                                ),
+                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+                              ),
+                              validator: (val) => val == null || val.trim().isEmpty ? 'Ingresa la ubicación' : null,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: TextFormField(
+                              controller: _supportController,
+                              style: GoogleFonts.inter(fontSize: 14.5),
+                              keyboardType: TextInputType.number,
+                              decoration: InputDecoration(
+                                labelText: r'Apoyo Mensual ($)',
+                                prefixIcon: const Icon(Icons.monetization_on_outlined, color: AppTheme.primaryColor),
+                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      Text(
+                        'Vista Previa del Mapa de Ubicación (Toca para seleccionar 📍):',
+                        style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A)),
+                      ),
+                      const SizedBox(height: 8),
+
+                      InkWell(
+                        onTap: _openLocationPicker,
+                        borderRadius: BorderRadius.circular(24),
+                        child: IgnorePointer(
+                          child: VacancyLocationMapWidget(
+                            locationName: _locationController.text.isEmpty ? 'Cerca de TESOEM' : _locationController.text,
+                            distanceKm: _distanceKm,
+                            commuteMinutes: _commuteMinutes,
+                            transportTip: _transportTip,
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      TextFormField(
+                        controller: _descriptionController,
+                        maxLines: 4,
+                        style: GoogleFonts.inter(fontSize: 14),
+                        decoration: InputDecoration(
+                          labelText: 'Descripción del Puesto y Actividades',
+                          alignLabelWithHint: true,
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+                        ),
+                        validator: (val) => val == null || val.trim().isEmpty ? 'Ingresa una descripción' : null,
+                      ),
+
+                      const SizedBox(height: 24),
+
+                      Text('Requisitos Mínimos para Alumnos', style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A))),
+                      const SizedBox(height: 12),
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Promedio Mínimo Requerido: ${_requiredGpa.toStringAsFixed(1)}', style: GoogleFonts.inter(fontWeight: FontWeight.bold, fontSize: 13.5)),
+                        ],
+                      ),
+                      Slider(
+                        value: _requiredGpa,
+                        min: 7.0,
+                        max: 10.0,
+                        divisions: 30,
+                        activeColor: AppTheme.primaryColor,
+                        onChanged: (val) => setState(() => _requiredGpa = val),
+                      ),
+
+                      SwitchListTile(
+                        title: Text('Inglés Obligatorio', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600)),
+                        subtitle: Text('Requisito indispensable para postularse', style: GoogleFonts.inter(fontSize: 12)),
+                        value: _requiresEnglish,
+                        onChanged: (val) => setState(() => _requiresEnglish = val),
+                        activeThumbColor: AppTheme.primaryColor,
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      // Requisitos específicos (chips)
+                      Text('Habilidades requeridas:', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 8),
+
+                      Wrap(
+                        spacing: 8,
+                        children: _requirementsList.map((req) {
+                          return Chip(
+                            label: Text(req, style: GoogleFonts.inter(fontSize: 12)),
+                            deleteIcon: const Icon(Icons.close, size: 16),
+                            onDeleted: () {
+                              setState(() {
+                                _requirementsList.remove(req);
+                              });
+                            },
+                          );
+                        }).toList(),
+                      ),
+
+                      const SizedBox(height: 8),
+
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: _newRequirementController,
+                              style: GoogleFonts.inter(fontSize: 13.5),
+                              decoration: InputDecoration(
+                                hintText: 'Añadir habilidad (ej. Python, Git...)',
+                                isDense: true,
+                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          IconButton.filled(
+                            onPressed: _addRequirement,
+                            icon: const Icon(Icons.add),
+                            style: IconButton.styleFrom(backgroundColor: AppTheme.primaryColor),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 32),
+
+                      SizedBox(
+                        width: double.infinity,
+                        height: 52,
+                        child: ElevatedButton(
+                          onPressed: _submitVacancy,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppTheme.primaryColor,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          ),
+                          child: Text(
+                            isEditing ? 'GUARDAR CAMBIOS' : 'PUBLICAR VACANTE EN ÁGORA TALENTO',
+                            style: GoogleFonts.outfit(fontWeight: FontWeight.bold, letterSpacing: 0.8),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
     );
   }
 }

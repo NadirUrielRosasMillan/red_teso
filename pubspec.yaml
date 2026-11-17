@@ -9,19 +9,32 @@ environment:
 
 dependencies:
   flutter:
+
     sdk: flutter
   cupertino_icons: ^1.0.6
-  
+
   # Firebase
   firebase_core: ^3.1.1
   firebase_auth: ^5.1.2
   cloud_firestore: ^5.0.2
   firebase_storage: ^12.0.1
+  firebase_messaging: ^15.0.3
   
   # State Management & Utils
   provider: ^6.1.1
   google_fonts: ^6.1.0
   intl: ^0.19.0
+  file_picker: ^13.1.0
+  url_launcher: ^6.3.2
+  shared_preferences: ^2.2.3
+  flutter_map: ^7.0.2
+  latlong2: ^0.9.1
+  http: ^1.2.1
+  video_player: ^2.8.6
+  flutter_animate: ^4.5.0
+  shimmer: ^3.0.0
+  smooth_page_indicator: ^1.1.0
+  flutter_local_notifications: ^17.2.1
 
 dev_dependencies:
   flutter_test:
@@ -29,15 +42,18 @@ dev_dependencies:
   flutter_lints: ^3.0.0
   flutter_launcher_icons: ^0.13.1
 
-# Configuración del paquete generador apuntando a la ubicación real de tu imagen
 flutter_launcher_icons:
-  android: "launcher_icon"
+  android: true
   ios: true
-  image_path: "web/icons/logo_sis_color.png"
-  adaptive_icon_background: "#000000"
-  adaptive_icon_foreground: "web/icons/logo_sis_color.png"
+  image_path: "assets/images/branding/agora_app_icon_1024.png"
+  remove_alpha_ios: true
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/images/branding/agora_app_icon_1024.png"
 
 flutter:
+
   uses-material-design: true
+
   assets:
-    - web/icons/logo_sis_color.png
+    - assets/images/branding/
+    - assets/images/experiences/

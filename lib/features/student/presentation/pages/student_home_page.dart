@@ -1,8 +1,17 @@
+
+import 'dart:math' as math;
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:red_teso/core/theme/app_theme.dart';
-import 'package:red_teso/features/auth/presentation/providers/auth_provider.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:red_teso/core/widgets/theme_toggle_button.dart';
+
+import 'package:red_teso/core/widgets/notification_bell.dart';
 import 'package:red_teso/features/student/presentation/pages/vacancy_detail_page.dart';
+import 'package:red_teso/features/student/presentation/widgets/ai_vacancy_assistant_modal.dart';
 
 class StudentHomePage extends StatefulWidget {
   const StudentHomePage({super.key});
@@ -12,45 +21,27 @@ class StudentHomePage extends StatefulWidget {
 }
 
 class _StudentHomePageState extends State<StudentHomePage> {
+  final TextEditingController _searchController = TextEditingController();
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
   String _selectedCategory = 'Todos';
-  final _searchController = TextEditingController();
 
-  final List<Map<String, dynamic>> _vacancies = [
-    {
-      'id': 'vac-1',
-      'puesto': 'Desarrollador Flutter Junior',
-      'empresa': 'Tech Solutions TESOEM',
-      'tipo': 'Residencias',
-      'gpa': 8.5,
-      'descripcion': 'Buscamos un estudiante de Ingeniería en Sistemas Computacionales de los últimos semestres entusiasta por el desarrollo móvil para integrarse a nuestro equipo de desarrollo interno mediante residencias profesionales. Aprenderás buenas prácticas de Clean Architecture y testing.',
-      'requisitos': ['Flutter & Dart', 'Git / GitHub', 'Conocimientos de bases de datos', 'Promedio mínimo 8.5']
-    },
-    {
-      'id': 'vac-2',
-      'puesto': 'Soporte Técnico e Infraestructura',
-      'empresa': 'Innovación Digital S.A.',
-      'tipo': 'Servicio Social',
-      'gpa': 7.5,
-      'descripcion': 'Únete para liberar tu servicio social apoyando en el mantenimiento preventivo y correctivo del equipo de cómputo, servidores y redes de la empresa.',
-      'requisitos': ['Redes básicas', 'Mantenimiento de Hardware', 'Proactivo', 'Estudiante activo de Sistemas']
-    },
-    {
-      'id': 'vac-3',
-      'puesto': 'Full Stack Developer (Node.js & React)',
-      'empresa': 'Global Software Systems',
-      'tipo': 'Empleo Egresados',
-      'gpa': 8.0,
-      'descripcion': 'Oportunidad de contratación inmediata para recién egresados de Sistemas Computacionales del TESOEM. Trabajarás en proyectos internacionales con metodologías ágiles.',
-      'requisitos': ['JavaScript / TypeScript', 'Inglés intermedio (Leído/Hablado)', 'React o Angular', 'Node.js']
-    },
+  static const Color _bgDark = Color(0xFF0A1922); // Pizarra Turquesa Oscuro
+  static const Color _primaryBlue = Color(0xFF0793B8); // Turquesa Principal
+  static const Color _cyan = Color(0xFF10BFD0); // Cian
+  static const Color _mint = Color(0xFF6BE7C8); // Menta
+  static const Color _cream = Color(0xFFF4FAFC); // Turquesa-50 (fondo claro)
+  static const Color _text = Color(0xFF0D212C); // Pizarra 950
+  static const Color _muted = Color(0xFF4A6572); // Pizarra 600
+  static const Color _border = Color(0xFFDCEBF0); // Borde Turquesa-Gris claro
+
+  final List<String> _categories = const [
+    'Todos',
+    'Servicio Social',
+    'Residencias',
+    'Empleo Egresados',
   ];
-
-  void _clearSearchAndFilters() {
-    setState(() {
-      _searchController.clear();
-      _selectedCategory = 'Todos';
-    });
-  }
 
   @override
   void dispose() {
@@ -60,236 +51,967 @@ class _StudentHomePageState extends State<StudentHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final filteredVacancies = _vacancies.where((v) {
-      final matchesCategory = _selectedCategory == 'Todos' || v['tipo'] == _selectedCategory;
-      final matchesSearch = v['puesto'].toString().toLowerCase().contains(_searchController.text.toLowerCase()) ||
-          v['empresa'].toString().toLowerCase().contains(_searchController.text.toLowerCase());
-      return matchesCategory && matchesSearch;
-    }).toList();
+    final user = _auth.currentUser;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).brightness == Brightness.dark ? _bgDark : _cream,
       appBar: AppBar(
-        title: const Text('RedTESO Oportunidades', style: TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.white,
-        foregroundColor: AppTheme.primaryGreen,
+        backgroundColor: Theme.of(context).brightness == Brightness.dark ? _bgDark : _primaryBlue,
+        foregroundColor: Colors.white,
         elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout_outlined),
-            onPressed: () => context.read<AuthProvider>().logout(),
-          ),
+        scrolledUnderElevation: 0,
+        titleSpacing: 20,
+        title: Row(
+          children: [
+            Container(
+              width: 39,
+              height: 39,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [_primaryBlue, _cyan],
+                ),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(
+                Icons.hub_rounded,
+                color: Colors.white,
+                size: 25,
+              ),
+            ),
+            const SizedBox(width: 11),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'RedTESO',
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 21,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                    height: 1.1,
+                  ),
+                ),
+                Text(
+                  'BOLSA DE TRABAJO',
+                  style: GoogleFonts.inter(
+                    fontSize: 8,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 1.7,
+                    color: _mint,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        actions: const [
+           const ThemeToggleButton(),
+    const NotificationBell(color: Colors.white),
+    const SizedBox(width: 15),
         ],
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 90),
+        child: Tooltip(
+          message: 'Abre el asistente de IA para explorar oportunidades',
+          child: FloatingActionButton.extended(
+            heroTag: 'student_ai_assistant',
+            onPressed: () => AiVacancyAssistantModal.show(context),
+            backgroundColor: _primaryBlue,
+            foregroundColor: Colors.white,
+            elevation: 7,
+            icon: const Icon(Icons.auto_awesome_rounded),
+            label: Text(
+              'Asistente IA',
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 12,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+        ),
+      ).animate().scale(
+            delay: 200.ms,
+            duration: 400.ms,
+            curve: Curves.easeOutBack,
+          ),
+
+      body: Stack(
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: TextField(
-              controller: _searchController,
-              onChanged: (_) => setState(() {}),
-              decoration: InputDecoration(
-                hintText: 'Buscar vacantes, puestos o empresas...',
-                prefixIcon: const Icon(Icons.search, color: AppTheme.primaryGreen),
-                suffixIcon: _searchController.text.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: () {
-                          _searchController.clear();
-                          setState(() {});
-                        },
-                      )
-                    : null,
-              ),
+          Positioned.fill(
+            child: CustomPaint(
+              painter: _AmbientPainter(isDark: Theme.of(context).brightness == Brightness.dark),
             ),
           ),
+          SafeArea(
+            top: false,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final wide = constraints.maxWidth >= 850;
 
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12.0),
-            child: SizedBox(
-              height: 40,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                children: [
-                  _buildCategoryChip('Todos'),
-                  _buildCategoryChip('Servicio Social'),
-                  _buildCategoryChip('Residencias'),
-                  _buildCategoryChip('Empleo Egresados'),
-                ],
-              ),
-            ),
-          ),
+                return Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 1180),
+                    child: Column(
+                      children: [
+                        _buildStudentHeader(user?.uid, wide)
+                            .animate()
+                            .fadeIn(duration: 400.ms),
 
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: Text(
-              'Vacantes Disponibles para Sistemas',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
-            ),
-          ),
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(
+                            wide ? 28 : 18,
+                            17,
+                            wide ? 28 : 18,
+                            10,
+                          ),
+                          child: _buildSearch(),
+                        ),
 
-          Expanded(
-            child: filteredVacancies.isEmpty
-                ? _buildPremiumEmptyState()
-                : ListView.builder(
-                    itemCount: filteredVacancies.length,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    itemBuilder: (context, index) {
-                      final vacancy = filteredVacancies[index];
-                      return _buildVacancyCard(vacancy);
-                    },
+                        SizedBox(
+                          height: 43,
+                          child: ListView(
+                            scrollDirection: Axis.horizontal,
+                            padding: EdgeInsets.symmetric(
+                              horizontal: wide ? 28 : 18,
+                            ),
+                            children: _categories
+                                .map(_buildCategoryChip)
+                                .toList(),
+                          ),
+                        ),
+
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(
+                            wide ? 28 : 20,
+                            17,
+                            wide ? 28 : 20,
+                            10,
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 5,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  color: _primaryBlue,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Oportunidades para ti',
+                                      style: GoogleFonts.plusJakartaSans(
+                                        color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFF4FAFC) : _text,
+                                        fontSize: wide ? 25 : 22,
+                                        fontWeight: FontWeight.w800,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      'El siguiente paso de tu carrera comienza aquí.',
+                                      style: GoogleFonts.inter(
+                                        color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFB8E2EC) : _muted,
+                                        fontSize: 11,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF112A36) : Colors.white.withValues(alpha: 0.85),
+                                  border: Border.all(color: _border),
+                                  borderRadius: BorderRadius.circular(13),
+                                ),
+                                child: const Icon(
+                                  Icons.work_outline_rounded,
+                                  color: _primaryBlue,
+                                  size: 21,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        Expanded(
+                          child: StreamBuilder<QuerySnapshot>(
+                            stream: _db.collection('vacancies').snapshots(),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasError) {
+                                return _buildEmpty(
+                                  icon: Icons.cloud_off_rounded,
+                                  title: 'No pudimos cargar las vacantes',
+                                  subtitle:
+                                      'Comprueba tu conexión e inténtalo de nuevo.',
+                                );
+                              }
+
+                              if (!snapshot.hasData) {
+                                return _buildLoading(context);
+                              }
+
+                              final docs = snapshot.data!.docs.toList();
+
+                              docs.sort((a, b) {
+                                final aData =
+                                    a.data() as Map<String, dynamic>;
+                                final bData =
+                                    b.data() as Map<String, dynamic>;
+
+                                final aTime =
+                                    aData['createdAt'] as Timestamp?;
+                                final bTime =
+                                    bData['createdAt'] as Timestamp?;
+
+                                if (aTime == null && bTime == null) return 0;
+                                if (aTime == null) return 1;
+                                if (bTime == null) return -1;
+
+                                return bTime.compareTo(aTime);
+                              });
+
+                              final search =
+                                  _searchController.text.trim().toLowerCase();
+
+                              final vacancies = docs.where((doc) {
+                                final data =
+                                    doc.data() as Map<String, dynamic>;
+
+                                final type =
+                                    (data['tipo'] ?? '').toString();
+                                final title = (data['puesto'] ?? '')
+                                    .toString()
+                                    .toLowerCase();
+                                final company = (data['empresa'] ?? '')
+                                    .toString()
+                                    .toLowerCase();
+
+                                final matchesCategory =
+                                    _selectedCategory == 'Todos' ||
+                                        type == _selectedCategory;
+
+                                final matchesSearch =
+                                    title.contains(search) ||
+                                        company.contains(search);
+
+                                return matchesCategory && matchesSearch;
+                              }).toList();
+
+                              if (vacancies.isEmpty) {
+                                return _buildEmpty(
+                                  icon: Icons.travel_explore_rounded,
+                                  title: 'No encontramos coincidencias',
+                                  subtitle:
+                                      'Prueba otra búsqueda o cambia de categoría.',
+                                  action: TextButton.icon(
+                                    onPressed: () {
+                                      setState(() {
+                                        _searchController.clear();
+                                        _selectedCategory = 'Todos';
+                                      });
+                                    },
+                                    icon: const Icon(
+                                      Icons.refresh_rounded,
+                                      color: _primaryBlue,
+                                    ),
+                                    label: Text(
+                                      'Limpiar filtros',
+                                      style: GoogleFonts.inter(
+                                        color: _primaryBlue,
+                                        fontWeight: FontWeight.w800,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }
+
+                              return ListView.builder(
+                                padding: EdgeInsets.fromLTRB(
+                                  wide ? 28 : 18,
+                                  0,
+                                  wide ? 28 : 18,
+                                  150,
+                                ),
+                                itemCount: vacancies.length,
+                                itemBuilder: (context, index) {
+                                  final data = vacancies[index].data()
+                                      as Map<String, dynamic>;
+
+                                  final vacancy = {
+                                    ...data,
+                                    'id': vacancies[index].id,
+                                  };
+
+                                  return _buildVacancyCard(vacancy)
+                                      .animate(
+                                        delay: (index.clamp(0, 8) * 45).ms,
+                                      )
+                                      .fadeIn(duration: 300.ms)
+                                      .slideY(begin: 0.04, end: 0);
+                                },
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
+                );
+              },
+            ),
           ),
         ],
       ),
     );
   }
 
-  // Estado vacío Premium con diseño vectorial nativo y acción directa (RF Consulta Vacantes)
-  Widget _buildPremiumEmptyState() {
-    return Center(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: Colors.grey[50],
-                shape: BoxShape.circle,
+  Widget _buildStudentHeader(String? uid, bool wide) {
+    if (uid == null) return _welcomeBanner('Estudiante');
+
+    return StreamBuilder<DocumentSnapshot>(
+      stream: _db.collection('users').doc(uid).snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError ||
+            !snapshot.hasData ||
+            !snapshot.data!.exists) {
+          return _welcomeBanner('Estudiante');
+        }
+
+        final data = snapshot.data!.data() as Map<String, dynamic>;
+        final name = (data['name'] ?? 'Estudiante').toString().trim();
+        final firstName =
+            name.isEmpty ? 'Estudiante' : name.split(' ').first;
+
+        return Container(
+          margin: EdgeInsets.fromLTRB(
+            wide ? 28 : 18,
+            10,
+            wide ? 28 : 18,
+            0,
+          ),
+          padding: EdgeInsets.all(wide ? 21 : 17),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color(0xFF10BFD0),
+                Color(0xFF0793B8),
+                Color(0xFF056C88),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(25),
+            border: Border.all(
+              color: _cyan.withValues(alpha: 0.6),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: _primaryBlue.withValues(alpha: 0.25),
+                blurRadius: 18,
+                offset: const Offset(0, 7),
               ),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Icon(Icons.work_off_outlined, size: 80, color: Colors.grey[400]),
-                  Positioned(
-                    right: 4,
-                    top: 4,
-                    child: Icon(Icons.search_off, size: 28, color: Colors.orange[400]),
-                  )
-                ],
+            ],
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withValues(alpha: 0.13),
+                  border: Border.all(color: _mint, width: 1.5),
+                ),
+                child: Center(
+                  child: Text(
+                    firstName[0].toUpperCase(),
+                    style: GoogleFonts.plusJakartaSans(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '¡Hola, $firstName!',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.plusJakartaSans(
+                        color: Colors.white,
+                        fontSize: wide ? 24 : 21,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Es un buen día para avanzar.',
+                      style: GoogleFonts.inter(
+                        color: Colors.white70,
+                        fontSize: 11,
+                      ),
+                    ),
+                    const SizedBox(height: 9),
+                    Text(
+                      'TU FUTURO PROFESIONAL EMPIEZA HOY',
+                      style: GoogleFonts.inter(
+                        color: _mint,
+                        fontSize: 8,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 1,
+                      ),
+                    ),
+                    if (data['gpa'] != null) ...[
+                      const SizedBox(height: 7),
+                      Text(
+                        'Promedio académico: ${data['gpa']}',
+                        style: GoogleFonts.inter(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              const Icon(
+                Icons.school_rounded,
+                color: _mint,
+                size: 30,
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _welcomeBanner(String name) {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(18, 10, 18, 0),
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [_cyan, _primaryBlue],
+        ),
+        borderRadius: BorderRadius.circular(23),
+      ),
+      child: Row(
+        children: [
+          const Icon(
+            Icons.waving_hand_rounded,
+            color: _mint,
+            size: 32,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              '¡Bienvenido, $name!',
+              style: GoogleFonts.plusJakartaSans(
+                color: Colors.white,
+                fontSize: 21,
+                fontWeight: FontWeight.w800,
               ),
             ),
-            const SizedBox(height: 24),
-            const Text(
-              'Sin vacantes coincidentes',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black87),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSearch() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF112A36) : Colors.white,
+        borderRadius: BorderRadius.circular(17),
+        border: Border.all(color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1B4B5F) : _border),
+        boxShadow: [
+          BoxShadow(
+            color: _primaryBlue.withValues(alpha: 0.07),
+            blurRadius: 15,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: TextField(
+        controller: _searchController,
+        onChanged: (_) => setState(() {}),
+        style: GoogleFonts.inter(
+          color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFF4FAFC) : _text,
+          fontSize: 13,
+        ),
+        cursorColor: _primaryBlue,
+        decoration: InputDecoration(
+          hintText: 'Busca puestos, empresas...',
+          hintStyle: GoogleFonts.inter(
+            color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFB8E2EC) : _muted,
+            fontSize: 12,
+          ),
+          prefixIcon: const Icon(
+            Icons.search_rounded,
+            color: _primaryBlue,
+          ),
+          suffixIcon: _searchController.text.isEmpty
+              ? null
+              : IconButton(
+                  onPressed: () {
+                    _searchController.clear();
+                    setState(() {});
+                  },
+                  icon: const Icon(
+                    Icons.close_rounded,
+                    color: _muted,
+                  ),
+                ),
+          contentPadding: const EdgeInsets.symmetric(vertical: 15),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(17),
+            borderSide: BorderSide.none,
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(17),
+            borderSide: BorderSide.none,
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(17),
+            borderSide: const BorderSide(
+              color: _primaryBlue,
+              width: 1.4,
             ),
-            const SizedBox(height: 8),
-            Text(
-              'No encontramos ofertas que coincidan con "${_searchController.text}". Prueba usando términos más generales o cambiando la categoría seleccionada.',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14, color: Colors.grey[600], height: 1.4),
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton.icon(
-              onPressed: _clearSearchAndFilters,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.primaryGreen,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              ),
-              icon: const Icon(Icons.refresh, color: Colors.white),
-              label: const Text('LIMPIAR BÚSQUEDA', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
-            ),
-          ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildCategoryChip(String category) {
-    final isSelected = _selectedCategory == category;
+    final selected = _selectedCategory == category;
+
     return Padding(
-      padding: const EdgeInsets.only(right: 8.0),
+      padding: const EdgeInsets.only(right: 9),
       child: FilterChip(
-        label: Text(category),
-        selected: isSelected,
-        selectedColor: AppTheme.primaryGreen,
-        checkmarkColor: Colors.white,
-        labelStyle: TextStyle(
-          color: isSelected ? Colors.white : AppTheme.primaryGreen,
-          fontWeight: FontWeight.bold,
-        ),
-        backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(
-          side: const BorderSide(color: AppTheme.primaryGreen),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        onSelected: (bool selected) {
-          setState(() {
-            _selectedCategory = category;
-          });
+        showCheckmark: false,
+        selected: selected,
+        onSelected: (_) {
+          setState(() => _selectedCategory = category);
         },
+        backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF112A36) : Colors.white,
+        selectedColor: _primaryBlue,
+        side: BorderSide(
+          color: selected ? _primaryBlue : _border,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(13),
+        ),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 8,
+          vertical: 7,
+        ),
+        label: Text(
+          category,
+          style: GoogleFonts.inter(
+            color: selected ? Colors.white : (Theme.of(context).brightness == Brightness.dark ? const Color(0xFFE0F4F8) : _primaryBlue),
+            fontSize: 11,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
       ),
     );
   }
 
   Widget _buildVacancyCard(Map<String, dynamic> vacancy) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 14),
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: ListTile(
-        contentPadding: const EdgeInsets.all(16),
-        leading: Hero(
-          tag: 'logo-${vacancy['id']}',
-          child: Material(
-            color: Colors.transparent,
-            child: Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: AppTheme.primaryGreen.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
+    final title = (vacancy['puesto'] ?? 'Vacante').toString();
+    final company = (vacancy['empresa'] ?? 'Empresa').toString();
+    final location =
+        (vacancy['ubicacion'] ?? 'Ubicación por confirmar').toString();
+    final type =
+        (vacancy['tipo'] ?? 'Oportunidad profesional').toString();
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(22),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => VacancyDetailPage(vacancy: vacancy),
               ),
-              child: const Icon(Icons.business, color: AppTheme.primaryGreen, size: 28),
+            );
+          },
+          child: Ink(
+            decoration: BoxDecoration(
+              color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF112A36) : Colors.white,
+              borderRadius: BorderRadius.circular(22),
+              border: Border.all(color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1B4B5F) : _border),
+              boxShadow: [
+                BoxShadow(
+                  color: _primaryBlue.withValues(alpha: 0.07),
+                  blurRadius: 17,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 53,
+                        height: 53,
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [_cyan, _primaryBlue],
+                          ),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Icon(
+                          _vacancyIcon(type),
+                          color: _mint,
+                          size: 27,
+                        ),
+                      ),
+                      const SizedBox(width: 13),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              title,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.plusJakartaSans(
+                                color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFF4FAFC) : _text,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              company,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.inter(
+                                color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFB8E2EC) : _muted,
+                                fontSize: 11,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Icon(
+                        Icons.arrow_outward_rounded,
+                        color: _primaryBlue,
+                        size: 21,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      _buildTag(Icons.work_outline_rounded, type, true),
+                      _buildTag(
+                        Icons.location_on_outlined,
+                        location,
+                        false,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+                  Divider(height: 1, color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1B4B5F) : _border),
+                  const SizedBox(height: 11),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.bolt_rounded,
+                        color: Color(0xFF0793B8),
+                        size: 18,
+                      ),
+                      const SizedBox(width: 5),
+                      Expanded(
+                        child: Text(
+                          'Descubre esta oportunidad',
+                          style: GoogleFonts.inter(
+                            color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFB8E2EC) : _muted,
+                            fontSize: 10,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        'Ver vacante →',
+                        style: GoogleFonts.plusJakartaSans(
+                          color: _primaryBlue,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
-        title: Text(
-          vacancy['puesto'] as String,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 4),
-            Text(vacancy['empresa'] as String, style: TextStyle(color: Colors.grey[700])),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: AppTheme.primaryGreen,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    vacancy['tipo'] as String,
-                    style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  'Promedio: ${vacancy['gpa']}',
-                  style: TextStyle(fontSize: 12, color: Colors.orange[800], fontWeight: FontWeight.bold),
-                ),
-              ],
-            )
-          ],
-        ),
-        trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => VacancyDetailPage(vacancy: vacancy),
-            ),
-          );
-        },
       ),
     );
   }
+
+  IconData _vacancyIcon(String type) {
+    final value = type.toLowerCase();
+
+    if (value.contains('social')) {
+      return Icons.volunteer_activism_rounded;
+    }
+    if (value.contains('residencia')) {
+      return Icons.school_rounded;
+    }
+    if (value.contains('empleo') || value.contains('egresado')) {
+      return Icons.business_center_rounded;
+    }
+
+    return Icons.work_rounded;
+  }
+
+  Widget _buildTag(IconData icon, String label, bool highlighted) {
+    return Container(
+      constraints: const BoxConstraints(maxWidth: 260),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 10,
+        vertical: 8,
+      ),
+      decoration: BoxDecoration(
+        color: Theme.of(context).brightness == Brightness.dark
+            ? (highlighted ? const Color(0xFF153E50) : const Color(0xFF0E222D))
+            : (highlighted ? const Color(0xFFE0F4F8) : const Color(0xFFF0F8FA)),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: highlighted ? _primaryBlue : _border,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            size: 14,
+            color: highlighted ? (Theme.of(context).brightness == Brightness.dark ? const Color(0xFF10BFD0) : _primaryBlue) : (Theme.of(context).brightness == Brightness.dark ? const Color(0xFFB8E2EC) : _muted),
+          ),
+          const SizedBox(width: 6),
+          Flexible(
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.inter(
+                color: highlighted ? (Theme.of(context).brightness == Brightness.dark ? const Color(0xFF10BFD0) : _primaryBlue) : (Theme.of(context).brightness == Brightness.dark ? const Color(0xFFB8E2EC) : _muted),
+                fontSize: 10,
+                fontWeight:
+                    highlighted ? FontWeight.w800 : FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmpty({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    Widget? action,
+  }) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: math.max(0, constraints.maxHeight - 40),
+            ),
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 76,
+                    height: 76,
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [
+                          Color(0xFFE0F4F8),
+                          Color(0xFFF4FAFC),
+                        ],
+                      ),
+                      shape: BoxShape.circle,
+                      border: Border.all(color: _primaryBlue),
+                    ),
+                    child: Icon(icon, color: _primaryBlue, size: 36),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    title,
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.plusJakartaSans(
+                      color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFF4FAFC) : _text,
+                      fontSize: 19,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    subtitle,
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.inter(
+                      color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFB8E2EC) : _muted,
+                      fontSize: 12,
+                      height: 1.6,
+                    ),
+                  ),
+                  if (action != null) ...[
+                    const SizedBox(height: 10),
+                    action,
+                  ],
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildLoading(BuildContext context) {
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 18),
+      itemCount: 3,
+      itemBuilder: (_, __) {
+        return Shimmer.fromColors(
+          baseColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF153443) : const Color(0xFFDCEBF0),
+          highlightColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1F495E) : Colors.white,
+          child: Container(
+            height: 135,
+            margin: const EdgeInsets.only(bottom: 14),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(22),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _AmbientPainter extends CustomPainter {
+  final bool isDark;
+
+  const _AmbientPainter({required this.isDark});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rect = Offset.zero & size;
+
+    canvas.drawRect(
+      rect,
+      Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: isDark ? const [Color(0xFF0A1922), Color(0xFF112A36), Color(0xFF0D212C)] : const [Color(0xFFF4FAFC), Color(0xFFE6F6FA), Color(0xFFDCEBF0)],
+        ).createShader(rect),
+    );
+
+    _glow(
+      canvas,
+      Offset(size.width * 0.95, size.height * 0.18),
+      size.width * 0.45,
+      const Color(0x280793B8), // _primaryBlue turquesa
+    );
+
+    _glow(
+      canvas,
+      Offset(size.width * 0.05, size.height * 0.78),
+      size.width * 0.48,
+      const Color(0x2810BFD0), // _cyan claro
+    );
+
+    final ringPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.2
+      ..color = const Color(0x240793B8); // Anillos turquesa
+
+    canvas.drawCircle(
+      Offset(size.width * 0.95, size.height * 0.15),
+      size.width * 0.18,
+      ringPaint,
+    );
+
+    canvas.drawCircle(
+      Offset(size.width * 0.95, size.height * 0.15),
+      size.width * 0.23,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1
+        ..color = const Color(0x2010BFD0), // Anillos cian
+    );
+
+    final dotPaint = Paint()..color = const Color(0x6610BFD0); // Partículas cian
+
+    for (int i = 0; i < 26; i++) {
+      final x = ((i * 83 + 29) % 997) / 997 * size.width;
+      final y = ((i * 137 + 47) % 991) / 991 * size.height;
+
+      canvas.drawCircle(
+        Offset(x, y),
+        i % 4 == 0 ? 1.8 : 1,
+        dotPaint,
+      );
+    }
+  }
+
+  void _glow(Canvas canvas, Offset center, double radius, Color color) {
+    canvas.drawCircle(
+      center,
+      radius,
+      Paint()
+        ..shader = RadialGradient(
+          colors: [
+            color,
+            color.withValues(alpha: 0),
+          ],
+        ).createShader(
+          Rect.fromCircle(
+            center: center,
+            radius: radius,
+          ),
+        ),
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant _AmbientPainter oldDelegate) => false;
 }

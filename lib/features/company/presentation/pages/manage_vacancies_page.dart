@@ -1,0 +1,333 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:red_teso/core/theme/app_theme.dart';
+import 'package:red_teso/core/widgets/liquid_glass_ambient_background.dart';
+import 'package:red_teso/features/company/presentation/pages/create_vacancy_page.dart';
+import 'package:red_teso/features/student/presentation/pages/vacancy_detail_page.dart';
+
+class ManageVacanciesPage extends StatefulWidget {
+  const ManageVacanciesPage({super.key});
+
+  @override
+  State<ManageVacanciesPage> createState() => _ManageVacanciesPageState();
+}
+
+class _ManageVacanciesPageState extends State<ManageVacanciesPage> {
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  Future<void> _confirmDeleteVacancy(String id, String title) async {
+    final bool? confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppTheme.surfaceDark,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: Text('¿Eliminar Vacante?', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white)),
+        content: Text('¿Estás seguro de eliminar "$title"? Esta acción no se puede deshacer.', style: GoogleFonts.inter(color: Colors.white70)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text('CANCELAR', style: GoogleFonts.inter(color: Colors.white60)),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+            child: Text('ELIMINAR', style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      try {
+        await _db.collection('vacancies').doc(id).delete();
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Vacante "$title" eliminada de la plataforma'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      } catch (e) {
+        debugPrint('Error al eliminar vacante: $e');
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final user = _auth.currentUser;
+    if (user == null) {
+      return Scaffold(
+        backgroundColor: AppTheme.bgDark,
+        body: Center(child: Text('Inicia sesión para ver tus publicaciones', style: GoogleFonts.inter(color: Colors.white))),
+      );
+    }
+
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      appBar: AppBar(
+        title: Text('Mis Vacantes Publicadas', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white)),
+        backgroundColor: AppTheme.bgDark.withOpacity(0.85),
+        foregroundColor: Colors.white,
+        elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add_rounded, color: AppTheme.accentColor, size: 28),
+            tooltip: 'Publicar nueva vacante',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const CreateVacancyPage()),
+              );
+            },
+          ),
+          const SizedBox(width: 8),
+        ],
+      ),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 90),
+        child: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const CreateVacancyPage()),
+            );
+          },
+          backgroundColor: AppTheme.primaryColor,
+          elevation: 8,
+          tooltip: 'Publicar nueva vacante',
+          child: const Icon(Icons.add_rounded, color: Colors.white, size: 28),
+        ),
+      ).animate().scale(delay: 300.ms, duration: 400.ms, curve: Curves.easeOutBack),
+      body: LiquidGlassAmbientBackground(
+        child: StreamBuilder<QuerySnapshot>(
+          stream: _db
+              .collection('vacancies')
+              .where('companyId', isEqualTo: user.uid)
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return Center(child: Text('Error al cargar las vacantes', style: GoogleFonts.inter(color: Colors.white)));
+            }
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return _buildShimmerSkeletonList();
+            }
+
+            final docs = snapshot.data!.docs;
+
+            if (docs.isEmpty) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: AppTheme.primaryColor.withOpacity(0.2),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(Icons.post_add_rounded, size: 64, color: AppTheme.accentColor),
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        'No has publicado vacantes aún',
+                        style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Publica tu primera oportunidad laboral o de residencias para conectar con los alumnos de TESOEM.',
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.inter(fontSize: 13.5, color: Colors.white70),
+                      ),
+                      const SizedBox(height: 24),
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const CreateVacancyPage()),
+                          );
+                        },
+                        icon: const Icon(Icons.add_rounded, color: Colors.white),
+                        label: Text('PUBLICAR VACANTE', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppTheme.primaryColor,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+
+            return ListView.builder(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+              itemCount: docs.length,
+              itemBuilder: (context, index) {
+                final v = docs[index].data() as Map<String, dynamic>;
+                final id = docs[index].id;
+                final puesto = v['puesto'] ?? 'Sin título';
+                final tipo = v['tipo'] ?? 'Residencias';
+                final apoyo = v['apoyo'] ?? 0;
+
+                return GlassmorphicCard(
+                  glowColor: AppTheme.primaryColor,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  puesto,
+                                  style: GoogleFonts.outfit(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: AppTheme.primaryColor.withOpacity(0.3),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Text(
+                                    tipo,
+                                    style: GoogleFonts.inter(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Row(
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.edit_outlined, color: Colors.blueAccent),
+                                tooltip: 'Editar Vacante',
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => CreateVacancyPage(
+                                        vacancyToEdit: {...v, 'id': id},
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent),
+                                tooltip: 'Eliminar',
+                                onPressed: () => _confirmDeleteVacancy(id, puesto),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      Text(
+                        v['descripcion'] ?? 'Sin descripción',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.inter(fontSize: 13, color: Colors.white70),
+                      ),
+
+                      const Divider(height: 24, color: Colors.white12),
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              const Icon(Icons.monetization_on_outlined, size: 16, color: Colors.amber),
+                              const SizedBox(width: 4),
+                              Text(
+                                '\$$apoyo MXN / mes',
+                                style: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.bold, color: Colors.amber),
+                              ),
+                            ],
+                          ),
+                          InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => VacancyDetailPage(vacancy: {...v, 'id': id}),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: AppTheme.accentColor.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(color: AppTheme.accentColor.withOpacity(0.4)),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.map_rounded, size: 14, color: AppTheme.accentColor),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'Ver Mapa 📍',
+                                    style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: AppTheme.accentColor),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ).animate(delay: (index * 70).ms).fadeIn(duration: 400.ms, curve: Curves.easeOut).slideY(begin: 0.15, end: 0, curve: Curves.easeOut);
+              },
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildShimmerSkeletonList() {
+    return ListView.builder(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+      itemCount: 4,
+      itemBuilder: (context, index) {
+        return Shimmer.fromColors(
+          baseColor: Colors.white.withOpacity(0.08),
+          highlightColor: Colors.white.withOpacity(0.18),
+          child: Container(
+            height: 110,
+            margin: const EdgeInsets.only(bottom: 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}

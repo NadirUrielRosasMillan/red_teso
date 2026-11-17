@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "689933184697",
+    "project_id": "redteso",
+    "storage_bucket": "redteso.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:689933184697:android:46f158472bbbfa85db3568",
+        "android_client_info": {
+          "package_name": "com.example.red_teso"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCkN1jsvz9_bBaRvtFq8Yd2c140Tet-pNs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

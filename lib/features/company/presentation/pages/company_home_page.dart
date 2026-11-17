@@ -1,8 +1,18 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
+import 'package:red_teso/core/widgets/liquid_glass_ambient_background.dart';
+import 'package:red_teso/core/widgets/notification_bell.dart';
 import 'package:red_teso/features/auth/presentation/providers/auth_provider.dart';
 import 'package:red_teso/features/company/presentation/pages/student_detail_view_page.dart';
+import 'package:red_teso/features/company/presentation/widgets/contact_student_modal.dart';
+import 'package:red_teso/features/company/presentation/widgets/ai_talent_assistant_modal.dart';
+import 'package:red_teso/features/company/presentation/widgets/invite_student_modal.dart';
 
 class CompanyHomePage extends StatefulWidget {
   const CompanyHomePage({super.key});
@@ -12,286 +22,845 @@ class CompanyHomePage extends StatefulWidget {
 }
 
 class _CompanyHomePageState extends State<CompanyHomePage> {
-  // Estados para filtros
-  double _minGpa = 8.0;
-  String _filterGender = 'Todos';
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final ScrollController _scrollController = ScrollController();
+
+  String _searchQuery = '';
+  String _selectedModality = 'Todos';
+  bool _requireHighGpa = false;
   bool _requireEnglish = false;
-  String _filterModality = 'Todos';
+  bool _isScrolled = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(() {
+      if (_scrollController.offset > 70 && !_isScrolled) {
+        setState(() => _isScrolled = true);
+      } else if (_scrollController.offset <= 70 && _isScrolled) {
+        setState(() => _isScrolled = false);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   void _resetFilters() {
     setState(() {
-      _minGpa = 7.0;
-      _filterGender = 'Todos';
+      _searchQuery = '';
+      _selectedModality = 'Todos';
+      _requireHighGpa = false;
       _requireEnglish = false;
-      _filterModality = 'Todos';
+    });
+  }
+
+  void _applyTechFilter(String tech) {
+    setState(() {
+      if (_searchQuery.toLowerCase() == tech.toLowerCase()) {
+        _searchQuery = '';
+      } else {
+        _searchQuery = tech;
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // Datos de ejemplo simulados
-    final allStudents = [
-      {'nombre': 'Ana García Solís', 'gpa': 9.8, 'sexo': 'Femenino', 'ingles': true, 'mod': 'Residencias', 'correo': 'ana.garcia@tesoem.edu.mx', 'habilidades': ['Flutter', 'Dart', 'Firebase', 'UI/UX']},
-      {'nombre': 'Carlos Ruiz Mendoza', 'gpa': 8.5, 'sexo': 'Masculino', 'ingles': false, 'mod': 'Servicio Social', 'correo': 'carlos.ruiz@tesoem.edu.mx', 'habilidades': ['Java', 'SQL', 'Git']},
-      {'nombre': 'María López Hernández', 'gpa': 9.2, 'sexo': 'Femenino', 'ingles': true, 'mod': 'Recién Egresado', 'correo': 'maria.lopez@tesoem.edu.mx', 'habilidades': ['Python', 'Data Science', 'Machine Learning']},
-      {'nombre': 'Juan Pérez Gómez', 'gpa': 7.9, 'sexo': 'Masculino', 'ingles': true, 'mod': 'Residencias', 'correo': 'juan.perez@tesoem.edu.mx', 'habilidades': ['Node.js', 'React', 'MongoDB']},
-    ];
-
-    // Aplicar filtros en base a los criterios interactivos
-    final filteredStudents = allStudents.where((s) {
-      final matchesGpa = (s['gpa'] as double) >= _minGpa;
-      final matchesGender = _filterGender == 'Todos' || s['sexo'] == _filterGender;
-      final matchesEnglish = !_requireEnglish || (s['ingles'] as bool);
-      final matchesModality = _filterModality == 'Todos' || s['mod'] == _filterModality;
-      return matchesGpa && matchesGender && matchesEnglish && matchesModality;
-    }).toList();
-
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
-        title: const Text('Buscador de Talento', style: TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.white,
-        foregroundColor: AppTheme.primaryGreen,
+        title: Text(
+          'Buscador de Talento',
+          style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white),
+        ),
+        backgroundColor: AppTheme.bgDark.withOpacity(0.85),
+        foregroundColor: Colors.white,
         elevation: 0,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.logout_outlined),
-            onPressed: () => context.read<AuthProvider>().logout(),
-          ),
+          const NotificationBell(color: Colors.white),
+          const SizedBox(width: 8),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Talento en Sistemas',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const Text(
-              'Ajusta las prioridades de contratación para filtrar candidatos:',
-              style: TextStyle(color: Colors.grey),
-            ),
-            const SizedBox(height: 20),
 
-            // Contenedor del Sistema de Filtros Avanzados (Paso 7 / Requisito Filtros)
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.grey[50],
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.grey[200]!),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.02),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  )
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Row(
-                    children: [
-                      Icon(Icons.tune, color: AppTheme.primaryGreen, size: 20),
-                      SizedBox(width: 8),
-                      Text('Filtros de Prioridad Universitaria', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-                    ],
-                  ),
-                  const Divider(height: 24),
+      // Botón de Acción Flotante Inteligente cuando se hace scroll
+      floatingActionButton: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 300),
+        transitionBuilder: (child, animation) => ScaleTransition(scale: animation, child: child),
+        child: _isScrolled
+            ? Padding(
+                padding: const EdgeInsets.only(bottom: 100), // Por encima del dock flotante Liquid Glass
+                child: FloatingActionButton(
+                  key: const ValueKey('floating_ai_talent_btn'),
+                  onPressed: () => AiTalentAssistantModal.show(context, students: _sampleStudents),
+                  backgroundColor: AppTheme.primaryTurquoise,
+                  elevation: 6,
+                  tooltip: 'IA REDTESO 🤖',
+                  child: const Icon(Icons.psychology_rounded, color: Colors.white, size: 24),
+                ),
+              )
+            : const SizedBox.shrink(key: ValueKey('empty_ai_talent_btn')),
+      ),
 
-                  // Filtro Promedio Mínimo
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('Promedio mínimo:', style: TextStyle(color: Colors.grey[700])),
-                      Text(
-                        _minGpa.toStringAsFixed(1),
-                        style: const TextStyle(fontWeight: FontWeight.bold, color: AppTheme.primaryGreen, fontSize: 16),
+      body: LiquidGlassAmbientBackground(
+        child: CustomScrollView(
+          controller: _scrollController,
+          physics: const BouncingScrollPhysics(),
+          slivers: [
+          SliverToBoxAdapter(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 12),
+
+                // 1. BOTÓN DE BÚSQUEDA SEMÁNTICA CON IA ÁGORA TALENTO 🤖✨
+                AnimatedOpacity(
+                  duration: const Duration(milliseconds: 250),
+                  opacity: _isScrolled ? 0.3 : 1.0,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+                    child: GestureDetector(
+                      onTap: () {
+                        AiTalentAssistantModal.show(context, students: _sampleStudents);
+                      },
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [
+                              AppTheme.primaryTurquoise,
+                              AppTheme.darkTurquoise,
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: AppTheme.accentColor.withOpacity(0.5), width: 1.2),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppTheme.accentColor.withOpacity(0.2),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: const BoxDecoration(
+                                gradient: LinearGradient(colors: [AppTheme.primaryColor, AppTheme.accentColor]),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(Icons.psychology_rounded, color: Colors.white, size: 22),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Búsqueda Semántica con IA ÁGORA Talento 🤖✨',
+                                    style: GoogleFonts.outfit(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                                  ),
+                                  Text(
+                                    'Ej. "Busco alumno en bases de datos cerca de Chalco"',
+                                    style: GoogleFonts.inter(color: Colors.white70, fontSize: 11.5),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const Icon(Icons.arrow_forward_ios_rounded, color: AppTheme.accentColor, size: 14),
+                          ],
+                        ),
                       ),
-                    ],
-                  ),
-                  Slider(
-                    value: _minGpa,
-                    min: 7.0,
-                    max: 10.0,
-                    divisions: 30,
-                    activeColor: AppTheme.primaryGreen,
-                    inactiveColor: AppTheme.primaryGreen.withOpacity(0.1),
-                    onChanged: (val) => setState(() => _minGpa = val),
-                  ),
-
-                  // Filtro por Estado / Modalidad Académica
-                  Text('Estado Académico / Modalidad:', style: TextStyle(color: Colors.grey[700])),
-                  const SizedBox(height: 6),
-                  DropdownButtonFormField<String>(
-                    isExpanded: true,
-                    value: _filterModality,
-                    decoration: InputDecoration(
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                      fillColor: Colors.white,
-                      filled: true,
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: Colors.grey[300]!)),
                     ),
-                    items: ['Todos', 'Servicio Social', 'Residencias', 'Recién Egresado']
-                        .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                        .toList(),
-                    onChanged: (val) => setState(() => _filterModality = val!),
                   ),
-                  const SizedBox(height: 16),
+                ),
 
-                  // Chips de inclusión y habilidades de prioridad
-                  Text('Criterios adicionales prioritarios:', style: TextStyle(color: Colors.grey[700])),
-                  const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 4,
+                const SizedBox(height: 10),
+
+                // 2. CHIPS DE TECNOLOGÍAS RÁPIDAS
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  child: Row(
                     children: [
+                      Text('Tecnologías: ', style: GoogleFonts.inter(fontSize: 11.5, fontWeight: FontWeight.bold, color: const Color(0xFF64748B))),
+                      ...['Python', 'Flutter', 'AWS', 'Java', 'React', 'Ciberseguridad', 'SQL'].map((tech) {
+                        final isSelected = _searchQuery.toLowerCase() == tech.toLowerCase();
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 6.0),
+                          child: ActionChip(
+                            label: Text(tech),
+                            backgroundColor: isSelected ? AppTheme.primaryColor : const Color(0xFFF1F5F9),
+                            labelStyle: GoogleFonts.inter(
+                              color: isSelected ? Colors.white : const Color(0xFF334155),
+                              fontSize: 11.5,
+                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              side: BorderSide(
+                                color: isSelected ? AppTheme.primaryColor : const Color(0xFFE2E8F0),
+                              ),
+                            ),
+                            onPressed: () => _applyTechFilter(tech),
+                          ),
+                        );
+                      }).toList(),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 6),
+
+                // 3. CHIPS DE FILTRO RÁPIDO (Modalidad, GPA, Inglés)
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    children: [
+                      ...['Todos', 'Residencias', 'Servicio Social', 'Recién Egresado'].map((modality) {
+                        final isSelected = _selectedModality == modality;
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: ChoiceChip(
+                            label: Text(modality),
+                            selected: isSelected,
+                            selectedColor: AppTheme.primaryColor,
+                            labelStyle: GoogleFonts.inter(
+                              color: isSelected ? Colors.white : const Color(0xFF475569),
+                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                              fontSize: 12.5,
+                            ),
+                            onSelected: (val) => setState(() => _selectedModality = modality),
+                          ),
+                        );
+                      }),
                       FilterChip(
-                        label: const Text('Solo Mujeres (Inclusión)'),
-                        selected: _filterGender == 'Femenino',
-                        selectedColor: AppTheme.primaryGreen,
+                        label: const Text('🌟 GPA 9.0+'),
+                        selected: _requireHighGpa,
+                        selectedColor: AppTheme.accentColor,
                         checkmarkColor: Colors.white,
-                        labelStyle: TextStyle(color: _filterGender == 'Femenino' ? Colors.white : Colors.black87),
-                        onSelected: (val) => setState(() => _filterGender = val ? 'Femenino' : 'Todos'),
+                        labelStyle: GoogleFonts.inter(
+                          color: _requireHighGpa ? Colors.white : const Color(0xFF475569),
+                          fontWeight: _requireHighGpa ? FontWeight.bold : FontWeight.normal,
+                          fontSize: 12.5,
+                        ),
+                        onSelected: (val) => setState(() => _requireHighGpa = val),
                       ),
+                      const SizedBox(width: 8),
                       FilterChip(
-                        label: const Text('Inglés Obligatorio'),
+                        label: const Text('🗣️ Inglés'),
                         selected: _requireEnglish,
-                        selectedColor: AppTheme.primaryGreen,
+                        selectedColor: AppTheme.primaryColor,
                         checkmarkColor: Colors.white,
-                        labelStyle: TextStyle(color: _requireEnglish ? Colors.white : Colors.black87),
+                        labelStyle: GoogleFonts.inter(
+                          color: _requireEnglish ? Colors.white : const Color(0xFF475569),
+                          fontWeight: _requireEnglish ? FontWeight.bold : FontWeight.normal,
+                          fontSize: 12.5,
+                        ),
                         onSelected: (val) => setState(() => _requireEnglish = val),
                       ),
                     ],
                   ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Candidatos coincidentes (${filteredStudents.length})',
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
                 ),
+
+                const SizedBox(height: 14),
               ],
             ),
-            const SizedBox(height: 12),
+          ),
 
-            // Lista de resultados filtrados / Estado vacío Premium
-            filteredStudents.isEmpty
-                ? _buildPremiumCompanyEmptyState()
-                : ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: filteredStudents.length,
-                    itemBuilder: (context, index) {
-                      final s = filteredStudents[index];
-                      return Card(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        elevation: 1,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        child: ListTile(
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          leading: CircleAvatar(
-                            radius: 24,
-                            backgroundColor: AppTheme.primaryGreen.withOpacity(0.1),
-                            child: Text(
-                              s['nombre'].toString()[0],
-                              style: const TextStyle(color: AppTheme.primaryGreen, fontWeight: FontWeight.bold, fontSize: 18),
+          // 4. LISTA DE TALENTOS EN TIEMPO REAL DESDE FIRESTORE
+          StreamBuilder<QuerySnapshot>(
+            stream: _db.collection('users').where('type', isEqualTo: 'alumno').snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return const SliverToBoxAdapter(
+                  child: Center(child: Text('Error de conexión a la nube')),
+                );
+              }
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const SliverToBoxAdapter(
+                  child: Center(child: CircularProgressIndicator(color: AppTheme.primaryColor)),
+                );
+              }
+
+              final docs = snapshot.data?.docs ?? [];
+
+              // Mapea los documentos de Firestore
+              List<Map<String, dynamic>> studentsList = docs.map((doc) {
+                final data = doc.data() as Map<String, dynamic>;
+                return {
+                  'uid': doc.id,
+                  'name': data['name'] ?? 'Alumno Registrado',
+                  'email': data['email'] ?? '',
+                  'gpa': (data['gpa'] ?? 8.5).toDouble(),
+                  'modality': data['modality'] ?? 'Residencias',
+                  'gender': data['gender'] ?? 'Femenino',
+                  'speaksEnglish': data['speaksEnglish'] ?? false,
+                  'career': data['career'] ?? 'Ing. en Sistemas Computacionales',
+                  'skills': data['skills'] ?? ['Java', 'Python', 'React', 'Ciberseguridad', 'Flutter', 'AWS', 'SQL'],
+                  'location': data['location'] ?? 'Chalco',
+                };
+              }).toList();
+
+              // Si aún no hay alumnos en Firestore, incluye perfiles de demostración para pruebas
+              if (studentsList.isEmpty) {
+                studentsList = _sampleStudents;
+              }
+
+              // Aplicación de Filtros Inteligentes
+              final filtered = studentsList.where((s) {
+                final name = s['name'].toString().toLowerCase();
+                final career = s['career'].toString().toLowerCase();
+                final skills = (s['skills'] as List).join(' ').toLowerCase();
+                final query = _searchQuery.toLowerCase().trim();
+
+                final matchesQuery = query.isEmpty ||
+                    name.contains(query) ||
+                    career.contains(query) ||
+                    skills.contains(query);
+
+                final matchesModality =
+                    _selectedModality == 'Todos' || s['modality'] == _selectedModality;
+
+                final matchesGpa = !_requireHighGpa || (s['gpa'] as double) >= 9.0;
+                final matchesEnglish = !_requireEnglish || (s['speaksEnglish'] as bool);
+
+                return matchesQuery && matchesModality && matchesGpa && matchesEnglish;
+              }).toList();
+
+              if (filtered.isEmpty) {
+                return SliverToBoxAdapter(child: _buildEmptyState());
+              }
+
+              if (MediaQuery.of(context).size.width > 700) {
+                return SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  sliver: SliverGrid(
+                    gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                      maxCrossAxisExtent: 380,
+                      mainAxisSpacing: 18,
+                      crossAxisSpacing: 18,
+                      mainAxisExtent: 260,
+                    ),
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        final student = filtered[index];
+                        return _buildCompactStudentCard(student)
+                            .animate(delay: (index * 60).ms)
+                            .fadeIn(duration: 400.ms, curve: Curves.easeOut)
+                            .slideY(begin: 0.15, end: 0, curve: Curves.easeOut);
+                      },
+                      childCount: filtered.length,
+                    ),
+                  ),
+                );
+              } else {
+                return SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        final student = filtered[index];
+                        return _buildExecutiveTalentCard(student)
+                            .animate(delay: (index * 70).ms)
+                            .fadeIn(duration: 400.ms, curve: Curves.easeOut)
+                            .slideY(begin: 0.15, end: 0, curve: Curves.easeOut);
+                      },
+                      childCount: filtered.length,
+                    ),
+                  ),
+                );
+              }
+            },
+          ),
+
+          const SliverToBoxAdapter(
+            child: SizedBox(height: 100), // Espacio para el dock flotante Liquid Glass
+          ),
+        ],
+      ),
+    ),
+    );
+  }
+
+  /// Construye la tarjeta ejecutiva estilo LinkedIn / Glassmorphic para cada alumno
+  Widget _buildExecutiveTalentCard(Map<String, dynamic> student) {
+    final name = student['name'] ?? 'Alumno';
+    final gpa = (student['gpa'] ?? 8.5).toStringAsFixed(1);
+    final modality = student['modality'] ?? 'Residencias';
+    final speaksEnglish = student['speaksEnglish'] ?? false;
+    final skills = List<String>.from(student['skills'] ?? ['Java', 'Python', 'React', 'Flutter', 'AWS', 'SQL']);
+
+    return GlassmorphicCard(
+      glowColor: AppTheme.primaryColor,
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => StudentDetailViewPage(student: student),
+          ),
+        );
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+              // 1. FOTO/AVATAR DE PERFIL CON MARCO GUINDA Y BADGE DORADO DE PROMEDIO
+              Row(
+                children: [
+                  Stack(
+                    alignment: Alignment.bottomRight,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(3),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(color: AppTheme.primaryColor, width: 2),
+                        ),
+                        child: CircleAvatar(
+                          radius: 28,
+                          backgroundColor: AppTheme.primaryColor.withOpacity(0.12),
+                          child: Text(
+                            name[0],
+                            style: GoogleFonts.outfit(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: AppTheme.primaryColor,
                             ),
                           ),
-                          title: Text(s['nombre'] as String, style: const TextStyle(fontWeight: FontWeight.bold)),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(height: 4),
-                              Text('${s['mod']} | Promedio: ${s['gpa']}', style: TextStyle(color: Colors.grey[700], fontSize: 13)),
-                              const SizedBox(height: 4),
-                              Wrap(
-                                spacing: 4,
-                                children: (s['habilidades'] as List<String>).take(3).map((h) {
-                                  return Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                    decoration: BoxDecoration(color: Colors.grey[100], borderRadius: BorderRadius.circular(4)),
-                                    child: Text(h, style: const TextStyle(fontSize: 10, color: Colors.black54)),
-                                  );
-                                }).toList(),
-                              ),
-                            ],
-                          ),
-                          trailing: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              if (s['ingles'] as bool)
-                                const Tooltip(
-                                  message: 'Inglés Fluido',
-                                  child: Icon(Icons.g_translate, color: Colors.blue, size: 18),
-                                ),
-                              const SizedBox(height: 4),
-                              Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey[400]),
-                            ],
-                          ),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => StudentDetailViewPage(student: s),
-                              ),
-                            );
-                          },
                         ),
-                      );
-                    },
+                      ),
+                      // Badge Dorado de Promedio GPA
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF0F172A),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: AppTheme.accentColor, width: 1.2),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.star_rounded, color: Colors.amber, size: 12),
+                            const SizedBox(width: 2),
+                            Text(
+                              gpa,
+                              style: GoogleFonts.inter(
+                                color: Colors.white,
+                                fontSize: 10.5,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-          ],
-        ),
+
+                  const SizedBox(width: 14),
+
+                  // NOMBRE Y DISPONIBILIDAD
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          name,
+                          style: GoogleFonts.outfit(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: const Color(0xFF0F172A),
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          'Ing. en Sistemas Computacionales',
+                          style: GoogleFonts.inter(
+                            fontSize: 12.5,
+                            color: const Color(0xFF64748B),
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+
+                        // INSIGNIA EN VIVO DE DISPONIBILIDAD
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFECFDF5), // Emerald light
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: const Color(0xFFA7F3D0)),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                width: 7,
+                                height: 7,
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFF10B981),
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                'Disponible para $modality',
+                                style: GoogleFonts.inter(
+                                  fontSize: 11.5,
+                                  fontWeight: FontWeight.bold,
+                                  color: const Color(0xFF047857),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 16),
+
+              // 2. SKILLS & TECNOLOGÍAS DEL ALUMNO (Highlight si coincide con la búsqueda)
+              Text(
+                'Habilidades Tecnológicas:',
+                style: GoogleFonts.inter(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: const Color(0xFF334155),
+                ),
+              ),
+              const SizedBox(height: 6),
+
+              Wrap(
+                spacing: 6,
+                runSpacing: 6,
+                children: [
+                  ...skills.map((skill) {
+                    final isMatched = _searchQuery.isNotEmpty &&
+                        skill.toLowerCase().contains(_searchQuery.toLowerCase().trim());
+
+                    return Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: isMatched ? AppTheme.primaryColor : const Color(0xFFF1F5F9),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: isMatched ? AppTheme.primaryColor : const Color(0xFFE2E8F0),
+                        ),
+                      ),
+                      child: Text(
+                        skill,
+                        style: GoogleFonts.inter(
+                          fontSize: 11.5,
+                          fontWeight: isMatched ? FontWeight.bold : FontWeight.w600,
+                          color: isMatched ? Colors.white : const Color(0xFF1E293B),
+                        ),
+                      ),
+                    );
+                  }),
+                  if (speaksEnglish)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: AppTheme.primaryColor.withOpacity(0.08),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: AppTheme.primaryColor.withOpacity(0.2)),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.g_translate_rounded, size: 12, color: AppTheme.primaryColor),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Inglés Avanzado',
+                            style: GoogleFonts.inter(
+                              fontSize: 11.5,
+                              fontWeight: FontWeight.bold,
+                              color: AppTheme.primaryColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
+
+              const Divider(height: 28),
+
+              // 3. ACCIÓN UNIFICADA: INVITAR A VACANTE DIRECTA 📩
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    InviteStudentModal.show(context, student: student);
+                  },
+                  icon: const Icon(Icons.mark_email_read_rounded, size: 18, color: Colors.white),
+                  label: Text(
+                    'INVITAR A VACANTE DIRECTA 📩',
+                    style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.white, letterSpacing: 0.5),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.primaryColor,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    elevation: 1,
+                  ),
+                ),
+              ),
+            ],
+          ),
+    );
+  }
+
+  Widget _buildCompactStudentCard(Map<String, dynamic> student) {
+    final name = student['name'] ?? 'Alumno';
+    final gpa = (student['gpa'] ?? 8.5).toStringAsFixed(1);
+    final modality = student['modality'] ?? 'Residencias';
+    final speaksEnglish = student['speaksEnglish'] ?? false;
+    final skills = List<String>.from(student['skills'] ?? ['Java', 'Python', 'React', 'Flutter', 'AWS', 'SQL']);
+
+    return GlassmorphicCard(
+      glowColor: AppTheme.primaryColor,
+      padding: const EdgeInsets.all(16),
+      margin: EdgeInsets.zero,
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => StudentDetailViewPage(student: student),
+          ),
+        );
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Stack(
+                alignment: Alignment.bottomRight,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: AppTheme.accentColor, width: 1.5),
+                    ),
+                    child: CircleAvatar(
+                      radius: 20,
+                      backgroundColor: AppTheme.primaryColor.withOpacity(0.3),
+                      child: Text(
+                        name[0],
+                        style: GoogleFonts.outfit(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF0F172A),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: AppTheme.accentColor, width: 1),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.star_rounded, color: Colors.amber, size: 10),
+                        const SizedBox(width: 1),
+                        Text(
+                          gpa,
+                          style: GoogleFonts.inter(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14.5),
+                    ),
+                    Text(
+                      'Sistemas • $modality',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.inter(color: AppTheme.accentColor, fontSize: 11, fontWeight: FontWeight.w600),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 10),
+
+          Wrap(
+            spacing: 6,
+            runSpacing: 4,
+            children: [
+              ...skills.take(3).map((skill) {
+                return Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    skill,
+                    style: GoogleFonts.inter(color: Colors.white, fontSize: 10.5),
+                  ),
+                );
+              }),
+              if (speaksEnglish)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: AppTheme.primaryColor.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    '🇺🇸 Inglés',
+                    style: GoogleFonts.inter(color: Colors.white, fontSize: 10.5, fontWeight: FontWeight.bold),
+                  ),
+                ),
+            ],
+          ),
+
+          const Spacer(),
+
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => StudentDetailViewPage(student: student),
+                      ),
+                    );
+                  },
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: Colors.white38),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                  ),
+                  child: Text('Perfil 👤', style: GoogleFonts.inter(color: Colors.white, fontSize: 11)),
+                ),
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {
+                    InviteStudentModal.show(context, student: student);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.primaryColor,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                  ),
+                  child: Text('Invitar 📩', style: GoogleFonts.inter(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
 
-  // Estado vacío Premium para el reclutador (Buscador de Alumnos)
-  Widget _buildPremiumCompanyEmptyState() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 40.0, horizontal: 16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.orange[50],
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(Icons.person_search_outlined, size: 64, color: Colors.orange),
+  Widget _buildEmptyState() {
+    return Container(
+      margin: const EdgeInsets.all(32),
+      padding: const EdgeInsets.all(28),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+      ),
+      child: Column(
+        children: [
+          const Icon(Icons.person_search_rounded, size: 64, color: Colors.grey),
+          const SizedBox(height: 16),
+          Text(
+            'No se encontraron alumnos',
+            style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A)),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'No hay candidatos que coincidan con "$_searchQuery" o con los filtros aplicados.',
+            textAlign: TextAlign.center,
+            style: GoogleFonts.inter(fontSize: 13, color: const Color(0xFF64748B)),
+          ),
+          const SizedBox(height: 20),
+          ElevatedButton.icon(
+            onPressed: _resetFilters,
+            icon: const Icon(Icons.refresh_rounded, size: 18),
+            label: const Text('Restablecer Filtros'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.primaryColor,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             ),
-            const SizedBox(height: 16),
-            const Text(
-              'Sin coincidencias de talento',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Ningún estudiante cumple exactamente con los criterios actuales. Intenta suavizar el promedio mínimo o remover filtros adicionales.',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14, color: Colors.grey, height: 1.4),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton.icon(
-              onPressed: _resetFilters,
-              style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryGreen),
-              icon: const Icon(Icons.refresh, color: Colors.white),
-              label: const Text('RESTABLECER FILTROS', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
+
+  // Lista de alumnos de demostración con tecnologías específicas y ubicación
+  static final List<Map<String, dynamic>> _sampleStudents = [
+    {
+      'uid': 'student_demo_1',
+      'name': 'Carlos Eduardo Mendoza',
+      'email': 'carlos.mendoza@tesoem.edu.mx',
+      'gpa': 9.6,
+      'modality': 'Residencias',
+      'gender': 'Masculino',
+      'speaksEnglish': true,
+      'career': 'Ing. en Sistemas Computacionales',
+      'skills': ['Bases de Datos', 'SQL', 'Kubernetes', 'AWS', 'Docker', 'Python'],
+      'location': 'Chalco',
+    },
+    {
+      'uid': 'student_demo_2',
+      'name': 'Valeria Gómez Peña',
+      'email': 'valeria.gomez@tesoem.edu.mx',
+      'gpa': 9.4,
+      'modality': 'Residencias',
+      'gender': 'Femenino',
+      'speaksEnglish': true,
+      'career': 'Ing. en Sistemas Computacionales',
+      'skills': ['Flutter', 'React', 'Firebase', 'Terraform', 'SQL', 'Git'],
+      'location': 'Ixtapaluca',
+    },
+    {
+      'uid': 'student_demo_3',
+      'name': 'Alejandro Ruiz Peralta',
+      'email': 'alejandro.ruiz@tesoem.edu.mx',
+      'gpa': 9.8,
+      'modality': 'Recién Egresado',
+      'gender': 'Masculino',
+      'speaksEnglish': true,
+      'career': 'Ing. en Sistemas Computacionales',
+      'skills': ['Python', 'Ciberseguridad', 'Machine Learning', 'OpenCV', 'React', 'Java'],
+      'location': 'Valle de Chalco',
+    },
+  ];
 }

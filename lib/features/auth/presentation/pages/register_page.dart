@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
 import 'package:red_teso/features/auth/presentation/providers/auth_provider.dart';
+import 'package:red_teso/features/auth/presentation/widgets/verification_success_dialog.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -15,7 +16,6 @@ class _RegisterPageState extends State<RegisterPage> {
   final _passwordController = TextEditingController();
   final _nameController = TextEditingController();
 
-  // Campos específicos de Alumno
   String _userType = 'Alumno';
   String _modality = 'Servicio Social';
   String _gender = 'Femenino';
@@ -31,19 +31,57 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   void _register() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+    final name = _nameController.text.trim();
+
+    if (name.isEmpty || email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Por favor completa todos los campos obligatorios'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
-    // En un caso real, pasaríamos todos estos datos al provider
+    Map<String, dynamic> extraData = {};
+    if (_userType == 'Alumno') {
+      extraData = {
+        'modality': _modality,
+        'gender': _gender,
+        'speaksEnglish': _speaksEnglish,
+        'gpa': _gpa,
+        'career': 'Ingeniería en Sistemas Computacionales',
+      };
+    } else if (_userType == 'Profesor') {
+      extraData = {
+        'department': 'División de Ingeniería en Sistemas Computacionales',
+        'isVerifiedProfessor': true,
+      };
+    }
+
     final error = await authProvider.signUp(
-      _emailController.text.trim(),
-      _passwordController.text.trim(),
+      email: email,
+      password: password,
+      name: name,
+      type: _userType.toLowerCase(),
+      extraData: extraData,
     );
 
-    if (error != null && mounted) {
+    if (!mounted) return;
+
+    if (error != null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(error), backgroundColor: Colors.red),
       );
-    } else if (mounted) {
+    } else {
+      // Muestra la animación interactiva de éxito y aviso de correo / spam
+      await VerificationSuccessDialog.show(context, email: email);
+
+      if (!mounted) return;
       Navigator.pop(context);
     }
   }
@@ -64,11 +102,11 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
             const SizedBox(height: 20),
 
-            // Selector de tipo de usuario principal
             SegmentedButton<String>(
               segments: const [
                 ButtonSegment(value: 'Alumno', label: Text('Alumno'), icon: Icon(Icons.school)),
                 ButtonSegment(value: 'Empresa', label: Text('Empresa'), icon: Icon(Icons.business)),
+                ButtonSegment(value: 'Profesor', label: Text('Profesor'), icon: Icon(Icons.co_present_rounded)),
               ],
               selected: {_userType},
               onSelectionChanged: (val) => setState(() => _userType = val.first),
@@ -98,7 +136,7 @@ class _RegisterPageState extends State<RegisterPage> {
               const SizedBox(height: 16),
 
               DropdownButtonFormField<String>(
-                value: _modality,
+                initialValue: _modality,
                 decoration: const InputDecoration(labelText: 'Estado / Modalidad'),
                 items: ['Servicio Social', 'Residencias', 'Recién Egresado']
                     .map((e) => DropdownMenuItem(value: e, child: Text(e)))
@@ -129,7 +167,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 title: const Text('¿Hablas Inglés?'),
                 value: _speaksEnglish,
                 onChanged: (val) => setState(() => _speaksEnglish = val),
-                activeColor: AppTheme.primaryGreen,
+                activeThumbColor: AppTheme.primaryGreen,
               ),
 
               const Text('Promedio (GPA)'),

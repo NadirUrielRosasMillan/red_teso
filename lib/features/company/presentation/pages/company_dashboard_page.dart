@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:red_teso/core/theme/app_theme.dart';
+import 'package:red_teso/core/widgets/liquid_glass_floating_navbar.dart';
+import 'package:red_teso/features/courses/presentation/pages/course_catalog_page.dart';
 import 'package:red_teso/features/company/presentation/pages/company_home_page.dart';
-import 'package:red_teso/features/company/presentation/pages/create_vacancy_page.dart';
 import 'package:red_teso/features/company/presentation/pages/company_applicants_page.dart';
+import 'package:red_teso/features/company/presentation/pages/manage_vacancies_page.dart';
+import 'package:red_teso/features/company/presentation/pages/company_profile_edit_page.dart';
 
 class CompanyDashboardPage extends StatefulWidget {
   const CompanyDashboardPage({super.key});
@@ -15,43 +17,53 @@ class _CompanyDashboardPageState extends State<CompanyDashboardPage> {
   int _currentIndex = 0;
 
   final List<Widget> _pages = [
+    const CourseCatalogPage(),
     const CompanyHomePage(),
-    const CreateVacancyPage(),
+    const ManageVacanciesPage(),
     const CompanyApplicantsPage(),
+    const CompanyProfileEditPage(),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBody: true, // Permite que el contenido haga scroll traslúcido bajo el dock Liquid Glass
       body: IndexedStack(
         index: _currentIndex,
         children: _pages,
       ),
-      bottomNavigationBar: BottomNavigationBar(
+      bottomNavigationBar: LiquidGlassFloatingNavBar(
         currentIndex: _currentIndex,
-        selectedItemColor: AppTheme.primaryGreen,
-        unselectedItemColor: Colors.grey,
-        type: BottomNavigationBarType.fixed,
         onTap: (index) {
           setState(() {
             _currentIndex = index;
           });
         },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search_outlined),
-            activeIcon: Icon(Icons.search),
-            label: 'Buscar Talento',
+        items: [
+          LiquidGlassNavItem(
+            icon: Icons.school_outlined,
+            activeIcon: Icons.school_rounded,
+            label: 'Cursos',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add_box_outlined),
-            activeIcon: Icon(Icons.add_box),
-            label: 'Nueva Vacante',
+          LiquidGlassNavItem(
+            icon: Icons.person_search_outlined,
+            activeIcon: Icons.person_search_rounded,
+            label: 'Talento',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.people_outline),
-            activeIcon: Icon(Icons.people),
+          LiquidGlassNavItem(
+            icon: Icons.list_alt_outlined,
+            activeIcon: Icons.list_alt_rounded,
+            label: 'Vacantes',
+          ),
+          LiquidGlassNavItem(
+            icon: Icons.people_outline,
+            activeIcon: Icons.people_rounded,
             label: 'Postulados',
+          ),
+          LiquidGlassNavItem(
+            icon: Icons.business_outlined,
+            activeIcon: Icons.business_rounded,
+            label: 'Perfil',
           ),
         ],
       ),
