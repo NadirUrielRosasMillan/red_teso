@@ -25,7 +25,7 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
   final List<_Experience> _experiences = const [
     _Experience(
       id: 'talento',
-      title: 'ÁGORA Talento',
+      title: 'NEXUM Talento',
       eyebrow: 'BOLSA DE TRABAJO',
       subtitle: 'Conecta con tu próxima oportunidad.',
       description:
@@ -37,7 +37,7 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
     ),
     _Experience(
       id: 'aprende',
-      title: 'ÁGORA Aprende',
+      title: 'NEXUM Aprende',
       eyebrow: 'CURSOS Y HABILIDADES',
       subtitle: 'Aprende. Crece. Evoluciona.',
       description:
@@ -49,7 +49,7 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
     ),
     _Experience(
       id: 'impulsa',
-      title: 'ÁGORA Impulsa',
+      title: 'NEXUM Impulsa',
       eyebrow: 'CÓDIGO COLABORATIVO',
       subtitle: 'Comparte código. Impulsa ideas.',
       description:
@@ -175,7 +175,7 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
                       label: Text(
                         selected.available
                             ? 'ENTRAR A ${selected.title.toUpperCase()}'
-                            : 'ÁGORA IMPULSA · PRÓXIMAMENTE',
+                            : 'NEXUM IMPULSA · PRÓXIMAMENTE',
                         style: const TextStyle(
                           fontWeight: FontWeight.w900,
                           letterSpacing: .8,
@@ -209,7 +209,7 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
       child: Row(
         children: [
           Image.asset(
-            'assets/images/branding/agora_icono_app.png',
+            'assets/images/branding/nexum_icon_1024.png',
             width: 54,
             height: 54,
             fit: BoxFit.contain,
@@ -225,7 +225,7 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'ÁGORA',
+                  'NEXUM',
                   style: TextStyle(
                     color: _greenPrimary,
                     fontSize: 23,

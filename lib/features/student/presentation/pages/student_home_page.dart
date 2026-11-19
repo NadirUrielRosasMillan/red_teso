@@ -63,19 +63,13 @@ class _StudentHomePageState extends State<StudentHomePage> {
         titleSpacing: 20,
         title: Row(
           children: [
-            Container(
-              width: 39,
-              height: 39,
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [_primaryBlue, _cyan],
-                ),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Icon(
-                Icons.hub_rounded,
-                color: Colors.white,
-                size: 25,
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.asset(
+                'assets/images/branding/nexum_icon_1024.png',
+                width: 39,
+                height: 39,
+                fit: BoxFit.cover,
               ),
             ),
             const SizedBox(width: 11),
@@ -83,7 +77,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'RedTESO',
+                  'NEXUM',
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 21,
                     fontWeight: FontWeight.w800,

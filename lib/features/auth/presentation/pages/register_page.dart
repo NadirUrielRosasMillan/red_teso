@@ -1,4 +1,7 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:red_teso/features/auth/presentation/providers/auth_provider.dart';
 import 'package:red_teso/features/auth/presentation/widgets/verification_success_dialog.dart';
@@ -10,7 +13,8 @@ class RegisterPage extends StatefulWidget {
   State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _RegisterPageState extends State<RegisterPage> {
+class _RegisterPageState extends State<RegisterPage>
+    with SingleTickerProviderStateMixin {
   static const Color _greenPrimary = Color(0xFF0B5D3B);
   static const Color _greenSecondary = Color(0xFF1E8449);
   static const Color _greenLight = Color(0xFFA8D5A2);
@@ -19,6 +23,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _nameController = TextEditingController();
+  late final AnimationController _logoOrbitController;
 
   String _userType = 'Alumno';
   String _modality = 'Servicio Social';
@@ -27,10 +32,20 @@ class _RegisterPageState extends State<RegisterPage> {
   double _gpa = 8.0;
 
   @override
+  void initState() {
+    super.initState();
+    _logoOrbitController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 7),
+    )..repeat();
+  }
+
+  @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
     _nameController.dispose();
+    _logoOrbitController.dispose();
     super.dispose();
   }
 
@@ -119,15 +134,10 @@ class _RegisterPageState extends State<RegisterPage> {
                           padding: const EdgeInsets.only(bottom: 20),
                           child: Column(
                             children: [
-                              Image.asset(
-                                'assets/images/branding/agora_icono_app.png',
-                                width: 58,
-                                height: 58,
-                                fit: BoxFit.contain,
-                              ),
+                              _buildAnimatedLogo(),
                               const SizedBox(height: 8),
                               const Text(
-                                'ÁGORA',
+                                'NEXUM',
                                 style: TextStyle(
                                   color: _greenPrimary,
                                   fontSize: 25,
@@ -433,6 +443,111 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
+  Widget _buildAnimatedLogo() {
+    const markWidth = 154.0;
+    const markHeight = 122.0;
+
+    return AnimatedBuilder(
+      animation: _logoOrbitController,
+      builder: (context, _) {
+        final angle = _logoOrbitController.value * math.pi * 2;
+        const tilt = -.28;
+
+        return SizedBox(
+          width: markWidth,
+          height: markHeight,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              ShaderMask(
+                blendMode: BlendMode.srcIn,
+                shaderCallback: (bounds) => const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0xFFB8E986),
+                    Color(0xFF28A85B),
+                    Color(0xFF075C3B),
+                  ],
+                ).createShader(bounds),
+                child: Text(
+                  'N',
+                  style: GoogleFonts.spaceGrotesk(
+                    fontSize: 94,
+                    height: 1,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: -9,
+                  ),
+                ),
+              ),
+              Positioned.fill(
+                child: CustomPaint(
+                  painter: _RegisterOrbitPainter(
+                    progress: _logoOrbitController.value,
+                  ),
+                ),
+              ),
+              ...List.generate(3, (index) {
+                final nodeAngle = angle + index * math.pi * 2 / 3;
+                const rx = 62.0;
+                const ry = 25.0;
+                final x = rx * math.cos(nodeAngle);
+                final y = ry * math.sin(nodeAngle);
+                final nodeX = x * math.cos(tilt) - y * math.sin(tilt);
+                final nodeY = x * math.sin(tilt) + y * math.cos(tilt);
+                final icon = switch (index) {
+                  0 => Icons.work_rounded,
+                  1 => Icons.school_rounded,
+                  _ => Icons.lightbulb_outline_rounded,
+                };
+
+                return Positioned(
+                  left: markWidth / 2 + nodeX - 15,
+                  top: markHeight / 2 + nodeY - 15,
+                  child: Container(
+                    width: 30,
+                    height: 30,
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF2E9D5C), Color(0xFF075C3B)],
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.white, width: 1.7),
+                      boxShadow: [
+                        BoxShadow(
+                          color: _greenPrimary.withValues(alpha: .2),
+                          blurRadius: 9,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: index == 2
+                        ? Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              Icon(icon, color: Colors.white, size: 18),
+                              const Positioned(
+                                right: 1,
+                                bottom: 1,
+                                child: Icon(
+                                  Icons.settings_rounded,
+                                  color: Colors.white,
+                                  size: 9,
+                                ),
+                              ),
+                            ],
+                          )
+                        : Icon(icon, color: Colors.white, size: 17),
+                  ),
+                );
+              }),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   InputDecoration _inputDecoration(String label, IconData icon) {
     return InputDecoration(
       labelText: label,
@@ -469,6 +584,49 @@ class _RegisterPageState extends State<RegisterPage> {
       decoration: _inputDecoration(label, icon),
     );
   }
+}
+
+class _RegisterOrbitPainter extends CustomPainter {
+  final double progress;
+
+  const _RegisterOrbitPainter({required this.progress});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final orbit = Rect.fromCenter(
+      center: center,
+      width: size.width * .9,
+      height: size.height * .44,
+    );
+    canvas.save();
+    canvas.translate(center.dx, center.dy);
+    canvas.rotate(-.28);
+    final localOrbit = orbit.shift(-center);
+    canvas.drawOval(
+      localOrbit,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.8
+        ..color = const Color(0xFF1E8449).withValues(alpha: .55),
+    );
+    canvas.drawArc(
+      localOrbit,
+      math.pi * (.08 + progress * .28),
+      math.pi * .72,
+      false,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeCap = StrokeCap.round
+        ..strokeWidth = 3.2
+        ..color = const Color(0xFFA8D5A2).withValues(alpha: .92),
+    );
+    canvas.restore();
+  }
+
+  @override
+  bool shouldRepaint(covariant _RegisterOrbitPainter oldDelegate) =>
+      oldDelegate.progress != progress;
 }
 
 class _RegisterBgPainter extends CustomPainter {

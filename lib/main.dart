@@ -33,25 +33,25 @@ Future<void> main() async {
           create: (_) => ThemeProvider(),
         ),
       ],
-      child: const RedTESOApp(),
+      child: const NexumApp(),
     ),
   );
 }
 
-class RedTESOApp extends StatefulWidget {
-  const RedTESOApp({super.key});
+class NexumApp extends StatefulWidget {
+  const NexumApp({super.key});
 
   @override
-  State<RedTESOApp> createState() => _RedTESOAppState();
+  State<NexumApp> createState() => _NexumAppState();
 }
 
-class _RedTESOAppState extends State<RedTESOApp> {
+class _NexumAppState extends State<NexumApp> {
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, child) {
         return MaterialApp(
-          title: 'ÁGORA',
+          title: 'NEXUM',
           debugShowCheckedModeBanner: false,
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
@@ -83,7 +83,7 @@ class _RedTESOAppState extends State<RedTESOApp> {
           return const AuthWrapper();
         }
 
-        // La única entrada para usuarios sin sesión es el login de ÁGORA.
+        // La única entrada para usuarios sin sesión es el login de NEXUM.
         return const LoginPage();
       },
     );
@@ -117,7 +117,7 @@ class AuthWrapper extends StatelessWidget {
           case UserType.profesor:
           case UserType.empresa:
             // El selector filtra las experiencias según el rol.
-            // Las empresas únicamente verán ÁGORA Talento.
+            // Las empresas únicamente verán NEXUM Talento.
             return const EcosystemSelectorPage();
           case UserType.admin:
             return const AdminDashboardPage();
