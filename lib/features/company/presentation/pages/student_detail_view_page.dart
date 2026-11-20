@@ -116,11 +116,7 @@ class StudentDetailViewPage extends StatelessWidget {
         ),
         title: Text('Perfil del Candidato', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white)),
         foregroundColor: Colors.white,
-<<<<<<< HEAD
-        backgroundColor: const Color(0xFF0B1524).withOpacity(0.85),
-=======
         backgroundColor: AppTheme.bgDark.withOpacity(0.85),
->>>>>>> origin/main
         elevation: 0,
       ),
       body: LiquidGlassAmbientBackground(

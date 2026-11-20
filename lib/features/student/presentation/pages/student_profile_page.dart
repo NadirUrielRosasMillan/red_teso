@@ -23,26 +23,6 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
   late final TextEditingController _phoneController;
   late final TextEditingController _skillController;
 
-<<<<<<< HEAD
-  static const Color _wine = Color(0xFF164B91);
-  static const Color _wineDark = Color(0xFF12366A);
-  static const Color _wineLight = Color(0xFF3679C9);
-  static const Color _gold = Color(0xFF8DB9E8);
-  static const Color _cream = Color(0xFFF1F6FC);
-  static const Color _ink = Color(0xFF16324F);
-  static const Color _muted = Color(0xFF64748B);
-  static const Color _border = Color(0xFFDCE7F3);
-  static const Color _green = Color(0xFF31805A);
-  static const Color _red = Color(0xFFB42336);
-
-  bool get _isDark => Theme.of(context).brightness == Brightness.dark;
-  Color get _pageBackground => _isDark ? const Color(0xFF0B1524) : _cream;
-  Color get _cardBackground => _isDark ? const Color(0xFF15243A) : Colors.white;
-  Color get _textColor => _isDark ? const Color(0xFFEAF2FB) : _ink;
-  Color get _mutedColor => _isDark ? const Color(0xFFB8C8DC) : _muted;
-  Color get _borderColor => _isDark ? const Color(0xFF294363) : _border;
-  Color get _fieldBackground => _isDark ? const Color(0xFF15243A) : const Color(0xFFF8FBFF);
-=======
   static const Color _wine = Color(0xFF0793B8);
   static const Color _wineDark = Color(0xFF056C88);
   static const Color _wineLight = Color(0xFF10BFD0);
@@ -61,7 +41,6 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
   Color get _mutedColor => _isDark ? const Color(0xFFB8E2EC) : _muted;
   Color get _borderColor => _isDark ? const Color(0xFF1B4B5F) : _border;
   Color get _fieldBackground => _isDark ? const Color(0xFF153443) : const Color(0xFFF8FCFE);
->>>>>>> origin/main
 
   double _gpa = 8.0;
   String _modality = 'Servicio Social';
@@ -716,13 +695,8 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
               runSpacing: 8,
               children: _skills.map((skill) => Chip(
                 avatar: const Icon(Icons.check_circle_rounded, color: _wine, size: 17),
-<<<<<<< HEAD
-                label: Text(skill, style: GoogleFonts.inter(color: _wineDark, fontSize: 12)),
-                backgroundColor: _isDark ? const Color(0xFF1B304A) : const Color(0xFFEAF2FB),
-=======
                 label: Text(skill, style: GoogleFonts.inter(color: _isDark ? const Color(0xFFE0F4F8) : _wineDark, fontSize: 12)),
                 backgroundColor: _isDark ? const Color(0xFF153E50) : const Color(0xFFE6F6FA),
->>>>>>> origin/main
                 side: BorderSide(color: _wine.withValues(alpha: 0.12)),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 deleteIcon: const Icon(Icons.close_rounded, color: _red, size: 16),
@@ -951,13 +925,8 @@ class _ProfileAmbientPainter extends CustomPainter {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: isDark
-<<<<<<< HEAD
-              ? const [Color(0xFF0B1524), Color(0xFF101C2D), Color(0xFF15243A)]
-              : const [Color(0xFFF5F9FF), Color(0xFFEAF2FB), Color(0xFFDCEBFA)],
-=======
               ? const [Color(0xFF0A1922), Color(0xFF112A36), Color(0xFF0D212C)]
               : const [Color(0xFFF4FAFC), Color(0xFFE6F6FA), Color(0xFFDCEBF0)],
->>>>>>> origin/main
         ).createShader(rect),
     );
 
@@ -965,32 +934,20 @@ class _ProfileAmbientPainter extends CustomPainter {
       canvas,
       Offset(size.width * 0.95, size.height * 0.18),
       size.width * 0.45,
-<<<<<<< HEAD
-      const Color(0x283679C9),
-=======
       const Color(0x280793B8),
->>>>>>> origin/main
     );
 
     _glow(
       canvas,
       Offset(size.width * 0.05, size.height * 0.78),
       size.width * 0.48,
-<<<<<<< HEAD
-      const Color(0x288DB9E8),
-=======
       const Color(0x2810BFD0),
->>>>>>> origin/main
     );
 
     final ringPaint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.2
-<<<<<<< HEAD
-      ..color = const Color(0x24164B91);
-=======
       ..color = const Color(0x240793B8);
->>>>>>> origin/main
 
     canvas.drawCircle(
       Offset(size.width * 0.95, size.height * 0.15),
@@ -1004,17 +961,10 @@ class _ProfileAmbientPainter extends CustomPainter {
       Paint()
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1
-<<<<<<< HEAD
-        ..color = const Color(0x206EA5E3),
-    );
-
-    final dotPaint = Paint()..color = const Color(0x668DB9E8);
-=======
         ..color = const Color(0x2010BFD0),
     );
 
     final dotPaint = Paint()..color = const Color(0x6610BFD0);
->>>>>>> origin/main
 
     for (int i = 0; i < 26; i++) {
       final x = ((i * 83 + 29) % 997) / 997 * size.width;

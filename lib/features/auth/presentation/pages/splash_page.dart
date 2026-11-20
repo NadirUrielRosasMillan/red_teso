@@ -77,21 +77,6 @@ class _SplashPageState extends State<SplashPage>
                 ScaleTransition(
                   scale: _scaleAnimation,
                   child: Container(
-<<<<<<< HEAD
-                    width: 250,
-                    height: 250,
-                    decoration: const BoxDecoration(
-                      color: Colors
-                          .transparent, // Cambiado a totalmente transparente
-                    ),
-                    child: Image.asset(
-                      'assets/images/branding/agora_logo_principal.png',
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 32),
-=======
                     width: 200,
                     height: 200,
                     decoration: BoxDecoration(
@@ -114,45 +99,27 @@ class _SplashPageState extends State<SplashPage>
                 ),
                 const SizedBox(height: 40),
                 
->>>>>>> origin/main
                 FadeTransition(
                   opacity: _opacityAnimation,
                   child: Column(
                     children: [
                       Text(
-<<<<<<< HEAD
-                        'ÁGORA',
-                        style: TextStyle(
-                          fontSize: 38,
-                          fontWeight: FontWeight.bold,
-                          color: AppTheme.primaryGreen,
-                          letterSpacing: 1.2,
-=======
                         'RedTESO',
                         style: GoogleFonts.spaceGrotesk(
                           fontSize: 42,
                           fontWeight: FontWeight.w800,
                           color: AppTheme.textPrimaryLight, // Texto oscuro sobre blanco
                           letterSpacing: -1,
->>>>>>> origin/main
                         ),
                       ),
                       const SizedBox(height: 8),
                       Text(
-<<<<<<< HEAD
-                        'Talento · Aprende · Impulsa',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey,
-                          fontWeight: FontWeight.w500,
-=======
                         'TU TALENTO ABRE PUERTAS',
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 11,
                           color: AppTheme.primaryTurquoise, // Turquesa
                           fontWeight: FontWeight.w700,
                           letterSpacing: 2,
->>>>>>> origin/main
                         ),
                       ),
                     ],
@@ -173,12 +140,7 @@ class _SplashPageState extends State<SplashPage>
                   height: 32,
                   child: CircularProgressIndicator(
                     strokeWidth: 2.5,
-<<<<<<< HEAD
-                    valueColor:
-                        AlwaysStoppedAnimation<Color>(AppTheme.primaryGreen),
-=======
                     valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryTurquoise),
->>>>>>> origin/main
                   ),
                 ),
               ),

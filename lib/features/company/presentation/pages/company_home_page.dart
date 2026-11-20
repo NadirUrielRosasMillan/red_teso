@@ -77,11 +77,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
           'Buscador de Talento',
           style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white),
         ),
-<<<<<<< HEAD
-        backgroundColor: const Color(0xFF0B1524).withOpacity(0.85),
-=======
         backgroundColor: AppTheme.bgDark.withOpacity(0.85),
->>>>>>> origin/main
         foregroundColor: Colors.white,
         elevation: 0,
         actions: [
@@ -102,13 +98,8 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                   onPressed: () => AiTalentAssistantModal.show(context, students: _sampleStudents),
                   backgroundColor: AppTheme.primaryTurquoise,
                   elevation: 6,
-<<<<<<< HEAD
-                  tooltip: 'IA ÁGORA TALENTO 🤖',
-                  child: const Icon(Icons.psychology_rounded, color: AppTheme.accentColor, size: 24),
-=======
                   tooltip: 'IA REDTESO 🤖',
                   child: const Icon(Icons.psychology_rounded, color: Colors.white, size: 24),
->>>>>>> origin/main
                 ),
               )
             : const SizedBox.shrink(key: ValueKey('empty_ai_talent_btn')),

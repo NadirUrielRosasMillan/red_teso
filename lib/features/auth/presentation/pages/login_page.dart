@@ -27,16 +27,11 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   int _logoTapCount = 0;
   Timer? _logoTapResetTimer;
 
-<<<<<<< HEAD
-  static const Color _navy = Color(0xFF123D78);
-  static const Color _aqua = Color(0xFF67D8FF);
-=======
   static const Color _bgWhite = Colors.white; // Fondo blanco puro
   static const Color _primaryTurquoise = Color(0xFF0793B8); // Turquesa / Cian Oscuro
   static const Color _cyan = Color(0xFF10BFD0); // Cian claro
   static const Color _textDark = Color(0xFF0D1330); // Gris-950 (Oscuro)
   static const Color _textMuted = Color(0xFF566080); // Gris-600
->>>>>>> origin/main
 
   @override
   void initState() {
@@ -168,11 +163,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-<<<<<<< HEAD
-      backgroundColor: Colors.white,
-=======
       backgroundColor: _bgWhite,
->>>>>>> origin/main
       body: Stack(
         children: [
           Positioned.fill(
@@ -230,8 +221,6 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     );
   }
 
-<<<<<<< HEAD
-=======
   // Diseño para celular
   Widget _buildMobileLayout() {
     return Column(
@@ -301,7 +290,6 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     );
   }
 
->>>>>>> origin/main
   Widget _buildBrand({bool compact = false}) {
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -309,17 +297,6 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         GestureDetector(
           onTap: _handleLogoTap,
           child: Container(
-<<<<<<< HEAD
-            width: compact ? 210 : 190,
-            height: compact ? 132 : 120,
-            child: Image.asset(
-              'assets/images/branding/agora_logo_principal.png',
-              fit: BoxFit.contain,
-            ),
-          ),
-        ),
-        const SizedBox(height: 18),
-=======
             width: compact ? 94 : 108,
             height: compact ? 94 : 108,
             decoration: BoxDecoration(
@@ -368,25 +345,11 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
             letterSpacing: 3,
           ),
         ),
->>>>>>> origin/main
       ],
     );
   }
 
   Widget _buildLoginCard() {
-<<<<<<< HEAD
-    return Container(
-      padding: const EdgeInsets.all(28),
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.96),
-            borderRadius: BorderRadius.circular(30),
-            border: Border.all(color: const Color(0xFFD8E8F8)),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFF315B8A).withValues(alpha: 0.12),
-                blurRadius: 38,
-                offset: const Offset(0, 18),
-=======
     return ClipRRect(
       borderRadius: BorderRadius.circular(32),
       child: BackdropFilter(
@@ -405,7 +368,6 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                 color: _primaryTurquoise.withValues(alpha: 0.08),
                 blurRadius: 40,
                 offset: const Offset(0, 20),
->>>>>>> origin/main
               ),
             ],
           ),
@@ -417,41 +379,25 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                 width: 48,
                 height: 5,
                 decoration: BoxDecoration(
-<<<<<<< HEAD
-                  color: _aqua,
-=======
                   color: _primaryTurquoise,
->>>>>>> origin/main
                   borderRadius: BorderRadius.circular(20),
                 ),
               ),
               const SizedBox(height: 24),
               Text(
                 '¡Bienvenido!',
-<<<<<<< HEAD
-                style: GoogleFonts.outfit(
-                  color: _navy,
-                  fontSize: 31,
-=======
                 style: GoogleFonts.plusJakartaSans(
                   color: _textDark,
                   fontSize: 32,
->>>>>>> origin/main
                   fontWeight: FontWeight.w800,
                   letterSpacing: -0.5,
                 ),
               ),
               const SizedBox(height: 8),
               Text(
-<<<<<<< HEAD
-                'Inicia sesión y entra a tu ecosistema ÁGORA.',
-                style: GoogleFonts.inter(
-                  color: const Color(0xFF647A96),
-=======
                 'Ingresa con tu matrícula (Alumno), número de empleado (Profesor) o correo (Empresa).',
                 style: GoogleFonts.inter(
                   color: _textMuted,
->>>>>>> origin/main
                   fontSize: 13,
                   height: 1.5,
                 ),
@@ -481,11 +427,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                     _isPasswordVisible
                         ? Icons.visibility_off_rounded
                         : Icons.visibility_rounded,
-<<<<<<< HEAD
-                    color: const Color(0xFF71839A),
-=======
                     color: _textMuted,
->>>>>>> origin/main
                     size: 21,
                   ),
                 ),
@@ -506,28 +448,16 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                             decoration: BoxDecoration(
                               gradient: const LinearGradient(
                                 colors: [
-<<<<<<< HEAD
-                                  Color(0xFF3D9EEB),
-                                  Color(0xFF1F67B2),
-                                  Color(0xFF438DCE),
-=======
                                   Color(0xFF00B8F0), // _cyan
                                   Color(0xFF0793B8), // _primaryTurquoise
->>>>>>> origin/main
                                 ],
                               ),
                               borderRadius: BorderRadius.circular(16),
                               boxShadow: [
                                 BoxShadow(
-<<<<<<< HEAD
-                                  color: _aqua.withValues(alpha: 0.23),
-                                  blurRadius: 22,
-                                  offset: const Offset(0, 8),
-=======
                                   color: _primaryTurquoise.withValues(alpha: 0.35),
                                   blurRadius: 15,
                                   offset: const Offset(0, 6),
->>>>>>> origin/main
                                 ),
                               ],
                             ),
@@ -593,22 +523,14 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                     Text(
                       '¿Nuevo en la comunidad? ',
                       style: GoogleFonts.inter(
-<<<<<<< HEAD
-                        color: const Color(0xFF647A96),
-=======
                         color: _textMuted,
->>>>>>> origin/main
                         fontSize: 12,
                       ),
                     ),
                     TextButton(
                       onPressed: _openRegister,
                       style: TextButton.styleFrom(
-<<<<<<< HEAD
-                        foregroundColor: _navy,
-=======
                         foregroundColor: _primaryTurquoise,
->>>>>>> origin/main
                         padding: const EdgeInsets.symmetric(
                           horizontal: 4,
                         ),
@@ -627,6 +549,8 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                 ),
               ),
             ],
+          ),
+        ),
       ),
     );
   }
@@ -648,60 +572,14 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
           padding: const EdgeInsets.only(left: 4, bottom: 8),
           child: Text(
             label,
-<<<<<<< HEAD
-            style: GoogleFonts.inter(
-              color: _navy,
-=======
             style: GoogleFonts.plusJakartaSans(
               color: _textDark,
->>>>>>> origin/main
               fontSize: 12,
               fontWeight: FontWeight.w600,
               letterSpacing: 0.3,
             ),
           ),
         ),
-<<<<<<< HEAD
-        TextField(
-          controller: controller,
-          obscureText: obscureText,
-          keyboardType: keyboardType,
-          onSubmitted: onSubmitted,
-          style: GoogleFonts.inter(
-            color: const Color(0xFF1D3553),
-            fontSize: 14,
-          ),
-          cursorColor: _aqua,
-          decoration: InputDecoration(
-            hintText: hint,
-            hintStyle: GoogleFonts.inter(
-              color: const Color(0xFF91A1B5),
-              fontSize: 12,
-            ),
-            prefixIcon: Icon(
-              icon,
-              color: _aqua,
-              size: 21,
-            ),
-            suffixIcon: suffix,
-            filled: true,
-            fillColor: const Color(0xFFF5F9FE),
-            contentPadding: const EdgeInsets.symmetric(
-              vertical: 19,
-              horizontal: 15,
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(15),
-              borderSide: BorderSide(
-                color: const Color(0xFFD7E3F0),
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(15),
-              borderSide: const BorderSide(
-                color: _aqua,
-                width: 1.4,
-=======
         ClipRRect(
           borderRadius: BorderRadius.circular(16),
           child: BackdropFilter(
@@ -748,7 +626,6 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                     width: 1.5,
                   ),
                 ),
->>>>>>> origin/main
               ),
             ),
           ),
@@ -757,8 +634,6 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     );
   }
 
-<<<<<<< HEAD
-=======
   Widget _buildFeature(IconData icon, String text) {
     return Row(
       children: [
@@ -793,17 +668,12 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     );
   }
 
->>>>>>> origin/main
   Widget _buildFooter() {
     return Text(
       'PLATAFORMA ACADÉMICA TESOEM',
       textAlign: TextAlign.center,
       style: GoogleFonts.inter(
-<<<<<<< HEAD
-      color: const Color(0xFF7387A1),
-=======
         color: _textMuted.withValues(alpha: 0.6),
->>>>>>> origin/main
         fontSize: 9,
         fontWeight: FontWeight.w600,
         letterSpacing: 2,
@@ -824,13 +694,8 @@ class _AdminAccessDialogState extends State<_AdminAccessDialog> {
   bool _obscurePassword = true;
   String? _errorMessage;
 
-<<<<<<< HEAD
-  static const Color _navy = Color(0xFF07172F);
-  static const Color _aqua = Color(0xFF67D8FF);
-=======
   static const Color _bgDark = Color(0xFF0A1922);
   static const Color _cyan = Color(0xFF10BFD0);
->>>>>>> origin/main
 
   @override
   void dispose() {
@@ -850,16 +715,6 @@ class _AdminAccessDialogState extends State<_AdminAccessDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       scrollable: true,
-<<<<<<< HEAD
-      backgroundColor: const Color(0xFF102A4A),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24),
-        side: BorderSide(color: _aqua.withValues(alpha: 0.35)),
-      ),
-      title: Row(
-        children: [
-          const Icon(Icons.admin_panel_settings_rounded, color: _aqua),
-=======
       backgroundColor: _bgDark,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(24),
@@ -868,7 +723,6 @@ class _AdminAccessDialogState extends State<_AdminAccessDialog> {
       title: Row(
         children: [
           const Icon(Icons.admin_panel_settings_rounded, color: _cyan),
->>>>>>> origin/main
           const SizedBox(width: 10),
           Expanded(
             child: Text(
@@ -899,11 +753,7 @@ class _AdminAccessDialogState extends State<_AdminAccessDialog> {
             decoration: InputDecoration(
               hintText: 'Contraseña',
               hintStyle: GoogleFonts.inter(color: Colors.white38),
-<<<<<<< HEAD
-              prefixIcon: const Icon(Icons.lock_outline_rounded, color: _aqua),
-=======
               prefixIcon: const Icon(Icons.lock_outline_rounded, color: _cyan),
->>>>>>> origin/main
               suffixIcon: IconButton(
                 onPressed: () => setState(
                   () => _obscurePassword = !_obscurePassword,
@@ -925,11 +775,7 @@ class _AdminAccessDialogState extends State<_AdminAccessDialog> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
-<<<<<<< HEAD
-                borderSide: const BorderSide(color: _aqua, width: 1.4),
-=======
                 borderSide: const BorderSide(color: _cyan, width: 1.4),
->>>>>>> origin/main
               ),
             ),
           ),
@@ -952,13 +798,8 @@ class _AdminAccessDialogState extends State<_AdminAccessDialog> {
         ),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
-<<<<<<< HEAD
-            backgroundColor: _aqua,
-            foregroundColor: _navy,
-=======
             backgroundColor: _cyan,
             foregroundColor: _bgDark,
->>>>>>> origin/main
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
@@ -1120,16 +961,10 @@ class _PremiumBackgroundPainter extends CustomPainter {
 
   _PremiumBackgroundPainter({required this.progress});
 
-<<<<<<< HEAD
-  static const Color _wine = Color(0xFF1357A6);
-  static const Color _navy = Color(0xFF07172F);
-  static const Color _aqua = Color(0xFF67D8FF);
-=======
   static const Color _noche800 = Color(0xFFF8FBFF);
   static const Color _noche950 = Color(0xFFFFFFFF);
   static const Color _primaryTurquoise = Color(0xFF0793B8);
   static const Color _cyan = Color(0xFF10BFD0);
->>>>>>> origin/main
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -1140,17 +975,10 @@ class _PremiumBackgroundPainter extends CustomPainter {
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
         colors: [
-<<<<<<< HEAD
-          Color(0xFF061326),
-          Color(0xFF123F78),
-          Color(0xFF0A2342),
-          Color(0xFF040B17),
-=======
           Color(0xFFFFFFFF),
           Color(0xFFF4FAFC),
           Color(0xFFE6F6FA),
           Color(0xFFDCEBF0),
->>>>>>> origin/main
         ],
         stops: [0, 0.38, 0.72, 1],
       ).createShader(rect);
@@ -1175,11 +1003,7 @@ class _PremiumBackgroundPainter extends CustomPainter {
         size.height * 0.76,
       ),
       size.width * 0.48,
-<<<<<<< HEAD
-      _aqua.withValues(alpha: 0.10),
-=======
       _cyan.withValues(alpha: 0.08),
->>>>>>> origin/main
     );
 
     // Trazos diagonales luminosos
@@ -1189,13 +1013,8 @@ class _PremiumBackgroundPainter extends CustomPainter {
       ..shader = LinearGradient(
         colors: [
           Colors.transparent,
-<<<<<<< HEAD
-          _aqua.withValues(alpha: 0.34),
-          _wine.withValues(alpha: 0.72),
-=======
           _cyan.withValues(alpha: 0.15),
           _primaryTurquoise.withValues(alpha: 0.25),
->>>>>>> origin/main
           Colors.transparent,
         ],
       ).createShader(rect);
@@ -1225,13 +1044,8 @@ class _PremiumBackgroundPainter extends CustomPainter {
     canvas.drawPath(path1, ribbonPaint);
     canvas.drawPath(path2, ribbonPaint);
 
-<<<<<<< HEAD
-    // Partículas doradas
-    final particlePaint = Paint()..color = _aqua.withValues(alpha: 0.44);
-=======
     // Partículas luminosas estilo cian
     final particlePaint = Paint()..color = _cyan.withValues(alpha: 0.3);
->>>>>>> origin/main
 
     for (int i = 0; i < 45; i++) {
       final x = ((i * 73.7) % 997) / 997 * size.width;
@@ -1254,11 +1068,7 @@ class _PremiumBackgroundPainter extends CustomPainter {
         ..shader = RadialGradient(
           colors: [
             Colors.transparent,
-<<<<<<< HEAD
-            _navy.withValues(alpha: 0.40),
-=======
             Colors.white.withValues(alpha: 0.1),
->>>>>>> origin/main
           ],
           stops: const [0.35, 1],
         ).createShader(rect),
