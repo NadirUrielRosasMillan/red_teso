@@ -370,7 +370,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                             const SizedBox(height: 16),
                             Center(
                               child: Text(
-                                'ÁGORA TALENTO · TU FUTURO PROFESIONAL',
+                                'NEXUM TALENTO · TU FUTURO PROFESIONAL',
                                 style: GoogleFonts.poppins(
                                   color: _mutedColor,
                                   fontSize: 10,
@@ -419,7 +419,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                   ),
                   clipBehavior: Clip.antiAlias,
                   child: Image.asset(
-                    'assets/images/branding/agora_icono_app.png',
+                    'assets/images/branding/nexum_icon_1024.png',
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -430,7 +430,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        'ÁGORA Talento',
+                        'NEXUM Talento',
                         style: GoogleFonts.poppins(
                           color: Colors.white,
                           fontSize: 20,

@@ -1,7 +1,7 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// Identidad visual de ÁGORA Talento: azul y blanco.
+/// Identidad visual de NEXUM: verde institucional y blanco.
 class AppTheme {
   static const Color primaryColor = Color(0xFF0793B8); // Turquesa Principal
   static const Color secondaryColor = Color(0xFF10BFD0); // Cian

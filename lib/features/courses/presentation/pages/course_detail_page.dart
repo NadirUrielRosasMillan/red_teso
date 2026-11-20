@@ -79,7 +79,7 @@ class CourseDetailPage extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        'RedTESO ',
+                        'NEXUM ',
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 13,
                           color: AppTheme.textSecondaryLight,

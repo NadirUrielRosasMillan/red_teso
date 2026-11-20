@@ -17,7 +17,7 @@ class FcmNotificationService {
 
   static const AndroidNotificationChannel _androidChannel = AndroidNotificationChannel(
     'redteso_push_channel',
-    'Notificaciones RedTESO',
+    'Notificaciones NEXUM',
     description: 'Canal oficial para invitaciones a entrevistas y postulaciones en TESOEM.',
     importance: Importance.high,
     playSound: true,
