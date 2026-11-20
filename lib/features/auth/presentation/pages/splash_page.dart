@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
 
@@ -98,7 +98,7 @@ class _SplashPageState extends State<SplashPage>
                   ),
                 ),
                 const SizedBox(height: 40),
-                
+
                 FadeTransition(
                   opacity: _opacityAnimation,
                   child: Column(
