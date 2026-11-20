@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
@@ -51,7 +51,7 @@ class StudentDetailViewPage extends StatelessWidget {
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      'Documento verificado y autenticado por el alumno en ÁGORA Talento.',
+                      'Documento verificado y autenticado por el alumno en NEXUM Talento.',
                       style: GoogleFonts.inter(fontSize: 12, color: Colors.white, fontWeight: FontWeight.w600),
                     ),
                   ),

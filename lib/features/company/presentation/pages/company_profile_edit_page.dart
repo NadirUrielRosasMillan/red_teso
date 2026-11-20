@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -195,7 +195,7 @@ class _CompanyProfileEditPageState extends State<CompanyProfileEditPage> {
                             style: GoogleFonts.outfit(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                           Text(
-                            'Configuración de cuenta institucional en ÁGORA Talento',
+                            'Configuración de cuenta institucional en NEXUM Talento',
                             style: GoogleFonts.inter(color: Colors.white.withOpacity(0.85), fontSize: 12),
                           ),
                         ],

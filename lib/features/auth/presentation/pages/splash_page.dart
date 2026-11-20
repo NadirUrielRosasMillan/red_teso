@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:red_teso/core/theme/app_theme.dart';
 
@@ -13,8 +13,10 @@ class SplashPage extends StatefulWidget {
 
 class _SplashPageState extends State<SplashPage>
     with SingleTickerProviderStateMixin {
+  static const Color _greenPrimary = Color(0xFF0B5D3B);
+  static const Color _greenLight = Color(0xFFA8D5A2);
+
   late AnimationController _animationController;
-  late Animation<double> _scaleAnimation;
   late Animation<double> _opacityAnimation;
 
   @override
@@ -23,10 +25,6 @@ class _SplashPageState extends State<SplashPage>
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1800),
-    );
-
-    _scaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.elasticOut),
     );
 
     _opacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
@@ -59,7 +57,7 @@ class _SplashPageState extends State<SplashPage>
             right: -100,
             child: CircleAvatar(
               radius: 150,
-              backgroundColor: AppTheme.primaryTurquoise.withValues(alpha: 0.08),
+              backgroundColor: _greenPrimary.withValues(alpha: 0.08),
             ),
           ),
           Positioned(
@@ -67,44 +65,42 @@ class _SplashPageState extends State<SplashPage>
             left: -50,
             child: CircleAvatar(
               radius: 120,
-              backgroundColor: AppTheme.accentCyan.withValues(alpha: 0.08),
+              backgroundColor: _greenLight.withValues(alpha: 0.12),
             ),
           ),
           Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ScaleTransition(
-                  scale: _scaleAnimation,
-                  child: Container(
-                    width: 200,
-                    height: 200,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppTheme.primaryTurquoise.withValues(alpha: 0.15),
-                          blurRadius: 50,
-                          spreadRadius: 10,
-                        ),
-                      ],
-                    ),
-                    child: ClipOval(
-                      child: Image.asset(
-                        'web/icons/logo_sis_color.jpg',
-                        fit: BoxFit.cover,
+                Container(
+                  width: 200,
+                  height: 200,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(32),
+                    boxShadow: [
+                      BoxShadow(
+                        color: _greenPrimary.withValues(alpha: 0.15),
+                        blurRadius: 50,
+                        spreadRadius: 10,
                       ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(32),
+                    child: Image.asset(
+                      'assets/images/branding/nexum_icon_1024.png',
+                      fit: BoxFit.cover,
                     ),
                   ),
                 ),
                 const SizedBox(height: 40),
-                
+
                 FadeTransition(
                   opacity: _opacityAnimation,
                   child: Column(
                     children: [
                       Text(
-                        'RedTESO',
+                        'NEXUM',
                         style: GoogleFonts.spaceGrotesk(
                           fontSize: 42,
                           fontWeight: FontWeight.w800,
@@ -117,7 +113,7 @@ class _SplashPageState extends State<SplashPage>
                         'TU TALENTO ABRE PUERTAS',
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 11,
-                          color: AppTheme.primaryTurquoise, // Turquesa
+                          color: _greenPrimary,
                           fontWeight: FontWeight.w700,
                           letterSpacing: 2,
                         ),
@@ -140,7 +136,7 @@ class _SplashPageState extends State<SplashPage>
                   height: 32,
                   child: CircularProgressIndicator(
                     strokeWidth: 2.5,
-                    valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryTurquoise),
+                    valueColor: AlwaysStoppedAnimation<Color>(_greenPrimary),
                   ),
                 ),
               ),

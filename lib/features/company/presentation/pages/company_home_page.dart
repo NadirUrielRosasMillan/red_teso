@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -98,7 +98,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                   onPressed: () => AiTalentAssistantModal.show(context, students: _sampleStudents),
                   backgroundColor: AppTheme.primaryTurquoise,
                   elevation: 6,
-                  tooltip: 'IA REDTESO 🤖',
+                  tooltip: 'IA NEXUM 🤖',
                   child: const Icon(Icons.psychology_rounded, color: Colors.white, size: 24),
                 ),
               )
@@ -116,7 +116,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
               children: [
                 const SizedBox(height: 12),
 
-                // 1. BOTÓN DE BÚSQUEDA SEMÁNTICA CON IA ÁGORA TALENTO 🤖✨
+                // 1. BOTÓN DE BÚSQUEDA SEMÁNTICA CON IA NEXUM TALENTO 🤖✨
                 AnimatedOpacity(
                   duration: const Duration(milliseconds: 250),
                   opacity: _isScrolled ? 0.3 : 1.0,
@@ -162,7 +162,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Búsqueda Semántica con IA ÁGORA Talento 🤖✨',
+                                    'Búsqueda Semántica con IA NEXUM Talento 🤖✨',
                                     style: GoogleFonts.outfit(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
                                   ),
                                   Text(
