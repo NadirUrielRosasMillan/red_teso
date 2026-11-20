@@ -13,6 +13,7 @@ class EcosystemSelectorPage extends StatefulWidget {
   @override
   State<EcosystemSelectorPage> createState() => _EcosystemSelectorPageState();
 }
+
 class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
   late final PageController _controller;
   int _selectedIndex = 0;
@@ -80,7 +81,7 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
       destination = const CourseCatalogPage();
     } else if (experience.id == 'impulsa') {
       destination = const AgoraImpulsaPage();
-    }else {
+    } else {
       return;
     }
 
@@ -651,3 +652,6 @@ class _ExperienceCard extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
