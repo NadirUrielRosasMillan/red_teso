@@ -5,6 +5,7 @@ import 'package:red_teso/features/auth/presentation/providers/auth_provider.dart
 import 'package:red_teso/features/courses/presentation/pages/course_catalog_page.dart';
 import 'package:red_teso/features/student/presentation/pages/student_dashboard_page.dart';
 import 'package:red_teso/features/company/presentation/pages/company_dashboard_page.dart';
+import 'package:red_teso/features/agora_impulsa/presentation/pages/agora_impulsa_page.dart';
 
 class EcosystemSelectorPage extends StatefulWidget {
   const EcosystemSelectorPage({super.key});
@@ -51,7 +52,7 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
       icon: Icons.rocket_launch_rounded,
       image: 'assets/images/experiences/impulsa.png',
       colors: [Color(0xFF157C83), Color(0xFF5EBF9C)],
-      available: false,
+      available: true,
     ),
   ];
 
@@ -77,7 +78,9 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
           : const StudentDashboardPage();
     } else if (experience.id == 'aprende') {
       destination = const CourseCatalogPage();
-    } else {
+    } else if (experience.id == 'impulsa') {
+      destination = const AgoraImpulsaPage();
+    }else {
       return;
     }
 

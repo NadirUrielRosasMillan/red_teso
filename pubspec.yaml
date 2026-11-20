@@ -24,7 +24,7 @@ dependencies:
   provider: ^6.1.1
   google_fonts: ^6.1.0
   intl: ^0.19.0
-  file_picker: ^13.1.0
+  file_picker: ^13.4.0
   url_launcher: ^6.3.2
   shared_preferences: ^2.2.3
   flutter_map: ^7.0.2
