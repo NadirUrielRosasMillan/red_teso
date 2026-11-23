@@ -80,7 +80,7 @@ class _CertificateVerifyPageState extends State<CertificateVerifyPage> {
                         textInputAction: TextInputAction.search,
                         onSubmitted: (_) => _verify(),
                         decoration: const InputDecoration(
-                          labelText: 'Folio (AGORA-2026-XXXXXXXX)',
+                          labelText: 'Folio (NEXUS-2026-XXXXXXXX)',
                           prefixIcon: Icon(Icons.verified_outlined),
                         ),
                       ),

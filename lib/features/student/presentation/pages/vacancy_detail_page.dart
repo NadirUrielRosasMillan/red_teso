@@ -178,12 +178,12 @@ class _VacancyDetailPageState extends State<VacancyDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final pageBackground = isDark ? const Color(0xFF0A1922) : const Color(0xFFF4FAFC);
-    final cardBackground = isDark ? const Color(0xFF112A36) : Colors.white;
-    final mainText = isDark ? const Color(0xFFF4FAFC) : const Color(0xFF0D212C);
-    final mutedText = isDark ? const Color(0xFFB8E2EC) : const Color(0xFF4A6572);
-    final borderColor = isDark ? const Color(0xFF1B4B5F) : const Color(0xFFDCEBF0);
+    const isDark = false;
+    const pageBackground = Colors.white;
+    const cardBackground = Colors.white;
+    const mainText = Color(0xFF111814);
+    const mutedText = Color(0xFF66756B);
+    const borderColor = Color(0xFFE0E5E2);
     final v = widget.vacancy;
     final puesto = v['puesto'] ?? 'Vacante';
     final empresa = v['empresa'] ?? 'Empresa Colaboradora';
@@ -251,12 +251,10 @@ class _VacancyDetailPageState extends State<VacancyDetailPage> {
               child: Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
+                  gradient: const LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: isDark
-                        ? const [Color(0xFF0793B8), Color(0xFF056C88)]
-                        : const [Color(0xFF10BFD0), Color(0xFF0793B8)],
+                    colors: [AppTheme.nexusGreen, AppTheme.nexusGreenSecondary],
                   ),
                   borderRadius: BorderRadius.circular(22),
                   border: Border.all(color: AppTheme.accentColor.withValues(alpha: 0.85), width: 1.1),
@@ -316,10 +314,10 @@ class _VacancyDetailPageState extends State<VacancyDetailPage> {
               spacing: 8,
               runSpacing: 8,
               children: [
-                _buildBadgeChip(Icons.category_rounded, tipo, AppTheme.primaryTurquoise),
-                _buildBadgeChip(Icons.monetization_on_rounded, '\$$apoyo MXN/mes', const Color(0xFF10B981)),
-                _buildBadgeChip(Icons.grade_rounded, 'GPA Mín: $gpa', AppTheme.accentCyan),
-                if (ingles) _buildBadgeChip(Icons.translate_rounded, 'Inglés Requerido', AppTheme.primaryTurquoise),
+                _buildBadgeChip(Icons.category_rounded, tipo, AppTheme.nexusGreen),
+                _buildBadgeChip(Icons.monetization_on_rounded, '\$$apoyo MXN/mes', AppTheme.nexusGreenSecondary),
+                _buildBadgeChip(Icons.grade_rounded, 'GPA Mín: $gpa', AppTheme.nexusGreen),
+                if (ingles) _buildBadgeChip(Icons.translate_rounded, 'Inglés Requerido', AppTheme.nexusGreenSecondary),
               ],
             ),
 
@@ -387,18 +385,18 @@ class _VacancyDetailPageState extends State<VacancyDetailPage> {
                     width: double.infinity,
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: isDark ? const Color(0xFF153E50) : const Color(0xFFE0F4F8),
+                      color: AppTheme.nexusGreenLight.withValues(alpha: 0.35),
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: AppTheme.primaryTurquoise),
+                      border: Border.all(color: AppTheme.nexusGreen),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.check_circle_rounded, color: AppTheme.primaryTurquoise, size: 22),
+                        const Icon(Icons.check_circle_rounded, color: AppTheme.nexusGreen, size: 22),
                         const SizedBox(width: 10),
                         Text(
                           'Ya estás postulado a esta vacante',
-                          style: GoogleFonts.outfit(color: isDark ? Colors.white : AppTheme.primaryTurquoise, fontWeight: FontWeight.bold, fontSize: 15),
+                          style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
                         ),
                       ],
                     ),
@@ -423,7 +421,7 @@ class _VacancyDetailPageState extends State<VacancyDetailPage> {
                 ],
               )
             else if (_isApplying)
-              const Center(child: CircularProgressIndicator(color: AppTheme.primaryTurquoise))
+              const Center(child: CircularProgressIndicator(color: AppTheme.nexusGreen))
             else
               SizedBox(
                 width: double.infinity,
@@ -431,13 +429,13 @@ class _VacancyDetailPageState extends State<VacancyDetailPage> {
                 child: ElevatedButton(
                   onPressed: _apply,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.primaryTurquoise,
-                    foregroundColor: Colors.white,
+                    backgroundColor: AppTheme.nexusGreenLight,
+                    foregroundColor: Colors.black,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   ),
                   child: Text(
                     'POSTULARME AHORA 🚀',
-                    style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 15, letterSpacing: 0.5),
+                    style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 15, letterSpacing: 0.5, color: Colors.black),
                   ),
                 ),
               ),
@@ -488,48 +486,10 @@ class _VacancyAmbientPainter extends CustomPainter {
     final rect = Offset.zero & size;
     canvas.drawRect(
       rect,
-      Paint()
-        ..shader = LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: isDark
-              ? const [Color(0xFF0A1922), Color(0xFF112A36), Color(0xFF0D212C)]
-              : const [Color(0xFFF4FAFC), Color(0xFFE6F6FA), Color(0xFFDCEBF0)],
-        ).createShader(rect),
-    );
-
-    _glow(canvas, Offset(size.width * .96, size.height * .16), size.width * .44, const Color(0x280793B8));
-    _glow(canvas, Offset(size.width * .04, size.height * .78), size.width * .46, const Color(0x2810BFD0));
-
-    canvas.drawCircle(
-      Offset(size.width * .96, size.height * .16),
-      size.width * .18,
-      Paint()..style = PaintingStyle.stroke..strokeWidth = 1.2..color = const Color(0x240793B8),
-    );
-    canvas.drawCircle(
-      Offset(size.width * .96, size.height * .16),
-      size.width * .24,
-      Paint()..style = PaintingStyle.stroke..strokeWidth = 1..color = const Color(0x2010BFD0),
-    );
-
-    final dots = Paint()..color = const Color(0x6610BFD0);
-    for (var i = 0; i < 26; i++) {
-      final x = ((i * 83 + 29) % 997) / 997 * size.width;
-      final y = ((i * 137 + 47) % 991) / 991 * size.height;
-      canvas.drawCircle(Offset(x, y), i % 4 == 0 ? 1.8 : 1, dots);
-    }
-  }
-
-  void _glow(Canvas canvas, Offset center, double radius, Color color) {
-    canvas.drawCircle(
-      center,
-      radius,
-      Paint()
-        ..shader = RadialGradient(colors: [color, color.withValues(alpha: 0)])
-            .createShader(Rect.fromCircle(center: center, radius: radius)),
+      Paint()..color = Colors.white,
     );
   }
 
   @override
-  bool shouldRepaint(covariant _VacancyAmbientPainter oldDelegate) => oldDelegate.isDark != isDark;
+  bool shouldRepaint(covariant _VacancyAmbientPainter oldDelegate) => false;
 }

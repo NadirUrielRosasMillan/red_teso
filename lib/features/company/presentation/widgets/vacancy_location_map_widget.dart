@@ -147,11 +147,11 @@ class _VacancyLocationMapWidgetState extends State<VacancyLocationMapWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardBackground = isDark ? const Color(0xFF112A36) : Colors.white;
-    final mainText = isDark ? const Color(0xFFF4FAFC) : const Color(0xFF0D212C);
-    final mutedText = isDark ? const Color(0xFFB8E2EC) : const Color(0xFF4A6572);
-    final borderColor = isDark ? const Color(0xFF1B4B5F) : const Color(0xFFDCEBF0);
+    const isDark = false;
+    const cardBackground = Colors.white;
+    const mainText = Color(0xFF111814);
+    const mutedText = Color(0xFF66756B);
+    const borderColor = Color(0xFFE0E5E2);
     final targetLatLng = _resolveTargetLatLng();
     final isRemote = widget.locationName.toLowerCase().contains('remoto') || widget.distanceKm == 0;
 
@@ -314,15 +314,15 @@ class _VacancyLocationMapWidgetState extends State<VacancyLocationMapWidget> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF0A1922).withValues(alpha: 0.92),
+                        color: AppTheme.nexusGreen.withValues(alpha: 0.94),
                         borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: AppTheme.accentColor.withValues(alpha: 0.5)),
+                        border: Border.all(color: AppTheme.nexusGreenLight.withValues(alpha: 0.6)),
                         boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 6)],
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.directions_bus_rounded, color: AppTheme.accentColor, size: 16),
+                          const Icon(Icons.directions_bus_rounded, color: AppTheme.nexusGreenLight, size: 16),
                           const SizedBox(width: 8),
                           Text(
                             isRemote
@@ -381,10 +381,10 @@ class _VacancyLocationMapWidgetState extends State<VacancyLocationMapWidget> {
                     right: 0,
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                      color: const Color(0xFF0A1922).withValues(alpha: 0.94),
+                      color: AppTheme.nexusGreen.withValues(alpha: 0.94),
                       child: Row(
                         children: [
-                          const Icon(Icons.alt_route_rounded, color: AppTheme.accentColor, size: 16),
+                          const Icon(Icons.alt_route_rounded, color: AppTheme.nexusGreenLight, size: 16),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
@@ -488,17 +488,17 @@ class _LocationPickerModalState extends State<LocationPickerModal> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final modalBackground = isDark ? const Color(0xFF0A1922) : const Color(0xFFF4FAFC);
-    final cardBackground = isDark ? const Color(0xFF112A36) : Colors.white;
-    final mainText = isDark ? const Color(0xFFF4FAFC) : const Color(0xFF0D212C);
-    final mutedText = isDark ? const Color(0xFFB8E2EC) : const Color(0xFF4A6572);
-    final borderColor = isDark ? const Color(0xFF1B4B5F) : const Color(0xFFDCEBF0);
+    const isDark = false;
+    const modalBackground = Colors.white;
+    const cardBackground = Colors.white;
+    const mainText = Color(0xFF111814);
+    const mutedText = Color(0xFF66756B);
+    const borderColor = Color(0xFFE0E5E2);
     return Container(
       height: MediaQuery.of(context).size.height * 0.88,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: modalBackground,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
       child: Column(
         children: [
@@ -620,10 +620,10 @@ class _LocationPickerModalState extends State<LocationPickerModal> {
                         return Padding(
                           padding: const EdgeInsets.only(right: 8),
                           child: ChoiceChip(
-                            avatar: Icon(preset.icon, size: 15, color: isSel ? Colors.white : AppTheme.primaryColor),
-                            label: Text(preset.title, style: GoogleFonts.inter(fontSize: 11.5, color: isSel ? Colors.white : (isDark ? const Color(0xFFEAF2FB) : const Color(0xFF16324F)), fontWeight: FontWeight.bold)),
+                            avatar: Icon(preset.icon, size: 15, color: isSel ? Colors.black : AppTheme.nexusGreen),
+                            label: Text(preset.title, style: GoogleFonts.inter(fontSize: 11.5, color: Colors.black, fontWeight: FontWeight.bold)),
                             selected: isSel,
-                            selectedColor: AppTheme.primaryColor,
+                            selectedColor: AppTheme.nexusGreenLight,
                             backgroundColor: Colors.white,
                             onSelected: (_) => _selectPreset(preset),
                           ),
@@ -641,13 +641,13 @@ class _LocationPickerModalState extends State<LocationPickerModal> {
                   child: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: mainText.withValues(alpha: 0.94),
+                      color: AppTheme.nexusGreen.withValues(alpha: 0.94),
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 8)],
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.place_rounded, color: AppTheme.accentColor, size: 24),
+                        const Icon(Icons.place_rounded, color: AppTheme.nexusGreenLight, size: 24),
                         const SizedBox(width: 10),
                         Expanded(
                           child: Column(
@@ -660,7 +660,7 @@ class _LocationPickerModalState extends State<LocationPickerModal> {
                               ),
                               Text(
                                 '⏱️ ~$_commuteMinutes min ($_distanceKm km desde TESOEM)',
-                                style: GoogleFonts.inter(color: AppTheme.accentColor, fontSize: 11.5, fontWeight: FontWeight.bold),
+                                style: GoogleFonts.inter(color: AppTheme.nexusGreenLight, fontSize: 11.5, fontWeight: FontWeight.bold),
                               ),
                             ],
                           ),
@@ -696,12 +696,13 @@ class _LocationPickerModalState extends State<LocationPickerModal> {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.primaryColor,
+                  backgroundColor: AppTheme.nexusGreenLight,
+                  foregroundColor: Colors.black,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                 ),
                 child: Text(
                   'CONFIRMAR UBICACIÓN SELECCIONADA 📍',
-                  style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14.5),
+                  style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14.5),
                 ),
               ),
             ),

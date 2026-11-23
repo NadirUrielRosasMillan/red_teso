@@ -23,24 +23,24 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
   late final TextEditingController _phoneController;
   late final TextEditingController _skillController;
 
-  static const Color _wine = Color(0xFF0793B8);
-  static const Color _wineDark = Color(0xFF056C88);
-  static const Color _wineLight = Color(0xFF10BFD0);
-  static const Color _gold = Color(0xFF6BE7C8);
-  static const Color _cream = Color(0xFFF4FAFC);
-  static const Color _ink = Color(0xFF0D212C);
-  static const Color _muted = Color(0xFF4A6572);
-  static const Color _border = Color(0xFFDCEBF0);
-  static const Color _green = Color(0xFF10B981);
+  static const Color _wine = Color(0xFF0B5D3B);
+  static const Color _wineDark = Color(0xFF0B5D3B);
+  static const Color _wineLight = Color(0xFF1E8449);
+  static const Color _gold = Color(0xFFA8D5A2);
+  static const Color _cream = Colors.white;
+  static const Color _ink = Color(0xFF111814);
+  static const Color _muted = Color(0xFF66756B);
+  static const Color _border = Color(0xFFE0E5E2);
+  static const Color _green = Color(0xFF1E8449);
   static const Color _red = Color(0xFFB42336);
 
-  bool get _isDark => Theme.of(context).brightness == Brightness.dark;
-  Color get _pageBackground => _isDark ? const Color(0xFF0A1922) : _cream;
-  Color get _cardBackground => _isDark ? const Color(0xFF112A36) : Colors.white;
-  Color get _textColor => _isDark ? const Color(0xFFF4FAFC) : _ink;
-  Color get _mutedColor => _isDark ? const Color(0xFFB8E2EC) : _muted;
-  Color get _borderColor => _isDark ? const Color(0xFF1B4B5F) : _border;
-  Color get _fieldBackground => _isDark ? const Color(0xFF153443) : const Color(0xFFF8FCFE);
+  bool get _isDark => false;
+  Color get _pageBackground => Colors.white;
+  Color get _cardBackground => Colors.white;
+  Color get _textColor => _ink;
+  Color get _mutedColor => _muted;
+  Color get _borderColor => _border;
+  Color get _fieldBackground => const Color(0xFFF6F8F7);
 
   double _gpa = 8.0;
   String _modality = 'Servicio Social';
@@ -271,7 +271,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
             child: const Text('Cancelar'),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: _wine, foregroundColor: Colors.white),
+            style: ElevatedButton.styleFrom(backgroundColor: _gold, foregroundColor: Colors.black),
             onPressed: () => Navigator.pop(dialogContext, true),
             child: const Text('Salir'),
           ),
@@ -414,7 +414,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                   width: 44,
                   height: 44,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF12366A),
+                    color: _wine,
                     borderRadius: BorderRadius.circular(14),
                   ),
                   clipBehavior: Clip.antiAlias,
@@ -680,7 +680,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                 width: 52,
                 child: ElevatedButton(
                   onPressed: _addSkill,
-                  style: ElevatedButton.styleFrom(backgroundColor: _wine, foregroundColor: Colors.white, padding: EdgeInsets.zero, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
+                  style: ElevatedButton.styleFrom(backgroundColor: _gold, foregroundColor: Colors.black, padding: EdgeInsets.zero, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
                   child: const Icon(Icons.add_rounded),
                 ),
               ),
@@ -695,8 +695,8 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
               runSpacing: 8,
               children: _skills.map((skill) => Chip(
                 avatar: const Icon(Icons.check_circle_rounded, color: _wine, size: 17),
-                label: Text(skill, style: GoogleFonts.inter(color: _isDark ? const Color(0xFFE0F4F8) : _wineDark, fontSize: 12)),
-                backgroundColor: _isDark ? const Color(0xFF153E50) : const Color(0xFFE6F6FA),
+                label: Text(skill, style: GoogleFonts.inter(color: Colors.black, fontSize: 12, fontWeight: FontWeight.w600)),
+                backgroundColor: _gold.withValues(alpha: 0.35),
                 side: BorderSide(color: _wine.withValues(alpha: 0.12)),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 deleteIcon: const Icon(Icons.close_rounded, color: _red, size: 16),
@@ -825,8 +825,8 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
           ElevatedButton(
             onPressed: isUploading ? null : () => _pickAndUploadDocument(docType),
             style: ElevatedButton.styleFrom(
-              backgroundColor: _wine,
-              foregroundColor: Colors.white,
+              backgroundColor: _gold,
+              foregroundColor: Colors.black,
               elevation: 0,
               padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 10),
               minimumSize: const Size(0, 38),
@@ -836,9 +836,9 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(hasFile ? Icons.refresh_rounded : Icons.file_upload_outlined, size: 16),
+                Icon(hasFile ? Icons.refresh_rounded : Icons.file_upload_outlined, size: 16, color: Colors.black),
                 const SizedBox(width: 5),
-                Text(hasFile ? 'CAMBIAR' : 'SUBIR', style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 10)),
+                Text(hasFile ? 'CAMBIAR' : 'SUBIR', style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 10, color: Colors.black)),
               ],
             ),
           ),
@@ -853,9 +853,9 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
       width: double.infinity,
       child: ElevatedButton.icon(
         onPressed: _saveProfile,
-        style: ElevatedButton.styleFrom(backgroundColor: _wine, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
-        icon: const Icon(Icons.save_rounded),
-        label: Text('Guardar cambios', style: GoogleFonts.poppins(fontWeight: FontWeight.w700)),
+        style: ElevatedButton.styleFrom(backgroundColor: _gold, foregroundColor: Colors.black, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
+        icon: const Icon(Icons.save_rounded, color: Colors.black),
+        label: Text('Guardar cambios', style: GoogleFonts.poppins(fontWeight: FontWeight.w700, color: Colors.black)),
       ),
     );
   }
@@ -920,77 +920,10 @@ class _ProfileAmbientPainter extends CustomPainter {
 
     canvas.drawRect(
       rect,
-      Paint()
-        ..shader = LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: isDark
-              ? const [Color(0xFF0A1922), Color(0xFF112A36), Color(0xFF0D212C)]
-              : const [Color(0xFFF4FAFC), Color(0xFFE6F6FA), Color(0xFFDCEBF0)],
-        ).createShader(rect),
-    );
-
-    _glow(
-      canvas,
-      Offset(size.width * 0.95, size.height * 0.18),
-      size.width * 0.45,
-      const Color(0x280793B8),
-    );
-
-    _glow(
-      canvas,
-      Offset(size.width * 0.05, size.height * 0.78),
-      size.width * 0.48,
-      const Color(0x2810BFD0),
-    );
-
-    final ringPaint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.2
-      ..color = const Color(0x240793B8);
-
-    canvas.drawCircle(
-      Offset(size.width * 0.95, size.height * 0.15),
-      size.width * 0.18,
-      ringPaint,
-    );
-
-    canvas.drawCircle(
-      Offset(size.width * 0.95, size.height * 0.15),
-      size.width * 0.23,
-      Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 1
-        ..color = const Color(0x2010BFD0),
-    );
-
-    final dotPaint = Paint()..color = const Color(0x6610BFD0);
-
-    for (int i = 0; i < 26; i++) {
-      final x = ((i * 83 + 29) % 997) / 997 * size.width;
-      final y = ((i * 137 + 47) % 991) / 991 * size.height;
-      canvas.drawCircle(
-        Offset(x, y),
-        i % 4 == 0 ? 1.8 : 1,
-        dotPaint,
-      );
-    }
-  }
-
-  void _glow(Canvas canvas, Offset center, double radius, Color color) {
-    canvas.drawCircle(
-      center,
-      radius,
-      Paint()
-        ..shader = RadialGradient(
-          colors: [color, color.withValues(alpha: 0)],
-        ).createShader(
-          Rect.fromCircle(center: center, radius: radius),
-        ),
+      Paint()..color = Colors.white,
     );
   }
 
   @override
-  bool shouldRepaint(covariant _ProfileAmbientPainter oldDelegate) =>
-      oldDelegate.isDark != isDark;
+  bool shouldRepaint(covariant _ProfileAmbientPainter oldDelegate) => false;
 }

@@ -406,12 +406,7 @@ class _SingleClipVideoWidgetState extends State<_SingleClipVideoWidget> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [
-                        AppTheme.primaryTurquoise,
-                        AppTheme.darkTurquoise,
-                      ],
-                    ),
+                    color: AppTheme.nexusGreenLight,
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
@@ -427,14 +422,14 @@ class _SingleClipVideoWidgetState extends State<_SingleClipVideoWidget> {
                       Text(
                         'VER INFORMACIÓN DEL CURSO 🎓',
                         style: GoogleFonts.outfit(
-                          color: Colors.white,
+                          color: Colors.black,
                           fontSize: 13,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 0.8,
                         ),
                       ),
                       const SizedBox(width: 8),
-                      const Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 16),
+                      const Icon(Icons.arrow_forward_rounded, color: Colors.black, size: 16),
                     ],
                   ),
                 ),

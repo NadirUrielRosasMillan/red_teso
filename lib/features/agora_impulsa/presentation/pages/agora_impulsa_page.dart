@@ -171,7 +171,7 @@ class _AgoraImpulsaPageState extends State<AgoraImpulsaPage> {
                     ),
                     const SizedBox(width: 10),
                     Text(
-                      'ÁGORA / IMPULSA',
+                      'NEXUS IMPULSA',
                       style: TextStyle(
                         fontWeight: FontWeight.w800,
                         letterSpacing: 0.6,
@@ -237,12 +237,12 @@ class _AgoraImpulsaPageState extends State<AgoraImpulsaPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 12),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
                             child: Text(
                               'REPOSITORIO ACADÉMICO',
                               style: TextStyle(
-                                color: Colors.white54,
+                                color: pal.textSecondary,
                                 fontSize: 11,
                                 letterSpacing: 1.5,
                                 fontWeight: FontWeight.w700,
@@ -264,8 +264,9 @@ class _AgoraImpulsaPageState extends State<AgoraImpulsaPage> {
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.07),
+                              color: Colors.white,
                               borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: pal.border),
                             ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -274,8 +275,8 @@ class _AgoraImpulsaPageState extends State<AgoraImpulsaPage> {
                                   _userName,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    color: Colors.white,
+                                  style: TextStyle(
+                                    color: pal.textPrimary,
                                     fontWeight: FontWeight.w700,
                                     fontSize: 13,
                                   ),
@@ -285,8 +286,8 @@ class _AgoraImpulsaPageState extends State<AgoraImpulsaPage> {
                                   _email,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    color: Colors.white70,
+                                  style: TextStyle(
+                                    color: pal.textSecondary,
                                     fontSize: 11,
                                   ),
                                 ),
@@ -358,13 +359,13 @@ class _AgoraImpulsaPageState extends State<AgoraImpulsaPage> {
                                   ),
                                   FilledButton.icon(
                                     onPressed: _openCreateProject,
-                                    icon: const Icon(Icons.add_rounded),
+                                    icon: const Icon(Icons.add_rounded, color: Colors.black),
                                     label:
                                     const Text('Comenzar Proyecto Nuevo'),
                                     style: FilledButton.styleFrom(
                                       backgroundColor:
-                                      ImpulsaPalette.flagGreen,
-                                      foregroundColor: Colors.white,
+                                      ImpulsaPalette.buttonGreen,
+                                      foregroundColor: Colors.black,
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 20, vertical: 16),
                                       shape: RoundedRectangleBorder(
@@ -465,8 +466,8 @@ class _AgoraImpulsaPageState extends State<AgoraImpulsaPage> {
       padding: const EdgeInsets.only(bottom: 8),
       child: Material(
         color: selected
-            ? ImpulsaPalette.flagGreenMid
-            : Colors.white.withValues(alpha: 0.04),
+            ? ImpulsaPalette.buttonGreen
+            : Colors.white,
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
           borderRadius: BorderRadius.circular(12),
@@ -475,13 +476,13 @@ class _AgoraImpulsaPageState extends State<AgoraImpulsaPage> {
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
             child: Row(
               children: [
-                Icon(icon, color: Colors.white, size: 20),
+                Icon(icon, color: Colors.black, size: 20),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     label,
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Colors.black,
                       fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
                       fontSize: 14,
                     ),
@@ -566,8 +567,8 @@ class _AgoraImpulsaPageState extends State<AgoraImpulsaPage> {
                     _statusPill(
                       icon: Icons.hourglass_top_rounded,
                       label: 'Solicitado',
-                      color: const Color(0xFF0284C7),
-                      bg: const Color(0xFF0284C7).withValues(alpha: 0.14),
+                      color: ImpulsaPalette.flagGreen,
+                      bg: ImpulsaPalette.buttonGreen.withValues(alpha: 0.3),
                     )
                   else if (p.isDonated)
                     _statusPill(
@@ -597,8 +598,8 @@ class _AgoraImpulsaPageState extends State<AgoraImpulsaPage> {
                 _statusPill(
                   icon: Icons.volunteer_activism_outlined,
                   label: 'Disponible para donación',
-                  color: const Color(0xFF059669),
-                  bg: const Color(0xFF059669).withValues(alpha: 0.14),
+                  color: ImpulsaPalette.flagGreenMid,
+                  bg: ImpulsaPalette.buttonGreen.withValues(alpha: 0.3),
                 ),
               ],
               const SizedBox(height: 8),

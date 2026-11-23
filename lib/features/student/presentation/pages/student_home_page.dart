@@ -27,14 +27,14 @@ class _StudentHomePageState extends State<StudentHomePage> {
 
   String _selectedCategory = 'Todos';
 
-  static const Color _bgDark = Color(0xFF0A1922); // Pizarra Turquesa Oscuro
-  static const Color _primaryBlue = Color(0xFF0793B8); // Turquesa Principal
-  static const Color _cyan = Color(0xFF10BFD0); // Cian
-  static const Color _mint = Color(0xFF6BE7C8); // Menta
-  static const Color _cream = Color(0xFFF4FAFC); // Turquesa-50 (fondo claro)
-  static const Color _text = Color(0xFF0D212C); // Pizarra 950
-  static const Color _muted = Color(0xFF4A6572); // Pizarra 600
-  static const Color _border = Color(0xFFDCEBF0); // Borde Turquesa-Gris claro
+  static const Color _bgDark = Colors.white;
+  static const Color _primaryBlue = Color(0xFF0B5D3B); // _nexusGreen
+  static const Color _cyan = Color(0xFF1E8449); // _nexusGreenSecondary
+  static const Color _mint = Color(0xFFA8D5A2); // _nexusGreenLight
+  static const Color _cream = Colors.white;
+  static const Color _text = Color(0xFF111814);
+  static const Color _muted = Color(0xFF66756B); // _nexusTextMuted
+  static const Color _border = Color(0xFFE0E5E2);
 
   final List<String> _categories = const [
     'Todos',
@@ -54,10 +54,11 @@ class _StudentHomePageState extends State<StudentHomePage> {
     final user = _auth.currentUser;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).brightness == Brightness.dark ? _bgDark : _cream,
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Theme.of(context).brightness == Brightness.dark ? _bgDark : _primaryBlue,
-        foregroundColor: Colors.white,
+        backgroundColor: Colors.white,
+        foregroundColor: _text,
+        surfaceTintColor: Colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0,
         titleSpacing: 20,
@@ -81,7 +82,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 21,
                     fontWeight: FontWeight.w800,
-                    color: Colors.white,
+                    color: _primaryBlue,
                     height: 1.1,
                   ),
                 ),
@@ -91,7 +92,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                     fontSize: 8,
                     fontWeight: FontWeight.w800,
                     letterSpacing: 1.7,
-                    color: _mint,
+                    color: _cyan,
                   ),
                 ),
               ],
@@ -99,9 +100,9 @@ class _StudentHomePageState extends State<StudentHomePage> {
           ],
         ),
         actions: const [
-           const ThemeToggleButton(),
-    const NotificationBell(color: Colors.white),
-    const SizedBox(width: 15),
+          ThemeToggleButton(),
+          NotificationBell(color: _primaryBlue),
+          SizedBox(width: 15),
         ],
       ),
 
@@ -113,13 +114,14 @@ class _StudentHomePageState extends State<StudentHomePage> {
           child: FloatingActionButton.extended(
             heroTag: 'student_ai_assistant',
             onPressed: () => AiVacancyAssistantModal.show(context),
-            backgroundColor: _primaryBlue,
-            foregroundColor: Colors.white,
-            elevation: 7,
-            icon: const Icon(Icons.auto_awesome_rounded),
+            backgroundColor: _mint,
+            foregroundColor: Colors.black,
+            elevation: 4,
+            icon: const Icon(Icons.auto_awesome_rounded, color: Colors.black),
             label: Text(
               'Asistente IA',
               style: GoogleFonts.plusJakartaSans(
+                color: Colors.black,
                 fontSize: 12,
                 fontWeight: FontWeight.w800,
               ),
@@ -202,7 +204,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                                     Text(
                                       'Oportunidades para ti',
                                       style: GoogleFonts.plusJakartaSans(
-                                        color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFF4FAFC) : _text,
+                                        color: _text,
                                         fontSize: wide ? 25 : 22,
                                         fontWeight: FontWeight.w800,
                                       ),
@@ -211,7 +213,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                                     Text(
                                       'El siguiente paso de tu carrera comienza aquí.',
                                       style: GoogleFonts.inter(
-                                        color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFB8E2EC) : _muted,
+                                        color: _muted,
                                         fontSize: 11,
                                       ),
                                     ),
@@ -221,7 +223,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                               Container(
                                 padding: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
-                                  color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF112A36) : Colors.white.withValues(alpha: 0.85),
+                                  color: const Color(0xFFF6F8F7),
                                   border: Border.all(color: _border),
                                   borderRadius: BorderRadius.circular(13),
                                 ),
@@ -393,24 +395,17 @@ class _StudentHomePageState extends State<StudentHomePage> {
           ),
           padding: EdgeInsets.all(wide ? 21 : 17),
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Color(0xFF10BFD0),
-                Color(0xFF0793B8),
-                Color(0xFF056C88),
-              ],
-            ),
+            color: const Color(0xFFF6F8F7),
             borderRadius: BorderRadius.circular(25),
             border: Border.all(
-              color: _cyan.withValues(alpha: 0.6),
+              color: _mint,
+              width: 1.4,
             ),
             boxShadow: [
               BoxShadow(
-                color: _primaryBlue.withValues(alpha: 0.25),
-                blurRadius: 18,
-                offset: const Offset(0, 7),
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 14,
+                offset: const Offset(0, 5),
               ),
             ],
           ),
@@ -421,14 +416,14 @@ class _StudentHomePageState extends State<StudentHomePage> {
                 height: 52,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.white.withValues(alpha: 0.13),
-                  border: Border.all(color: _mint, width: 1.5),
+                  color: _mint,
+                  border: Border.all(color: _primaryBlue.withValues(alpha: 0.2), width: 1.2),
                 ),
                 child: Center(
                   child: Text(
                     firstName[0].toUpperCase(),
                     style: GoogleFonts.plusJakartaSans(
-                      color: Colors.white,
+                      color: Colors.black,
                       fontSize: 24,
                       fontWeight: FontWeight.w800,
                     ),
@@ -445,7 +440,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.plusJakartaSans(
-                        color: Colors.white,
+                        color: _text,
                         fontSize: wide ? 24 : 21,
                         fontWeight: FontWeight.w800,
                       ),
@@ -454,7 +449,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                     Text(
                       'Es un buen día para avanzar.',
                       style: GoogleFonts.inter(
-                        color: Colors.white70,
+                        color: _muted,
                         fontSize: 11,
                       ),
                     ),
@@ -462,7 +457,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                     Text(
                       'TU FUTURO PROFESIONAL EMPIEZA HOY',
                       style: GoogleFonts.inter(
-                        color: _mint,
+                        color: _primaryBlue,
                         fontSize: 8,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 1,
@@ -473,7 +468,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                       Text(
                         'Promedio académico: ${data['gpa']}',
                         style: GoogleFonts.inter(
-                          color: Colors.white,
+                          color: _text,
                           fontSize: 10,
                           fontWeight: FontWeight.w700,
                         ),
@@ -485,7 +480,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
               const SizedBox(width: 8),
               const Icon(
                 Icons.school_rounded,
-                color: _mint,
+                color: _primaryBlue,
                 size: 30,
               ),
             ],
@@ -500,16 +495,15 @@ class _StudentHomePageState extends State<StudentHomePage> {
       margin: const EdgeInsets.fromLTRB(18, 10, 18, 0),
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [_cyan, _primaryBlue],
-        ),
+        color: const Color(0xFFF6F8F7),
+        border: Border.all(color: _mint),
         borderRadius: BorderRadius.circular(23),
       ),
       child: Row(
         children: [
           const Icon(
             Icons.waving_hand_rounded,
-            color: _mint,
+            color: _primaryBlue,
             size: 32,
           ),
           const SizedBox(width: 12),
@@ -517,7 +511,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
             child: Text(
               '¡Bienvenido, $name!',
               style: GoogleFonts.plusJakartaSans(
-                color: Colors.white,
+                color: _text,
                 fontSize: 21,
                 fontWeight: FontWeight.w800,
               ),
@@ -531,13 +525,13 @@ class _StudentHomePageState extends State<StudentHomePage> {
   Widget _buildSearch() {
     return Container(
       decoration: BoxDecoration(
-        color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF112A36) : Colors.white,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(17),
-        border: Border.all(color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1B4B5F) : _border),
+        border: Border.all(color: _border),
         boxShadow: [
           BoxShadow(
-            color: _primaryBlue.withValues(alpha: 0.07),
-            blurRadius: 15,
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 12,
             offset: const Offset(0, 4),
           ),
         ],
@@ -546,14 +540,14 @@ class _StudentHomePageState extends State<StudentHomePage> {
         controller: _searchController,
         onChanged: (_) => setState(() {}),
         style: GoogleFonts.inter(
-          color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFF4FAFC) : _text,
+          color: _text,
           fontSize: 13,
         ),
         cursorColor: _primaryBlue,
         decoration: InputDecoration(
           hintText: 'Busca puestos, empresas...',
           hintStyle: GoogleFonts.inter(
-            color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFB8E2EC) : _muted,
+            color: _muted,
             fontSize: 12,
           ),
           prefixIcon: const Icon(
@@ -604,8 +598,8 @@ class _StudentHomePageState extends State<StudentHomePage> {
         onSelected: (_) {
           setState(() => _selectedCategory = category);
         },
-        backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF112A36) : Colors.white,
-        selectedColor: _primaryBlue,
+        backgroundColor: Colors.white,
+        selectedColor: _mint,
         side: BorderSide(
           color: selected ? _primaryBlue : _border,
         ),
@@ -619,7 +613,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
         label: Text(
           category,
           style: GoogleFonts.inter(
-            color: selected ? Colors.white : (Theme.of(context).brightness == Brightness.dark ? const Color(0xFFE0F4F8) : _primaryBlue),
+            color: selected ? Colors.black : _text,
             fontSize: 11,
             fontWeight: FontWeight.w700,
           ),
@@ -652,14 +646,14 @@ class _StudentHomePageState extends State<StudentHomePage> {
           },
           child: Ink(
             decoration: BoxDecoration(
-              color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF112A36) : Colors.white,
+              color: Colors.white,
               borderRadius: BorderRadius.circular(22),
-              border: Border.all(color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1B4B5F) : _border),
+              border: Border.all(color: _border),
               boxShadow: [
                 BoxShadow(
-                  color: _primaryBlue.withValues(alpha: 0.07),
-                  blurRadius: 17,
-                  offset: const Offset(0, 6),
+                  color: Colors.black.withValues(alpha: 0.04),
+                  blurRadius: 15,
+                  offset: const Offset(0, 5),
                 ),
               ],
             ),
@@ -675,14 +669,12 @@ class _StudentHomePageState extends State<StudentHomePage> {
                         width: 53,
                         height: 53,
                         decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [_cyan, _primaryBlue],
-                          ),
+                          color: _mint,
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Icon(
                           _vacancyIcon(type),
-                          color: _mint,
+                          color: Colors.black,
                           size: 27,
                         ),
                       ),
@@ -696,7 +688,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: GoogleFonts.plusJakartaSans(
-                                color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFF4FAFC) : _text,
+                                color: _text,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w800,
                               ),
@@ -707,7 +699,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: GoogleFonts.inter(
-                                color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFB8E2EC) : _muted,
+                                color: _muted,
                                 fontSize: 11,
                               ),
                             ),
@@ -735,13 +727,13 @@ class _StudentHomePageState extends State<StudentHomePage> {
                     ],
                   ),
                   const SizedBox(height: 14),
-                  Divider(height: 1, color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1B4B5F) : _border),
+                  const Divider(height: 1, color: _border),
                   const SizedBox(height: 11),
                   Row(
                     children: [
                       const Icon(
                         Icons.bolt_rounded,
-                        color: Color(0xFF0793B8),
+                        color: _primaryBlue,
                         size: 18,
                       ),
                       const SizedBox(width: 5),
@@ -749,17 +741,27 @@ class _StudentHomePageState extends State<StudentHomePage> {
                         child: Text(
                           'Descubre esta oportunidad',
                           style: GoogleFonts.inter(
-                            color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFB8E2EC) : _muted,
+                            color: _muted,
                             fontSize: 10,
                           ),
                         ),
                       ),
-                      Text(
-                        'Ver vacante →',
-                        style: GoogleFonts.plusJakartaSans(
-                          color: _primaryBlue,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w800,
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 5,
+                        ),
+                        decoration: BoxDecoration(
+                          color: _mint,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          'Ver vacante →',
+                          style: GoogleFonts.plusJakartaSans(
+                            color: Colors.black,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w800,
+                          ),
                         ),
                       ),
                     ],
@@ -797,12 +799,10 @@ class _StudentHomePageState extends State<StudentHomePage> {
         vertical: 8,
       ),
       decoration: BoxDecoration(
-        color: Theme.of(context).brightness == Brightness.dark
-            ? (highlighted ? const Color(0xFF153E50) : const Color(0xFF0E222D))
-            : (highlighted ? const Color(0xFFE0F4F8) : const Color(0xFFF0F8FA)),
+        color: highlighted ? _mint.withValues(alpha: 0.45) : const Color(0xFFF6F8F7),
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
-          color: highlighted ? _primaryBlue : _border,
+          color: highlighted ? _mint : _border,
         ),
       ),
       child: Row(
@@ -811,7 +811,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
           Icon(
             icon,
             size: 14,
-            color: highlighted ? (Theme.of(context).brightness == Brightness.dark ? const Color(0xFF10BFD0) : _primaryBlue) : (Theme.of(context).brightness == Brightness.dark ? const Color(0xFFB8E2EC) : _muted),
+            color: highlighted ? Colors.black : _muted,
           ),
           const SizedBox(width: 6),
           Flexible(
@@ -820,7 +820,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: GoogleFonts.inter(
-                color: highlighted ? (Theme.of(context).brightness == Brightness.dark ? const Color(0xFF10BFD0) : _primaryBlue) : (Theme.of(context).brightness == Brightness.dark ? const Color(0xFFB8E2EC) : _muted),
+                color: highlighted ? Colors.black : _muted,
                 fontSize: 10,
                 fontWeight:
                     highlighted ? FontWeight.w800 : FontWeight.w500,
@@ -854,14 +854,9 @@ class _StudentHomePageState extends State<StudentHomePage> {
                     width: 76,
                     height: 76,
                     decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [
-                          Color(0xFFE0F4F8),
-                          Color(0xFFF4FAFC),
-                        ],
-                      ),
+                      color: const Color(0xFFF6F8F7),
                       shape: BoxShape.circle,
-                      border: Border.all(color: _primaryBlue),
+                      border: Border.all(color: _mint, width: 1.5),
                     ),
                     child: Icon(icon, color: _primaryBlue, size: 36),
                   ),
@@ -870,7 +865,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                     title,
                     textAlign: TextAlign.center,
                     style: GoogleFonts.plusJakartaSans(
-                      color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFF4FAFC) : _text,
+                      color: _text,
                       fontSize: 19,
                       fontWeight: FontWeight.w800,
                     ),
@@ -880,7 +875,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                     subtitle,
                     textAlign: TextAlign.center,
                     style: GoogleFonts.inter(
-                      color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFFB8E2EC) : _muted,
+                      color: _muted,
                       fontSize: 12,
                       height: 1.6,
                     ),
@@ -904,8 +899,8 @@ class _StudentHomePageState extends State<StudentHomePage> {
       itemCount: 3,
       itemBuilder: (_, __) {
         return Shimmer.fromColors(
-          baseColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF153443) : const Color(0xFFDCEBF0),
-          highlightColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1F495E) : Colors.white,
+          baseColor: const Color(0xFFE0E5E2),
+          highlightColor: Colors.white,
           child: Container(
             height: 135,
             margin: const EdgeInsets.only(bottom: 14),
@@ -928,82 +923,7 @@ class _AmbientPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final rect = Offset.zero & size;
-
-    canvas.drawRect(
-      rect,
-      Paint()
-        ..shader = LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: isDark ? const [Color(0xFF0A1922), Color(0xFF112A36), Color(0xFF0D212C)] : const [Color(0xFFF4FAFC), Color(0xFFE6F6FA), Color(0xFFDCEBF0)],
-        ).createShader(rect),
-    );
-
-    _glow(
-      canvas,
-      Offset(size.width * 0.95, size.height * 0.18),
-      size.width * 0.45,
-      const Color(0x280793B8), // _primaryBlue turquesa
-    );
-
-    _glow(
-      canvas,
-      Offset(size.width * 0.05, size.height * 0.78),
-      size.width * 0.48,
-      const Color(0x2810BFD0), // _cyan claro
-    );
-
-    final ringPaint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.2
-      ..color = const Color(0x240793B8); // Anillos turquesa
-
-    canvas.drawCircle(
-      Offset(size.width * 0.95, size.height * 0.15),
-      size.width * 0.18,
-      ringPaint,
-    );
-
-    canvas.drawCircle(
-      Offset(size.width * 0.95, size.height * 0.15),
-      size.width * 0.23,
-      Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 1
-        ..color = const Color(0x2010BFD0), // Anillos cian
-    );
-
-    final dotPaint = Paint()..color = const Color(0x6610BFD0); // Partículas cian
-
-    for (int i = 0; i < 26; i++) {
-      final x = ((i * 83 + 29) % 997) / 997 * size.width;
-      final y = ((i * 137 + 47) % 991) / 991 * size.height;
-
-      canvas.drawCircle(
-        Offset(x, y),
-        i % 4 == 0 ? 1.8 : 1,
-        dotPaint,
-      );
-    }
-  }
-
-  void _glow(Canvas canvas, Offset center, double radius, Color color) {
-    canvas.drawCircle(
-      center,
-      radius,
-      Paint()
-        ..shader = RadialGradient(
-          colors: [
-            color,
-            color.withValues(alpha: 0),
-          ],
-        ).createShader(
-          Rect.fromCircle(
-            center: center,
-            radius: radius,
-          ),
-        ),
-    );
+    canvas.drawRect(rect, Paint()..color = Colors.white);
   }
 
   @override

@@ -18,41 +18,41 @@ class StudentDetailViewPage extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: AppTheme.surfaceDark,
+        backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         title: Row(
           children: [
             const Icon(Icons.picture_as_pdf_rounded, color: Colors.redAccent, size: 28),
             const SizedBox(width: 10),
-            Expanded(child: Text(title, style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white))),
+            Expanded(child: Text(title, style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 18, color: AppTheme.textPrimaryLight))),
           ],
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Nombre del Archivo:', style: GoogleFonts.inter(fontSize: 12, color: Colors.white60)),
+            Text('Nombre del Archivo:', style: GoogleFonts.inter(fontSize: 12, color: AppTheme.nexusTextMuted)),
             const SizedBox(height: 2),
             Text(
               fileName ?? 'Documento_Oficial.pdf',
-              style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
+              style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.bold, color: AppTheme.textPrimaryLight),
             ),
             const SizedBox(height: 14),
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppTheme.primaryColor.withOpacity(0.2),
+                color: AppTheme.nexusGreenLight.withOpacity(0.3),
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: AppTheme.primaryColor.withOpacity(0.4)),
+                border: Border.all(color: AppTheme.nexusGreen.withOpacity(0.3)),
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.verified_user_rounded, color: AppTheme.accentColor, size: 20),
+                  const Icon(Icons.verified_user_rounded, color: AppTheme.nexusGreen, size: 20),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
                       'Documento verificado y autenticado por el alumno en NEXUS Talento.',
-                      style: GoogleFonts.inter(fontSize: 12, color: Colors.white, fontWeight: FontWeight.w600),
+                      style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textPrimaryLight, fontWeight: FontWeight.w600),
                     ),
                   ),
                 ],
@@ -63,7 +63,7 @@ class StudentDetailViewPage extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('CERRAR', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white60)),
+            child: Text('CERRAR', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: AppTheme.nexusTextMuted)),
           ),
           ElevatedButton.icon(
             onPressed: () async {
@@ -75,10 +75,11 @@ class StudentDetailViewPage extends StatelessWidget {
                 }
               }
             },
-            icon: const Icon(Icons.open_in_new_rounded, size: 16, color: Colors.white),
-            label: Text('ABRIR DOCUMENTO PDF', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white)),
+            icon: const Icon(Icons.open_in_new_rounded, size: 16, color: Colors.black),
+            label: Text('ABRIR DOCUMENTO PDF', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.black)),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.primaryColor,
+              backgroundColor: AppTheme.nexusGreenLight,
+              foregroundColor: Colors.black,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
             ),
           ),
@@ -98,10 +99,10 @@ class StudentDetailViewPage extends StatelessWidget {
     final speaksEnglish = s['speaksEnglish'] == true ? 'Sí (Avanzado)' : 'Básico';
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Colors.white, size: 26),
+          icon: const Icon(Icons.arrow_back_rounded, color: AppTheme.textPrimaryLight, size: 26),
           tooltip: 'Regresar',
           onPressed: () {
             if (Navigator.canPop(context)) {
@@ -114,9 +115,9 @@ class StudentDetailViewPage extends StatelessWidget {
             }
           },
         ),
-        title: Text('Perfil del Candidato', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white)),
-        foregroundColor: Colors.white,
-        backgroundColor: AppTheme.bgDark.withOpacity(0.85),
+        title: Text('Perfil del Candidato', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: AppTheme.textPrimaryLight)),
+        foregroundColor: AppTheme.textPrimaryLight,
+        backgroundColor: Colors.white,
         elevation: 0,
       ),
       body: LiquidGlassAmbientBackground(
@@ -132,22 +133,22 @@ class StudentDetailViewPage extends StatelessWidget {
                   children: [
                     CircleAvatar(
                       radius: 46,
-                      backgroundColor: AppTheme.primaryColor.withOpacity(0.3),
+                      backgroundColor: AppTheme.nexusGreenLight,
                       child: Text(
                         name[0],
-                        style: GoogleFonts.outfit(fontSize: 36, color: Colors.white, fontWeight: FontWeight.bold),
+                        style: GoogleFonts.outfit(fontSize: 36, color: Colors.black, fontWeight: FontWeight.bold),
                       ),
                     ),
                     const SizedBox(height: 14),
                     Text(
                       name,
-                      style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
+                      style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.bold, color: AppTheme.textPrimaryLight),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 4),
                     Text(
                       career,
-                      style: GoogleFonts.inter(fontSize: 13, color: Colors.white70),
+                      style: GoogleFonts.inter(fontSize: 13, color: AppTheme.nexusTextMuted),
                       textAlign: TextAlign.center,
                     ),
                     if (s['role'] != null) ...[
@@ -155,12 +156,12 @@ class StudentDetailViewPage extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                         decoration: BoxDecoration(
-                          color: AppTheme.primaryColor.withOpacity(0.3),
+                          color: AppTheme.nexusGreenLight.withOpacity(0.4),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
                           s['role'],
-                          style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                          style: GoogleFonts.inter(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12),
                         ),
                       ),
                     ],
@@ -177,9 +178,9 @@ class StudentDetailViewPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     _buildMetricItem('Promedio', gpa, Icons.star_rounded),
-                    Container(height: 30, width: 1, color: Colors.white.withOpacity(0.18)),
+                    Container(height: 30, width: 1, color: const Color(0xFFE0E5E2)),
                     _buildMetricItem('Modalidad', modality, Icons.school_rounded),
-                    Container(height: 30, width: 1, color: Colors.white.withOpacity(0.18)),
+                    Container(height: 30, width: 1, color: const Color(0xFFE0E5E2)),
                     _buildMetricItem('Inglés', speaksEnglish, Icons.translate_rounded),
                   ],
                 ),
@@ -195,13 +196,14 @@ class StudentDetailViewPage extends StatelessWidget {
                   onPressed: () {
                     InviteStudentModal.show(context, student: s);
                   },
-                  icon: const Icon(Icons.mark_email_read_rounded, color: Colors.white, size: 20),
+                  icon: const Icon(Icons.mark_email_read_rounded, color: Colors.black, size: 20),
                   label: Text(
                     'INVITAR A VACANTE DIRECTA 📩',
-                    style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 14.5, letterSpacing: 0.5, color: Colors.white),
+                    style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 14.5, letterSpacing: 0.5, color: Colors.black),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.primaryColor,
+                    backgroundColor: AppTheme.nexusGreenLight,
+                    foregroundColor: Colors.black,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                     elevation: 2,
                   ),
@@ -217,13 +219,13 @@ class StudentDetailViewPage extends StatelessWidget {
                       onPressed: () {
                         RateStudentModal.show(context, student: s);
                       },
-                      icon: const Icon(Icons.star_rounded, color: Colors.amber, size: 18),
+                      icon: const Icon(Icons.star_rounded, color: Colors.black, size: 18),
                       label: Text(
                         'EVALUAR ⭐',
-                        style: GoogleFonts.outfit(color: Colors.amber, fontWeight: FontWeight.bold, fontSize: 13),
+                        style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 13),
                       ),
                       style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: Colors.amber, width: 1.5),
+                        side: const BorderSide(color: AppTheme.nexusGreen, width: 1.5),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                         padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
@@ -235,13 +237,13 @@ class StudentDetailViewPage extends StatelessWidget {
                       onPressed: () {
                         ContactStudentModal.show(context, student: s);
                       },
-                      icon: const Icon(Icons.send_rounded, color: AppTheme.accentColor, size: 18),
+                      icon: const Icon(Icons.send_rounded, color: Colors.black, size: 18),
                       label: Text(
                         'CONTACTAR ✉️',
-                        style: GoogleFonts.outfit(color: AppTheme.accentColor, fontWeight: FontWeight.bold, fontSize: 13),
+                        style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 13),
                       ),
                       style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: AppTheme.accentColor, width: 1.5),
+                        side: const BorderSide(color: AppTheme.nexusGreen, width: 1.5),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                         padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
@@ -255,7 +257,7 @@ class StudentDetailViewPage extends StatelessWidget {
               // Sección Documentos Oficiales en PDF (CV y Kárdex)
               Text(
                 'Documentos Verificados del Candidato 📄',
-                style: GoogleFonts.outfit(fontSize: 17, fontWeight: FontWeight.bold, color: Colors.white),
+                style: GoogleFonts.outfit(fontSize: 17, fontWeight: FontWeight.bold, color: AppTheme.textPrimaryLight),
               ),
               const SizedBox(height: 12),
 
@@ -266,7 +268,7 @@ class StudentDetailViewPage extends StatelessWidget {
               // Sección Evaluaciones y Reseñas de Empresas
               Text(
                 'Evaluaciones y Reseñas de Empresas ⭐',
-                style: GoogleFonts.outfit(fontSize: 17, fontWeight: FontWeight.bold, color: Colors.white),
+                style: GoogleFonts.outfit(fontSize: 17, fontWeight: FontWeight.bold, color: AppTheme.textPrimaryLight),
               ),
               const SizedBox(height: 12),
 
@@ -306,18 +308,18 @@ class StudentDetailViewPage extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.08),
+              color: const Color(0xFFF6F8F7),
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.white12),
+              border: Border.all(color: const Color(0xFFE0E5E2)),
             ),
             child: Row(
               children: [
-                const Icon(Icons.info_outline_rounded, color: Colors.white60, size: 20),
+                const Icon(Icons.info_outline_rounded, color: AppTheme.nexusTextMuted, size: 20),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
                     'El candidato aún no ha adjuntado archivos PDF en su perfil.',
-                    style: GoogleFonts.inter(fontSize: 12.5, color: Colors.white70),
+                    style: GoogleFonts.inter(fontSize: 12.5, color: AppTheme.nexusTextMuted),
                   ),
                 ),
               ],
@@ -356,18 +358,18 @@ class StudentDetailViewPage extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: AppTheme.primaryColor.withOpacity(0.2),
+              color: AppTheme.nexusGreen.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.picture_as_pdf_rounded, color: Colors.white, size: 22),
+            child: const Icon(Icons.picture_as_pdf_rounded, color: AppTheme.nexusGreen, size: 22),
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.white)),
-                Text(fileName, style: GoogleFonts.inter(fontSize: 12, color: AppTheme.accentColor, fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis),
+                Text(title, style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 14, color: AppTheme.textPrimaryLight)),
+                Text(fileName, style: GoogleFonts.inter(fontSize: 12, color: AppTheme.nexusGreenSecondary, fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis),
               ],
             ),
           ),
@@ -378,15 +380,15 @@ class StudentDetailViewPage extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: AppTheme.primaryColor,
+                color: AppTheme.nexusGreenLight,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.visibility_rounded, size: 14, color: Colors.white),
+                  const Icon(Icons.visibility_rounded, size: 14, color: Colors.black),
                   const SizedBox(width: 4),
-                  Text('VER PDF', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 11.5, color: Colors.white)),
+                  Text('VER PDF', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 11.5, color: Colors.black)),
                 ],
               ),
             ),
@@ -398,7 +400,7 @@ class StudentDetailViewPage extends StatelessWidget {
 
   Widget _buildRealTimeEvaluations(String? studentId) {
     if (studentId == null || studentId.isEmpty) {
-      return Text('Sin evaluaciones registradas.', style: GoogleFonts.inter(color: Colors.white70));
+      return Text('Sin evaluaciones registradas.', style: GoogleFonts.inter(color: AppTheme.nexusTextMuted));
     }
 
     return StreamBuilder<QuerySnapshot>(
@@ -407,9 +409,9 @@ class StudentDetailViewPage extends StatelessWidget {
           .where('studentId', isEqualTo: studentId)
           .snapshots(),
       builder: (context, snapshot) {
-        if (snapshot.hasError) return Text('Error cargando reseñas.', style: GoogleFonts.inter(color: Colors.white70));
+        if (snapshot.hasError) return Text('Error cargando reseñas.', style: GoogleFonts.inter(color: AppTheme.nexusTextMuted));
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator(color: AppTheme.primaryColor));
+          return const Center(child: CircularProgressIndicator(color: AppTheme.nexusGreen));
         }
 
         final docs = snapshot.data?.docs ?? [];
@@ -419,17 +421,17 @@ class StudentDetailViewPage extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.08),
+              color: const Color(0xFFF6F8F7),
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.white12),
+              border: Border.all(color: const Color(0xFFE0E5E2)),
             ),
             child: Column(
               children: [
-                const Icon(Icons.rate_review_outlined, size: 40, color: Colors.white38),
+                const Icon(Icons.rate_review_outlined, size: 40, color: AppTheme.nexusTextMuted),
                 const SizedBox(height: 8),
                 Text(
                   'Aún no cuenta con evaluaciones escritas por empresas',
-                  style: GoogleFonts.inter(fontSize: 12.5, color: Colors.white70),
+                  style: GoogleFonts.inter(fontSize: 12.5, color: AppTheme.nexusTextMuted),
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -458,7 +460,7 @@ class StudentDetailViewPage extends StatelessWidget {
                     children: [
                       Text(
                         companyName,
-                        style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.white),
+                        style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 15, color: AppTheme.textPrimaryLight),
                       ),
                       Row(
                         children: [
@@ -466,7 +468,7 @@ class StudentDetailViewPage extends StatelessWidget {
                           const SizedBox(width: 4),
                           Text(
                             rating.toStringAsFixed(1),
-                            style: GoogleFonts.inter(fontWeight: FontWeight.bold, color: Colors.amber, fontSize: 13.5),
+                            style: GoogleFonts.inter(fontWeight: FontWeight.bold, color: AppTheme.textPrimaryLight, fontSize: 13.5),
                           ),
                         ],
                       ),
@@ -476,18 +478,18 @@ class StudentDetailViewPage extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     decoration: BoxDecoration(
-                      color: AppTheme.primaryColor.withOpacity(0.2),
+                      color: AppTheme.nexusGreenLight.withOpacity(0.4),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
                       modality,
-                      style: GoogleFonts.inter(fontSize: 11, color: Colors.white, fontWeight: FontWeight.bold),
+                      style: GoogleFonts.inter(fontSize: 11, color: Colors.black, fontWeight: FontWeight.bold),
                     ),
                   ),
                   const SizedBox(height: 10),
                   Text(
                     '"$comment"',
-                    style: GoogleFonts.inter(fontSize: 12.5, height: 1.4, color: Colors.white70, fontStyle: FontStyle.italic),
+                    style: GoogleFonts.inter(fontSize: 12.5, height: 1.4, color: AppTheme.nexusTextMuted, fontStyle: FontStyle.italic),
                   ),
                 ],
               ),
@@ -501,10 +503,10 @@ class StudentDetailViewPage extends StatelessWidget {
   Widget _buildMetricItem(String label, String value, IconData icon) {
     return Column(
       children: [
-        Icon(icon, color: AppTheme.accentColor, size: 22),
+        Icon(icon, color: AppTheme.nexusGreen, size: 22),
         const SizedBox(height: 6),
-        Text(value, style: GoogleFonts.outfit(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white)),
-        Text(label, style: GoogleFonts.inter(fontSize: 11.5, color: Colors.white70)),
+        Text(value, style: GoogleFonts.outfit(fontSize: 15, fontWeight: FontWeight.bold, color: AppTheme.textPrimaryLight)),
+        Text(label, style: GoogleFonts.inter(fontSize: 11.5, color: AppTheme.nexusTextMuted)),
       ],
     );
   }

@@ -122,7 +122,10 @@ class _ImpulsaKanbanBoardViewState extends State<ImpulsaKanbanBoardView> {
               child: const Text('Cancelar'),
             ),
             FilledButton(
-              style: FilledButton.styleFrom(backgroundColor: pal.primary),
+              style: FilledButton.styleFrom(
+                backgroundColor: ImpulsaPalette.buttonGreen,
+                foregroundColor: Colors.black,
+              ),
               onPressed: () {
                 final title = titleCtrl.text.trim();
                 if (title.isEmpty) return;
@@ -265,11 +268,11 @@ class _ImpulsaKanbanBoardViewState extends State<ImpulsaKanbanBoardView> {
                     FilledButton.icon(
                       onPressed: _addTaskDialog,
                       icon: const Icon(Icons.add_circle_outline_rounded,
-                          size: 18),
+                          size: 18, color: Colors.black),
                       label: const Text('+ Tarea nueva'),
                       style: FilledButton.styleFrom(
-                        backgroundColor: pal.primary,
-                        foregroundColor: Colors.white,
+                        backgroundColor: ImpulsaPalette.buttonGreen,
+                        foregroundColor: Colors.black,
                       ),
                     ),
                 ],

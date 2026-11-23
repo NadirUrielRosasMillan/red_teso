@@ -74,10 +74,10 @@ class _CourseXRayPlayerPageState extends State<CourseXRayPlayerPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0F172A),
-        foregroundColor: Colors.white,
+        backgroundColor: Colors.white,
+        foregroundColor: AppTheme.textPrimaryLight,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -86,6 +86,7 @@ class _CourseXRayPlayerPageState extends State<CourseXRayPlayerPage> {
               style: GoogleFonts.outfit(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
+                color: AppTheme.textPrimaryLight,
               ),
               overflow: TextOverflow.ellipsis,
             ),
@@ -93,14 +94,14 @@ class _CourseXRayPlayerPageState extends State<CourseXRayPlayerPage> {
               'Reproductor Interactivo X-Ray • TESOEM',
               style: GoogleFonts.inter(
                 fontSize: 11,
-                color: Colors.white60,
+                color: AppTheme.nexusTextMuted,
               ),
             ),
           ],
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.request_quote_rounded, color: AppTheme.accentColor),
+            icon: const Icon(Icons.request_quote_rounded, color: AppTheme.nexusGreen),
             tooltip: 'Solicitar Cotización',
             onPressed: () {
               CourseQuoteModal.show(context, course: widget.course);
@@ -109,7 +110,7 @@ class _CourseXRayPlayerPageState extends State<CourseXRayPlayerPage> {
           IconButton(
             icon: Icon(
               _showXRay ? Icons.subtitles_rounded : Icons.subtitles_outlined,
-              color: _showXRay ? AppTheme.accentColor : Colors.white,
+              color: _showXRay ? AppTheme.nexusGreen : AppTheme.nexusTextMuted,
             ),
             tooltip: 'Modo X-Ray Talento',
             onPressed: () {
@@ -260,11 +261,12 @@ class _CourseXRayPlayerPageState extends State<CourseXRayPlayerPage> {
               height: _showXRay ? 280 : 60,
               width: double.infinity,
               decoration: BoxDecoration(
-                color: const Color(0xFF1E293B),
+                color: Colors.white,
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+                border: const Border(top: BorderSide(color: AppTheme.borderLight)),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.5),
+                    color: Colors.black.withOpacity(0.08),
                     blurRadius: 20,
                     offset: const Offset(0, -6),
                   ),
@@ -284,12 +286,12 @@ class _CourseXRayPlayerPageState extends State<CourseXRayPlayerPage> {
                               Container(
                                 padding: const EdgeInsets.all(6),
                                 decoration: BoxDecoration(
-                                  color: AppTheme.accentColor.withOpacity(0.2),
+                                  color: AppTheme.nexusGreenLight.withOpacity(0.4),
                                   shape: BoxShape.circle,
                                 ),
                                 child: const Icon(
                                   Icons.people_alt_rounded,
-                                  color: AppTheme.accentColor,
+                                  color: AppTheme.nexusGreen,
                                   size: 18,
                                 ),
                               ),
@@ -299,7 +301,7 @@ class _CourseXRayPlayerPageState extends State<CourseXRayPlayerPage> {
                                 style: GoogleFonts.outfit(
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.white,
+                                  color: AppTheme.textPrimaryLight,
                                   letterSpacing: 0.8,
                                 ),
                               ),
@@ -308,7 +310,7 @@ class _CourseXRayPlayerPageState extends State<CourseXRayPlayerPage> {
                           IconButton(
                             icon: Icon(
                               _showXRay ? Icons.keyboard_arrow_down_rounded : Icons.keyboard_arrow_up_rounded,
-                              color: Colors.white70,
+                              color: AppTheme.nexusTextMuted,
                             ),
                             onPressed: () {
                               setState(() {
@@ -327,7 +329,7 @@ class _CourseXRayPlayerPageState extends State<CourseXRayPlayerPage> {
                             padding: const EdgeInsets.symmetric(vertical: 20),
                             child: Text(
                               'Este curso corporativo es impartido por el cuerpo docente verificado del TESOEM.',
-                              style: GoogleFonts.inter(color: Colors.white70, fontSize: 13),
+                              style: GoogleFonts.inter(color: AppTheme.nexusTextMuted, fontSize: 13),
                             ),
                           )
                         else
@@ -344,10 +346,10 @@ class _CourseXRayPlayerPageState extends State<CourseXRayPlayerPage> {
                                   margin: const EdgeInsets.only(right: 14),
                                   padding: const EdgeInsets.all(14),
                                   decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.08),
+                                    color: AppTheme.surfaceLight,
                                     borderRadius: BorderRadius.circular(20),
                                     border: Border.all(
-                                      color: Colors.white.withOpacity(0.18),
+                                      color: AppTheme.borderLight,
                                       width: 1,
                                     ),
                                   ),
@@ -373,7 +375,7 @@ class _CourseXRayPlayerPageState extends State<CourseXRayPlayerPage> {
                                                 Text(
                                                   student.name,
                                                   style: GoogleFonts.outfit(
-                                                    color: Colors.white,
+                                                    color: AppTheme.textPrimaryLight,
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: 14,
                                                   ),
@@ -382,7 +384,7 @@ class _CourseXRayPlayerPageState extends State<CourseXRayPlayerPage> {
                                                 Text(
                                                   student.roleInCourse,
                                                   style: GoogleFonts.inter(
-                                                    color: AppTheme.accentColor,
+                                                    color: AppTheme.nexusGreen,
                                                     fontSize: 11.5,
                                                     fontWeight: FontWeight.w600,
                                                   ),
@@ -397,13 +399,14 @@ class _CourseXRayPlayerPageState extends State<CourseXRayPlayerPage> {
                                       Container(
                                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                         decoration: BoxDecoration(
-                                          color: Colors.white.withOpacity(0.1),
+                                          color: Colors.white,
                                           borderRadius: BorderRadius.circular(10),
+                                          border: Border.all(color: AppTheme.borderLight),
                                         ),
                                         child: Text(
                                           '🎓 ${student.career} • GPA: ${student.gpa}',
                                           style: GoogleFonts.inter(
-                                            color: Colors.white70,
+                                            color: AppTheme.nexusTextMuted,
                                             fontSize: 11,
                                           ),
                                         ),
@@ -433,19 +436,14 @@ class _CourseXRayPlayerPageState extends State<CourseXRayPlayerPage> {
                                           width: double.infinity,
                                           padding: const EdgeInsets.symmetric(vertical: 8),
                                           decoration: BoxDecoration(
-                                            gradient: const LinearGradient(
-                                              colors: [
-                                                AppTheme.primaryTurquoise,
-                                                AppTheme.darkTurquoise,
-                                              ],
-                                            ),
+                                            color: AppTheme.nexusGreenLight,
                                             borderRadius: BorderRadius.circular(12),
                                           ),
                                           child: Center(
                                             child: Text(
                                               'Ver Perfil Completo 👤',
                                               style: GoogleFonts.outfit(
-                                                color: Colors.white,
+                                                color: Colors.black,
                                                 fontSize: 12,
                                                 fontWeight: FontWeight.bold,
                                               ),
@@ -485,7 +483,7 @@ class _CourseXRayPlayerPageState extends State<CourseXRayPlayerPage> {
       width: double.infinity,
       height: double.infinity,
       decoration: BoxDecoration(
-        color: const Color(0xFF0F172A),
+        color: AppTheme.textPrimaryLight,
         image: imageProvider != null
             ? DecorationImage(
                 image: imageProvider,

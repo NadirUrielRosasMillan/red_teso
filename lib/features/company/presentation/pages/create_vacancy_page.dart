@@ -190,7 +190,7 @@ class _CreateVacancyPageState extends State<CreateVacancyPage> {
     final isEditing = widget.vacancyToEdit != null;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: Colors.white,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
@@ -199,7 +199,7 @@ class _CreateVacancyPageState extends State<CreateVacancyPage> {
         ),
         title: Text(isEditing ? 'Editar Vacante' : 'Publicar Oportunidad', style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
         backgroundColor: Colors.white,
-        foregroundColor: const Color(0xFF0F172A),
+        foregroundColor: AppTheme.textPrimaryLight,
         elevation: 0,
       ),
       body: _isPublishing
@@ -221,7 +221,7 @@ class _CreateVacancyPageState extends State<CreateVacancyPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Detalles de la Vacante', style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A))),
+                      Text('Detalles de la Vacante', style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textPrimaryLight)),
                       const SizedBox(height: 20),
 
                       TextFormField(
@@ -291,7 +291,7 @@ class _CreateVacancyPageState extends State<CreateVacancyPage> {
 
                       Text(
                         'Vista Previa del Mapa de Ubicación (Toca para seleccionar 📍):',
-                        style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A)),
+                        style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.bold, color: AppTheme.textPrimaryLight),
                       ),
                       const SizedBox(height: 8),
 
@@ -324,7 +324,7 @@ class _CreateVacancyPageState extends State<CreateVacancyPage> {
 
                       const SizedBox(height: 24),
 
-                      Text('Requisitos Mínimos para Alumnos', style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A))),
+                      Text('Requisitos Mínimos para Alumnos', style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.bold, color: AppTheme.textPrimaryLight)),
                       const SizedBox(height: 12),
 
                       Row(
@@ -389,8 +389,8 @@ class _CreateVacancyPageState extends State<CreateVacancyPage> {
                           const SizedBox(width: 8),
                           IconButton.filled(
                             onPressed: _addRequirement,
-                            icon: const Icon(Icons.add),
-                            style: IconButton.styleFrom(backgroundColor: AppTheme.primaryColor),
+                            icon: const Icon(Icons.add, color: Colors.black),
+                            style: IconButton.styleFrom(backgroundColor: AppTheme.nexusGreenLight, foregroundColor: Colors.black),
                           ),
                         ],
                       ),
@@ -403,13 +403,13 @@ class _CreateVacancyPageState extends State<CreateVacancyPage> {
                         child: ElevatedButton(
                           onPressed: _submitVacancy,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppTheme.primaryColor,
-                            foregroundColor: Colors.white,
+                            backgroundColor: AppTheme.nexusGreenLight,
+                            foregroundColor: Colors.black,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                           ),
                           child: Text(
                             isEditing ? 'GUARDAR CAMBIOS' : 'PUBLICAR VACANTE EN NEXUS TALENTO',
-                            style: GoogleFonts.outfit(fontWeight: FontWeight.bold, letterSpacing: 0.8),
+                            style: GoogleFonts.outfit(fontWeight: FontWeight.bold, letterSpacing: 0.8, color: Colors.black),
                           ),
                         ),
                       ),

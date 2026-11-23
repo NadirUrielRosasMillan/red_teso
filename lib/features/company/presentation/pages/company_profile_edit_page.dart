@@ -136,11 +136,11 @@ class _CompanyProfileEditPageState extends State<CompanyProfileEditPage> {
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('Mi Perfil de Empresa', style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
         backgroundColor: Colors.white,
-        foregroundColor: const Color(0xFF0F172A),
+        foregroundColor: AppTheme.textPrimaryLight,
         elevation: 0,
         actions: [
           IconButton(
@@ -225,7 +225,7 @@ class _CompanyProfileEditPageState extends State<CompanyProfileEditPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Información General', style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A))),
+                    Text('Información General', style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.bold, color: AppTheme.textPrimaryLight)),
                     const SizedBox(height: 18),
 
                     TextFormField(
@@ -281,7 +281,7 @@ class _CompanyProfileEditPageState extends State<CompanyProfileEditPage> {
 
                     const SizedBox(height: 24),
 
-                    Text('Sobre la Empresa', style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A))),
+                    Text('Sobre la Empresa', style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.bold, color: AppTheme.textPrimaryLight)),
                     const SizedBox(height: 12),
 
                     TextFormField(
@@ -305,13 +305,13 @@ class _CompanyProfileEditPageState extends State<CompanyProfileEditPage> {
                           : ElevatedButton(
                               onPressed: _saveProfile,
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: AppTheme.primaryColor,
-                                foregroundColor: Colors.white,
+                                backgroundColor: AppTheme.nexusGreenLight,
+                                foregroundColor: Colors.black,
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                               ),
                               child: Text(
                                 'GUARDAR PERFIL CORPORATIVO',
-                                style: GoogleFonts.outfit(fontWeight: FontWeight.bold, letterSpacing: 0.8),
+                                style: GoogleFonts.outfit(fontWeight: FontWeight.bold, letterSpacing: 0.8, color: Colors.black),
                               ),
                             ),
                     ),

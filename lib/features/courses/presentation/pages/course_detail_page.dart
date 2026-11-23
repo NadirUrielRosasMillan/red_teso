@@ -198,14 +198,14 @@ class CourseDetailPage extends StatelessWidget {
                         CourseQuoteModal.show(context, course: course);
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.accentCyan,
-                        foregroundColor: Colors.white,
+                        backgroundColor: AppTheme.nexusGreenLight,
+                        foregroundColor: Colors.black,
                         elevation: 0,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                       ),
                       child: Text(
                         'Cotizar Acceso Corporativo',
-                        style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, fontSize: 14),
+                        style: GoogleFonts.plusJakartaSans(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14),
                       ),
                     ),
                   ),

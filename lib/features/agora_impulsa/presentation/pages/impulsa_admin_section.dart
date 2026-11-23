@@ -200,7 +200,7 @@ class _ImpulsaAdminProjectsSectionState
                       size: 48, color: pal.textSecondary),
                   const SizedBox(height: 12),
                   Text(
-                    'Aún no hay solicitudes de donación registradas en Ágora Impulsa.',
+                    'Aún no hay solicitudes de donación registradas en NEXUS Impulsa.',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: pal.textPrimary,
@@ -531,8 +531,8 @@ class _ImpulsaAdminProjectsSectionState
               if (canRelease)
                 FilledButton.icon(
                   style: FilledButton.styleFrom(
-                    backgroundColor: ImpulsaPalette.flagGreen,
-                    foregroundColor: Colors.white,
+                    backgroundColor: ImpulsaPalette.buttonGreen,
+                    foregroundColor: Colors.black,
                     padding: const EdgeInsets.symmetric(
                       horizontal: 18,
                       vertical: 12,
@@ -547,15 +547,15 @@ class _ImpulsaAdminProjectsSectionState
                     height: 16,
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
-                      color: Colors.white,
+                      color: Colors.black,
                     ),
                   )
-                      : const Icon(Icons.volunteer_activism_rounded),
+                      : const Icon(Icons.volunteer_activism_rounded, color: Colors.black),
                   label: Text(
                     isProcessing
                         ? 'Liberando proyecto...'
                         : 'Liberar y Donar proyecto 🌱',
-                    style: const TextStyle(fontWeight: FontWeight.w800),
+                    style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w800),
                   ),
                 ),
             ],

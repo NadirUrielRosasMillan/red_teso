@@ -71,18 +71,18 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
           'Buscador de Talento',
-          style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white),
+          style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 20, color: AppTheme.textPrimaryLight),
         ),
-        backgroundColor: AppTheme.bgDark.withOpacity(0.85),
-        foregroundColor: Colors.white,
+        backgroundColor: Colors.white,
+        foregroundColor: AppTheme.textPrimaryLight,
         elevation: 0,
-        actions: [
-          const NotificationBell(color: Colors.white),
-          const SizedBox(width: 8),
+        actions: const [
+          NotificationBell(color: AppTheme.nexusGreen),
+          SizedBox(width: 8),
         ],
       ),
 
@@ -96,10 +96,10 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                 child: FloatingActionButton(
                   key: const ValueKey('floating_ai_talent_btn'),
                   onPressed: () => AiTalentAssistantModal.show(context, students: _sampleStudents),
-                  backgroundColor: AppTheme.primaryTurquoise,
+                  backgroundColor: AppTheme.nexusGreenLight,
                   elevation: 6,
                   tooltip: 'IA NEXUS 🤖',
-                  child: const Icon(Icons.psychology_rounded, color: Colors.white, size: 24),
+                  child: const Icon(Icons.psychology_rounded, color: Colors.black, size: 24),
                 ),
               )
             : const SizedBox.shrink(key: ValueKey('empty_ai_talent_btn')),
@@ -190,23 +190,23 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                   child: Row(
                     children: [
-                      Text('Tecnologías: ', style: GoogleFonts.inter(fontSize: 11.5, fontWeight: FontWeight.bold, color: const Color(0xFF64748B))),
+                      Text('Tecnologías: ', style: GoogleFonts.inter(fontSize: 11.5, fontWeight: FontWeight.bold, color: AppTheme.nexusTextMuted)),
                       ...['Python', 'Flutter', 'AWS', 'Java', 'React', 'Ciberseguridad', 'SQL'].map((tech) {
                         final isSelected = _searchQuery.toLowerCase() == tech.toLowerCase();
                         return Padding(
                           padding: const EdgeInsets.only(right: 6.0),
                           child: ActionChip(
                             label: Text(tech),
-                            backgroundColor: isSelected ? AppTheme.primaryColor : const Color(0xFFF1F5F9),
+                            backgroundColor: isSelected ? AppTheme.nexusGreenLight : const Color(0xFFF6F8F7),
                             labelStyle: GoogleFonts.inter(
-                              color: isSelected ? Colors.white : const Color(0xFF334155),
+                              color: isSelected ? Colors.black : AppTheme.textPrimaryLight,
                               fontSize: 11.5,
                               fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                             ),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                               side: BorderSide(
-                                color: isSelected ? AppTheme.primaryColor : const Color(0xFFE2E8F0),
+                                color: isSelected ? AppTheme.nexusGreen : const Color(0xFFE0E5E2),
                               ),
                             ),
                             onPressed: () => _applyTechFilter(tech),
@@ -232,9 +232,10 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                           child: ChoiceChip(
                             label: Text(modality),
                             selected: isSelected,
-                            selectedColor: AppTheme.primaryColor,
+                            selectedColor: AppTheme.nexusGreenLight,
+                            backgroundColor: const Color(0xFFF6F8F7),
                             labelStyle: GoogleFonts.inter(
-                              color: isSelected ? Colors.white : const Color(0xFF475569),
+                              color: isSelected ? Colors.black : AppTheme.nexusTextMuted,
                               fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                               fontSize: 12.5,
                             ),
@@ -245,10 +246,11 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                       FilterChip(
                         label: const Text('🌟 GPA 9.0+'),
                         selected: _requireHighGpa,
-                        selectedColor: AppTheme.accentColor,
-                        checkmarkColor: Colors.white,
+                        selectedColor: AppTheme.nexusGreenLight,
+                        backgroundColor: const Color(0xFFF6F8F7),
+                        checkmarkColor: Colors.black,
                         labelStyle: GoogleFonts.inter(
-                          color: _requireHighGpa ? Colors.white : const Color(0xFF475569),
+                          color: _requireHighGpa ? Colors.black : AppTheme.nexusTextMuted,
                           fontWeight: _requireHighGpa ? FontWeight.bold : FontWeight.normal,
                           fontSize: 12.5,
                         ),
@@ -258,10 +260,11 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                       FilterChip(
                         label: const Text('🗣️ Inglés'),
                         selected: _requireEnglish,
-                        selectedColor: AppTheme.primaryColor,
-                        checkmarkColor: Colors.white,
+                        selectedColor: AppTheme.nexusGreenLight,
+                        backgroundColor: const Color(0xFFF6F8F7),
+                        checkmarkColor: Colors.black,
                         labelStyle: GoogleFonts.inter(
-                          color: _requireEnglish ? Colors.white : const Color(0xFF475569),
+                          color: _requireEnglish ? Colors.black : AppTheme.nexusTextMuted,
                           fontWeight: _requireEnglish ? FontWeight.bold : FontWeight.normal,
                           fontSize: 12.5,
                         ),
@@ -437,13 +440,13 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                           ),
                         ),
                       ),
-                      // Badge Dorado de Promedio GPA
+                      // Badge de Promedio GPA
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF0F172A),
+                          color: AppTheme.nexusGreen,
                           borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: AppTheme.accentColor, width: 1.2),
+                          border: Border.all(color: AppTheme.nexusGreenLight, width: 1.2),
                         ),
                         child: Row(
                           children: [
@@ -475,7 +478,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                           style: GoogleFonts.outfit(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: const Color(0xFF0F172A),
+                            color: AppTheme.textPrimaryLight,
                           ),
                         ),
                         const SizedBox(height: 2),
@@ -483,7 +486,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                           'Ing. en Sistemas Computacionales',
                           style: GoogleFonts.inter(
                             fontSize: 12.5,
-                            color: const Color(0xFF64748B),
+                            color: AppTheme.nexusTextMuted,
                           ),
                         ),
                         const SizedBox(height: 6),
@@ -492,9 +495,9 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFECFDF5), // Emerald light
+                            color: AppTheme.nexusGreenLight.withOpacity(0.35),
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: const Color(0xFFA7F3D0)),
+                            border: Border.all(color: AppTheme.nexusGreen.withOpacity(0.25)),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
@@ -503,7 +506,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                                 width: 7,
                                 height: 7,
                                 decoration: const BoxDecoration(
-                                  color: Color(0xFF10B981),
+                                  color: AppTheme.nexusGreen,
                                   shape: BoxShape.circle,
                                 ),
                               ),
@@ -513,7 +516,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                                 style: GoogleFonts.inter(
                                   fontSize: 11.5,
                                   fontWeight: FontWeight.bold,
-                                  color: const Color(0xFF047857),
+                                  color: Colors.black,
                                 ),
                               ),
                             ],
@@ -533,7 +536,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                 style: GoogleFonts.inter(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
-                  color: const Color(0xFF334155),
+                  color: AppTheme.textPrimaryLight,
                 ),
               ),
               const SizedBox(height: 6),
@@ -549,10 +552,10 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                     return Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
-                        color: isMatched ? AppTheme.primaryColor : const Color(0xFFF1F5F9),
+                        color: isMatched ? AppTheme.nexusGreenLight : const Color(0xFFF6F8F7),
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
-                          color: isMatched ? AppTheme.primaryColor : const Color(0xFFE2E8F0),
+                          color: isMatched ? AppTheme.nexusGreen : const Color(0xFFE0E5E2),
                         ),
                       ),
                       child: Text(
@@ -560,7 +563,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                         style: GoogleFonts.inter(
                           fontSize: 11.5,
                           fontWeight: isMatched ? FontWeight.bold : FontWeight.w600,
-                          color: isMatched ? Colors.white : const Color(0xFF1E293B),
+                          color: Colors.black,
                         ),
                       ),
                     );
@@ -569,21 +572,21 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
-                        color: AppTheme.primaryColor.withOpacity(0.08),
+                        color: AppTheme.nexusGreenLight.withOpacity(0.35),
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: AppTheme.primaryColor.withOpacity(0.2)),
+                        border: Border.all(color: AppTheme.nexusGreen.withOpacity(0.25)),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.g_translate_rounded, size: 12, color: AppTheme.primaryColor),
+                          const Icon(Icons.g_translate_rounded, size: 12, color: Colors.black),
                           const SizedBox(width: 4),
                           Text(
                             'Inglés Avanzado',
                             style: GoogleFonts.inter(
                               fontSize: 11.5,
                               fontWeight: FontWeight.bold,
-                              color: AppTheme.primaryColor,
+                              color: Colors.black,
                             ),
                           ),
                         ],
@@ -602,13 +605,14 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                   onPressed: () {
                     InviteStudentModal.show(context, student: student);
                   },
-                  icon: const Icon(Icons.mark_email_read_rounded, size: 18, color: Colors.white),
+                  icon: const Icon(Icons.mark_email_read_rounded, size: 18, color: Colors.black),
                   label: Text(
                     'INVITAR A VACANTE DIRECTA 📩',
-                    style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.white, letterSpacing: 0.5),
+                    style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.black, letterSpacing: 0.5),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.primaryColor,
+                    backgroundColor: AppTheme.nexusGreenLight,
+                    foregroundColor: Colors.black,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                     elevation: 1,
                   ),
@@ -650,17 +654,17 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                     padding: const EdgeInsets.all(2),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: AppTheme.accentColor, width: 1.5),
+                      border: Border.all(color: AppTheme.nexusGreen, width: 1.5),
                     ),
                     child: CircleAvatar(
                       radius: 20,
-                      backgroundColor: AppTheme.primaryColor.withOpacity(0.3),
+                      backgroundColor: AppTheme.nexusGreenLight.withOpacity(0.45),
                       child: Text(
                         name[0],
                         style: GoogleFonts.outfit(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: Colors.black,
                         ),
                       ),
                     ),
@@ -668,9 +672,9 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF0F172A),
+                      color: AppTheme.nexusGreen,
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: AppTheme.accentColor, width: 1),
+                      border: Border.all(color: AppTheme.nexusGreenLight, width: 1),
                     ),
                     child: Row(
                       children: [
@@ -694,13 +698,13 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                       name,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14.5),
+                      style: GoogleFonts.outfit(color: AppTheme.textPrimaryLight, fontWeight: FontWeight.bold, fontSize: 14.5),
                     ),
                     Text(
                       'Sistemas • $modality',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.inter(color: AppTheme.accentColor, fontSize: 11, fontWeight: FontWeight.w600),
+                      style: GoogleFonts.inter(color: AppTheme.nexusGreen, fontSize: 11, fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
@@ -718,12 +722,13 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                 return Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.1),
+                    color: const Color(0xFFF6F8F7),
                     borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: const Color(0xFFE0E5E2)),
                   ),
                   child: Text(
                     skill,
-                    style: GoogleFonts.inter(color: Colors.white, fontSize: 10.5),
+                    style: GoogleFonts.inter(color: AppTheme.textPrimaryLight, fontSize: 10.5),
                   ),
                 );
               }),
@@ -731,12 +736,12 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
-                    color: AppTheme.primaryColor.withOpacity(0.3),
+                    color: AppTheme.nexusGreenLight.withOpacity(0.4),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
                     '🇺🇸 Inglés',
-                    style: GoogleFonts.inter(color: Colors.white, fontSize: 10.5, fontWeight: FontWeight.bold),
+                    style: GoogleFonts.inter(color: Colors.black, fontSize: 10.5, fontWeight: FontWeight.bold),
                   ),
                 ),
             ],
@@ -757,11 +762,11 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                     );
                   },
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: Colors.white38),
+                    side: const BorderSide(color: Color(0xFFE0E5E2)),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     padding: const EdgeInsets.symmetric(vertical: 8),
                   ),
-                  child: Text('Perfil 👤', style: GoogleFonts.inter(color: Colors.white, fontSize: 11)),
+                  child: Text('Perfil 👤', style: GoogleFonts.inter(color: AppTheme.textPrimaryLight, fontSize: 11, fontWeight: FontWeight.w600)),
                 ),
               ),
               const SizedBox(width: 6),
@@ -771,11 +776,12 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                     InviteStudentModal.show(context, student: student);
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.primaryColor,
+                    backgroundColor: AppTheme.nexusGreenLight,
+                    foregroundColor: Colors.black,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     padding: const EdgeInsets.symmetric(vertical: 8),
                   ),
-                  child: Text('Invitar 📩', style: GoogleFonts.inter(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)),
+                  child: Text('Invitar 📩', style: GoogleFonts.inter(color: Colors.black, fontSize: 11, fontWeight: FontWeight.bold)),
                 ),
               ),
             ],
@@ -792,7 +798,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(color: const Color(0xFFE0E5E2)),
       ),
       child: Column(
         children: [
@@ -800,22 +806,22 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
           const SizedBox(height: 16),
           Text(
             'No se encontraron alumnos',
-            style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A)),
+            style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textPrimaryLight),
           ),
           const SizedBox(height: 6),
           Text(
             'No hay candidatos que coincidan con "$_searchQuery" o con los filtros aplicados.',
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(fontSize: 13, color: const Color(0xFF64748B)),
+            style: GoogleFonts.inter(fontSize: 13, color: AppTheme.nexusTextMuted),
           ),
           const SizedBox(height: 20),
           ElevatedButton.icon(
             onPressed: _resetFilters,
-            icon: const Icon(Icons.refresh_rounded, size: 18),
+            icon: const Icon(Icons.refresh_rounded, size: 18, color: Colors.black),
             label: const Text('Restablecer Filtros'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.primaryColor,
-              foregroundColor: Colors.white,
+              backgroundColor: AppTheme.nexusGreenLight,
+              foregroundColor: Colors.black,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             ),
           ),

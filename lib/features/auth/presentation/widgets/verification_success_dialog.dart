@@ -174,15 +174,15 @@ class _VerificationSuccessDialogState extends State<VerificationSuccessDialog>
                           borderRadius: BorderRadius.circular(32),
                           boxShadow: [
                             BoxShadow(
-                              color: AppTheme.primaryTurquoise.withOpacity(0.18),
+                              color: AppTheme.nexusGreen.withOpacity(0.14),
                               blurRadius: 40,
                               spreadRadius: 4,
                               offset: const Offset(0, 16),
                             ),
                           ],
                           border: Border.all(
-                            color: const Color(0xFFF1F5F9),
-                            width: 2,
+                            color: AppTheme.borderLight,
+                            width: 1.5,
                           ),
                         ),
                         child: Column(
@@ -200,7 +200,7 @@ class _VerificationSuccessDialogState extends State<VerificationSuccessDialog>
                               style: GoogleFonts.outfit(
                                 fontSize: 26,
                                 fontWeight: FontWeight.bold,
-                                color: const Color(0xFF0F172A),
+                                color: AppTheme.textPrimaryLight,
                                 letterSpacing: -0.5,
                               ),
                             ),
@@ -212,7 +212,7 @@ class _VerificationSuccessDialogState extends State<VerificationSuccessDialog>
                               textAlign: TextAlign.center,
                               style: GoogleFonts.inter(
                                 fontSize: 14,
-                                color: const Color(0xFF64748B),
+                                color: AppTheme.nexusTextMuted,
                                 fontWeight: FontWeight.w400,
                               ),
                             ),
@@ -223,10 +223,10 @@ class _VerificationSuccessDialogState extends State<VerificationSuccessDialog>
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                               decoration: BoxDecoration(
-                                color: const Color(0xFFF8FAFC),
+                                color: AppTheme.surfaceLight,
                                 borderRadius: BorderRadius.circular(20),
                                 border: Border.all(
-                                  color: const Color(0xFFE2E8F0),
+                                  color: AppTheme.borderLight,
                                   width: 1,
                                 ),
                               ),
@@ -236,13 +236,13 @@ class _VerificationSuccessDialogState extends State<VerificationSuccessDialog>
                                   Container(
                                     padding: const EdgeInsets.all(6),
                                     decoration: BoxDecoration(
-                                      color: AppTheme.primaryColor.withOpacity(0.1),
+                                      color: AppTheme.nexusGreen.withOpacity(0.1),
                                       shape: BoxShape.circle,
                                     ),
                                     child: const Icon(
                                       Icons.mark_email_read_rounded,
                                       size: 16,
-                                      color: AppTheme.primaryColor,
+                                      color: AppTheme.nexusGreen,
                                     ),
                                   ),
                                   const SizedBox(width: 10),
@@ -252,7 +252,7 @@ class _VerificationSuccessDialogState extends State<VerificationSuccessDialog>
                                       style: GoogleFonts.inter(
                                         fontSize: 13.5,
                                         fontWeight: FontWeight.w600,
-                                        color: const Color(0xFF1E293B),
+                                        color: AppTheme.textPrimaryLight,
                                       ),
                                       overflow: TextOverflow.ellipsis,
                                     ),
@@ -268,7 +268,7 @@ class _VerificationSuccessDialogState extends State<VerificationSuccessDialog>
                               textAlign: TextAlign.center,
                               style: GoogleFonts.inter(
                                 fontSize: 13.5,
-                                color: const Color(0xFF475569),
+                                color: AppTheme.nexusTextMuted,
                                 height: 1.45,
                               ),
                             ),
@@ -279,10 +279,10 @@ class _VerificationSuccessDialogState extends State<VerificationSuccessDialog>
                             Container(
                               padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
-                                color: const Color(0xFFFFFBEB), // Soft Warm Yellow
+                                color: AppTheme.surfaceLight,
                                 borderRadius: BorderRadius.circular(20),
                                 border: Border.all(
-                                  color: const Color(0xFFFDE68A),
+                                  color: AppTheme.nexusGreenLight,
                                   width: 1.2,
                                 ),
                               ),
@@ -292,12 +292,12 @@ class _VerificationSuccessDialogState extends State<VerificationSuccessDialog>
                                   Container(
                                     padding: const EdgeInsets.all(8),
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFFF59E0B).withOpacity(0.15),
+                                      color: AppTheme.nexusGreenLight.withOpacity(0.35),
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: const Icon(
                                       Icons.alternate_email_rounded,
-                                      color: Color(0xFFD97706),
+                                      color: AppTheme.nexusGreen,
                                       size: 22,
                                     ),
                                   ),
@@ -311,7 +311,7 @@ class _VerificationSuccessDialogState extends State<VerificationSuccessDialog>
                                           style: GoogleFonts.inter(
                                             fontSize: 13.5,
                                             fontWeight: FontWeight.w700,
-                                            color: const Color(0xFFB45309),
+                                            color: AppTheme.textPrimaryLight,
                                           ),
                                         ),
                                         const SizedBox(height: 3),
@@ -319,7 +319,7 @@ class _VerificationSuccessDialogState extends State<VerificationSuccessDialog>
                                           'Revisa tu bandeja principal y tu carpeta de Spam / Correo no deseado.',
                                           style: GoogleFonts.inter(
                                             fontSize: 12.5,
-                                            color: const Color(0xFF78350F),
+                                            color: AppTheme.nexusTextMuted,
                                             height: 1.35,
                                           ),
                                         ),
@@ -348,18 +348,11 @@ class _VerificationSuccessDialogState extends State<VerificationSuccessDialog>
                                   height: 54,
                                   clipBehavior: Clip.antiAlias,
                                   decoration: BoxDecoration(
-                                    gradient: const LinearGradient(
-                                      colors: [
-                                        AppTheme.primaryTurquoise,
-                                        AppTheme.darkTurquoise,
-                                      ],
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                    ),
+                                    color: AppTheme.nexusGreenLight,
                                     borderRadius: BorderRadius.circular(20),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: AppTheme.primaryColor.withOpacity(0.32),
+                                        color: AppTheme.nexusGreen.withOpacity(0.16),
                                         blurRadius: 16,
                                         spreadRadius: 0,
                                         offset: const Offset(0, 8),
@@ -383,7 +376,7 @@ class _VerificationSuccessDialogState extends State<VerificationSuccessDialog>
                                             Text(
                                               '¡ENTENDIDO, IR AL LOGIN!',
                                               style: GoogleFonts.outfit(
-                                                color: Colors.white,
+                                                color: Colors.black,
                                                 fontSize: 15,
                                                 fontWeight: FontWeight.bold,
                                                 letterSpacing: 0.5,
@@ -392,7 +385,7 @@ class _VerificationSuccessDialogState extends State<VerificationSuccessDialog>
                                             const SizedBox(width: 8),
                                             const Icon(
                                               Icons.arrow_forward_rounded,
-                                              color: Colors.white,
+                                              color: Colors.black,
                                               size: 18,
                                             ),
                                           ],
@@ -435,11 +428,11 @@ class _VerificationSuccessDialogState extends State<VerificationSuccessDialog>
               size: const Size(120, 120),
               painter: _GlowPulsePainter(
                 pulseValue: pulseValue,
-                color: const Color(0xFF10B981),
+                color: AppTheme.nexusGreenSecondary,
               ),
             ),
 
-            // Esfera verde esmeralda brillante con gradiente radial y sombra 3D
+            // Esfera verde Nexus con sombra suave
             Container(
               width: 80,
               height: 80,
@@ -447,15 +440,15 @@ class _VerificationSuccessDialogState extends State<VerificationSuccessDialog>
                 shape: BoxShape.circle,
                 gradient: const LinearGradient(
                   colors: [
-                    Color(0xFF34D399), // Emerald claro
-                    Color(0xFF059669), // Emerald profundo
+                    AppTheme.nexusGreenSecondary,
+                    AppTheme.nexusGreen,
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF10B981).withOpacity(0.45),
+                    color: AppTheme.nexusGreen.withOpacity(0.28),
                     blurRadius: 24,
                     spreadRadius: 2,
                     offset: const Offset(0, 8),
@@ -481,12 +474,12 @@ class _VerificationSuccessDialogState extends State<VerificationSuccessDialog>
                 child: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF1E293B),
+                    color: AppTheme.nexusGreenLight,
                     shape: BoxShape.circle,
                     border: Border.all(color: Colors.white, width: 2.5),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
+                        color: Colors.black.withOpacity(0.15),
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
@@ -494,7 +487,7 @@ class _VerificationSuccessDialogState extends State<VerificationSuccessDialog>
                   ),
                   child: const Icon(
                     Icons.send_rounded,
-                    color: Color(0xFF38BDF8), // Cyan neón
+                    color: Colors.black,
                     size: 18,
                   ),
                 ),

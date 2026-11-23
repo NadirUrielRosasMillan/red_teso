@@ -73,20 +73,20 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
       context: context,
       barrierDismissible: true,
       builder: (dialogContext) => AlertDialog(
-        backgroundColor: AppTheme.surfaceDark,
+        backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         icon: const Icon(Icons.logout_rounded, color: Colors.redAccent, size: 34),
         title: Text(
           'Cerrar sesión',
           style: GoogleFonts.outfit(
-            color: Colors.white,
+            color: AppTheme.textPrimaryLight,
             fontWeight: FontWeight.bold,
           ),
         ),
         content: Text(
           '¿Seguro que deseas salir del panel administrativo?',
           textAlign: TextAlign.center,
-          style: GoogleFonts.inter(color: Colors.white70),
+          style: GoogleFonts.inter(color: AppTheme.nexusTextMuted),
         ),
         actionsAlignment: MainAxisAlignment.spaceEvenly,
         actions: [
@@ -112,7 +112,6 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
 
     if (confirmed != true || !mounted) return;
 
-    // Cerrar Firebase primero: un error de Firestore no debe bloquear la salida.
     try {
       await FirebaseAuth.instance.signOut();
     } catch (e) {
@@ -121,7 +120,6 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
 
     if (!mounted) return;
 
-    // Navegación directa al login, sin depender de rutas nombradas.
     Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
       MaterialPageRoute<void>(
         builder: (_) => const _AdminLogoutLoginRedirect(),
@@ -133,7 +131,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         toolbarHeight: 78,
@@ -145,14 +143,14 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
               height: 44,
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
-                  colors: [AppTheme.accentCyan, AppTheme.primaryTurquoise],
+                  colors: [AppTheme.nexusGreen, AppTheme.nexusGreenSecondary],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 borderRadius: BorderRadius.circular(15),
                 boxShadow: [
                   BoxShadow(
-                    color: AppTheme.primaryTurquoise.withValues(alpha: 0.25),
+                    color: AppTheme.nexusGreen.withValues(alpha: 0.25),
                     blurRadius: 16,
                     offset: const Offset(0, 5),
                   ),
@@ -176,7 +174,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
                     overflow: TextOverflow.ellipsis,
                     style: GoogleFonts.outfit(
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: AppTheme.textPrimaryLight,
                       fontSize: 19,
                     ),
                   ),
@@ -185,7 +183,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: GoogleFonts.inter(
-                      color: Colors.white60,
+                      color: AppTheme.nexusTextMuted,
                       fontSize: 10,
                       letterSpacing: 0.6,
                     ),
@@ -195,8 +193,8 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
             ),
           ],
         ),
-        backgroundColor: AppTheme.bgDark.withValues(alpha: 0.96),
-        foregroundColor: Colors.white,
+        backgroundColor: Colors.white,
+        foregroundColor: AppTheme.textPrimaryLight,
         elevation: 0,
         actions: [
           Padding(
@@ -220,12 +218,12 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
         ],
         bottom: TabBar(
           controller: _tabController,
-          labelColor: AppTheme.accentCyan,
-          unselectedLabelColor: Colors.white54,
-          indicatorColor: AppTheme.accentCyan,
+          labelColor: AppTheme.nexusGreen,
+          unselectedLabelColor: AppTheme.nexusTextMuted,
+          indicatorColor: AppTheme.nexusGreen,
           indicatorWeight: 3,
           indicatorSize: TabBarIndicatorSize.label,
-          dividerColor: Colors.white10,
+          dividerColor: const Color(0xFFE0E5E2),
           labelStyle: GoogleFonts.inter(
             fontWeight: FontWeight.w700,
             fontSize: 11,
@@ -250,11 +248,11 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
               padding: const EdgeInsets.fromLTRB(14, 16, 14, 12),
               child: Row(
                 children: [
-                  _buildCountCard('Alumnos', 'users', 'type', 'alumno', Icons.people_outline_rounded, Colors.blueAccent),
+                  _buildCountCard('Alumnos', 'users', 'type', 'alumno', Icons.people_outline_rounded, AppTheme.nexusGreen),
                   const SizedBox(width: 8),
-                  _buildCountCard('Empresas', 'users', 'type', 'empresa', Icons.business_center_rounded, AppTheme.accentColor),
+                  _buildCountCard('Empresas', 'users', 'type', 'empresa', Icons.business_center_rounded, AppTheme.nexusGreenSecondary),
                   const SizedBox(width: 8),
-                  _buildCountCard('Docentes', 'users', 'type', 'profesor', Icons.school_rounded, AppTheme.primaryGreen),
+                  _buildCountCard('Docentes', 'users', 'type', 'profesor', Icons.school_rounded, AppTheme.nexusGreen),
                 ],
               ),
             ),
@@ -299,7 +297,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
               'No se pudieron cargar los datos',
               textAlign: TextAlign.center,
               style: GoogleFonts.outfit(
-                color: Colors.white,
+                color: AppTheme.textPrimaryLight,
                 fontSize: 17,
                 fontWeight: FontWeight.bold,
               ),
@@ -308,13 +306,17 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
             Text(
               mensaje,
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(color: Colors.white70, fontSize: 12),
+              style: GoogleFonts.inter(color: AppTheme.nexusTextMuted, fontSize: 12),
             ),
             const SizedBox(height: 16),
             ElevatedButton.icon(
               onPressed: reintentar,
-              icon: const Icon(Icons.refresh),
+              icon: const Icon(Icons.refresh, color: Colors.black),
               label: const Text('Reintentar'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.nexusGreenLight,
+                foregroundColor: Colors.black,
+              ),
             ),
           ],
         ),
@@ -348,8 +350,8 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
               children: [
                 Icon(icon, color: color, size: 22),
                 const SizedBox(height: 6),
-                Text(count, style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: snapshot.hasError ? Colors.orangeAccent : Colors.white)),
-                Text(label, style: GoogleFonts.inter(fontSize: 10, color: Colors.white70)),
+                Text(count, style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: snapshot.hasError ? Colors.orangeAccent : AppTheme.textPrimaryLight)),
+                Text(label, style: GoogleFonts.inter(fontSize: 10, color: AppTheme.nexusTextMuted)),
               ],
             ),
           );
@@ -385,10 +387,10 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.check_circle_outline_rounded, size: 54, color: AppTheme.primaryGreen),
+                  const Icon(Icons.check_circle_outline_rounded, size: 54, color: AppTheme.nexusGreen),
                   const SizedBox(height: 12),
-                  Text('Todas las solicitudes están al día', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white)),
-                  Text('No hay empresas ni docentes pendientes de validación', style: GoogleFonts.inter(color: Colors.white60, fontSize: 12.5)),
+                  Text('Todas las solicitudes están al día', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 16, color: AppTheme.textPrimaryLight)),
+                  Text('No hay empresas ni docentes pendientes de validación', style: GoogleFonts.inter(color: AppTheme.nexusTextMuted, fontSize: 12.5)),
                 ],
               ),
             ),
@@ -406,15 +408,15 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
             final email = data['email'] ?? '';
 
             return GlassmorphicCard(
-              glowColor: type == 'empresa' ? AppTheme.accentColor : AppTheme.primaryGreen,
+              glowColor: AppTheme.nexusGreen,
               child: Row(
                 children: [
                   CircleAvatar(
                     radius: 22,
-                    backgroundColor: type == 'empresa' ? AppTheme.accentColor.withOpacity(0.2) : AppTheme.primaryGreen.withOpacity(0.2),
+                    backgroundColor: AppTheme.nexusGreenLight,
                     child: Icon(
                       type == 'empresa' ? Icons.business_rounded : Icons.school_rounded,
-                      color: Colors.white,
+                      color: Colors.black,
                       size: 20,
                     ),
                   ),
@@ -423,8 +425,8 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(name, style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 15)),
-                        Text('$email • $type', style: GoogleFonts.inter(color: Colors.white70, fontSize: 12)),
+                        Text(name, style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: AppTheme.textPrimaryLight, fontSize: 15)),
+                        Text('$email • $type', style: GoogleFonts.inter(color: AppTheme.nexusTextMuted, fontSize: 12)),
                       ],
                     ),
                   ),
@@ -438,13 +440,11 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
                         uid,
                         type == 'empresa' ? 'Empresa' : 'Docente',
                       ),
-                      // Fuerza un tamaño finito y evita heredar un ancho infinito
-                      // de ButtonStyle o de las restricciones del Row en Flutter Web.
                       style: ElevatedButton.styleFrom(
                         minimumSize: const Size(0, 42),
                         maximumSize: const Size(124, 42),
-                        backgroundColor: AppTheme.primaryGreen,
-                        foregroundColor: Colors.white,
+                        backgroundColor: AppTheme.nexusGreenLight,
+                        foregroundColor: Colors.black,
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -452,7 +452,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
                         padding: const EdgeInsets.symmetric(
                           horizontal: 10,
                           vertical: 8,
-                      ),
+                        ),
                       ),
                       child: Text(
                         'APROBAR',
@@ -462,7 +462,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
                         style: GoogleFonts.outfit(
                           fontWeight: FontWeight.bold,
                           fontSize: 11,
-                          color: Colors.white,
+                          color: Colors.black,
                         ),
                       ),
                     ),
@@ -505,10 +505,10 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.history_toggle_off_rounded, size: 54, color: Colors.white38),
+                const Icon(Icons.history_toggle_off_rounded, size: 54, color: AppTheme.nexusTextMuted),
                 const SizedBox(height: 12),
-                Text('No hay registros de actividad aún', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white)),
-                Text('Los movimientos de los usuarios aparecerán aquí en tiempo real', style: GoogleFonts.inter(color: Colors.white60, fontSize: 12.5)),
+                Text('No hay registros de actividad aún', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 16, color: AppTheme.textPrimaryLight)),
+                Text('Los movimientos de los usuarios aparecerán aquí en tiempo real', style: GoogleFonts.inter(color: AppTheme.nexusTextMuted, fontSize: 12.5)),
               ],
             ),
           );
@@ -532,7 +532,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
             }
 
             return GlassmorphicCard(
-              glowColor: status == 'Activo' ? AppTheme.primaryGreen : Colors.grey,
+              glowColor: status == 'Activo' ? AppTheme.nexusGreen : Colors.grey,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -541,16 +541,16 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
                     children: [
                       CircleAvatar(
                         radius: 20,
-                        backgroundColor: Colors.white12,
-                        child: Text(userName.isNotEmpty ? userName[0].toUpperCase() : '?', style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold)),
+                        backgroundColor: AppTheme.nexusGreenLight,
+                        child: Text(userName.isNotEmpty ? userName[0].toUpperCase() : '?', style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.bold)),
                       ),
                       Container(
                         width: 10,
                         height: 10,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: status == 'Activo' ? Colors.greenAccent : Colors.grey,
-                          border: Border.all(color: AppTheme.bgDark, width: 1.5),
+                          color: status == 'Activo' ? AppTheme.nexusGreen : Colors.grey,
+                          border: Border.all(color: Colors.white, width: 1.5),
                         ),
                       ),
                     ],
@@ -563,14 +563,14 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(userName, style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 14)),
-                            Text(timeStr, style: GoogleFonts.inter(color: Colors.white54, fontSize: 11)),
+                            Text(userName, style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: AppTheme.textPrimaryLight, fontSize: 14)),
+                            Text(timeStr, style: GoogleFonts.inter(color: AppTheme.nexusTextMuted, fontSize: 11)),
                           ],
                         ),
-                        Text('$action • $userType', style: GoogleFonts.inter(color: AppTheme.accentColor, fontSize: 12, fontWeight: FontWeight.w600)),
+                        Text('$action • $userType', style: GoogleFonts.inter(color: AppTheme.nexusGreen, fontSize: 12, fontWeight: FontWeight.w600)),
                         if (details.isNotEmpty) ...[
                           const SizedBox(height: 2),
-                          Text(details, style: GoogleFonts.inter(color: Colors.white70, fontSize: 11.5)),
+                          Text(details, style: GoogleFonts.inter(color: AppTheme.nexusTextMuted, fontSize: 11.5)),
                         ],
                       ],
                     ),
@@ -596,7 +596,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
         }
 
         final users = snapshot.data?.docs ?? [];
-        if (users.isEmpty) return Center(child: Text('No hay ${userType}s registrados.', style: GoogleFonts.inter(color: Colors.white)));
+        if (users.isEmpty) return Center(child: Text('No hay ${userType}s registrados.', style: GoogleFonts.inter(color: AppTheme.textPrimaryLight)));
 
         return ListView.builder(
           padding: const EdgeInsets.all(16),
@@ -610,12 +610,12 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
                 children: [
                   CircleAvatar(
                     radius: 20,
-                    backgroundColor: AppTheme.primaryColor.withOpacity(0.2),
+                    backgroundColor: AppTheme.nexusGreenLight,
                     child: Text(
                       (data['name'] is String && (data['name'] as String).isNotEmpty)
                           ? (data['name'] as String)[0].toUpperCase()
                           : '?',
-                      style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold),
+                      style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.bold),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -623,12 +623,12 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(data['name'] ?? 'Usuario', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 15)),
+                        Text(data['name'] ?? 'Usuario', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: AppTheme.textPrimaryLight, fontSize: 15)),
                         Text(
                           userType == 'alumno'
                               ? '${data['modality'] ?? 'Sistemas'} | GPA: ${data['gpa'] ?? '8.5'}'
                               : 'RFC: ${data['rfc'] ?? 'N/A'}',
-                          style: GoogleFonts.inter(color: Colors.white70, fontSize: 12),
+                          style: GoogleFonts.inter(color: AppTheme.nexusTextMuted, fontSize: 12),
                         ),
                       ],
                     ),
@@ -667,16 +667,16 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
                 children: [
                   Container(
                     padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(color: Colors.redAccent.withOpacity(0.2), borderRadius: BorderRadius.circular(12)),
-                    child: const Icon(Icons.work_outline_rounded, color: Colors.white, size: 20),
+                    decoration: BoxDecoration(color: Colors.redAccent.withOpacity(0.15), borderRadius: BorderRadius.circular(12)),
+                    child: const Icon(Icons.work_outline_rounded, color: Colors.redAccent, size: 20),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(v['puesto'] ?? 'Vacante', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 15)),
-                        Text('Empresa: ${v['empresa'] ?? 'Empresa'}', style: GoogleFonts.inter(color: Colors.white70, fontSize: 12)),
+                        Text(v['puesto'] ?? 'Vacante', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: AppTheme.textPrimaryLight, fontSize: 15)),
+                        Text('Empresa: ${v['empresa'] ?? 'Empresa'}', style: GoogleFonts.inter(color: AppTheme.nexusTextMuted, fontSize: 12)),
                       ],
                     ),
                   ),
@@ -699,8 +699,8 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
       padding: const EdgeInsets.all(16),
       itemCount: 4,
       itemBuilder: (context, index) => Shimmer.fromColors(
-        baseColor: Colors.white.withOpacity(0.08),
-        highlightColor: Colors.white.withOpacity(0.18),
+        baseColor: const Color(0xFFF6F8F7),
+        highlightColor: const Color(0xFFE0E5E2),
         child: Container(
           height: 80,
           margin: const EdgeInsets.only(bottom: 12),

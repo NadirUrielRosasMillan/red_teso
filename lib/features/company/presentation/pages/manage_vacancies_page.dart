@@ -24,14 +24,14 @@ class _ManageVacanciesPageState extends State<ManageVacanciesPage> {
     final bool? confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: AppTheme.surfaceDark,
+        backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: Text('¿Eliminar Vacante?', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white)),
-        content: Text('¿Estás seguro de eliminar "$title"? Esta acción no se puede deshacer.', style: GoogleFonts.inter(color: Colors.white70)),
+        title: Text('¿Eliminar Vacante?', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: AppTheme.textPrimaryLight)),
+        content: Text('¿Estás seguro de eliminar "$title"? Esta acción no se puede deshacer.', style: GoogleFonts.inter(color: AppTheme.nexusTextMuted)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text('CANCELAR', style: GoogleFonts.inter(color: Colors.white60)),
+            child: Text('CANCELAR', style: GoogleFonts.inter(color: AppTheme.nexusTextMuted)),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
@@ -64,21 +64,21 @@ class _ManageVacanciesPageState extends State<ManageVacanciesPage> {
     final user = _auth.currentUser;
     if (user == null) {
       return Scaffold(
-        backgroundColor: AppTheme.bgDark,
-        body: Center(child: Text('Inicia sesión para ver tus publicaciones', style: GoogleFonts.inter(color: Colors.white))),
+        backgroundColor: Colors.white,
+        body: Center(child: Text('Inicia sesión para ver tus publicaciones', style: GoogleFonts.inter(color: AppTheme.textPrimaryLight))),
       );
     }
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('Mis Vacantes Publicadas', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white)),
-        backgroundColor: AppTheme.bgDark.withOpacity(0.85),
-        foregroundColor: Colors.white,
+        title: Text('Mis Vacantes Publicadas', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: AppTheme.textPrimaryLight)),
+        backgroundColor: Colors.white,
+        foregroundColor: AppTheme.textPrimaryLight,
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.add_rounded, color: AppTheme.accentColor, size: 28),
+            icon: const Icon(Icons.add_rounded, color: AppTheme.nexusGreen, size: 28),
             tooltip: 'Publicar nueva vacante',
             onPressed: () {
               Navigator.push(
@@ -99,10 +99,10 @@ class _ManageVacanciesPageState extends State<ManageVacanciesPage> {
               MaterialPageRoute(builder: (context) => const CreateVacancyPage()),
             );
           },
-          backgroundColor: AppTheme.primaryColor,
+          backgroundColor: AppTheme.nexusGreenLight,
           elevation: 8,
           tooltip: 'Publicar nueva vacante',
-          child: const Icon(Icons.add_rounded, color: Colors.white, size: 28),
+          child: const Icon(Icons.add_rounded, color: Colors.black, size: 28),
         ),
       ).animate().scale(delay: 300.ms, duration: 400.ms, curve: Curves.easeOutBack),
       body: LiquidGlassAmbientBackground(
@@ -113,7 +113,7 @@ class _ManageVacanciesPageState extends State<ManageVacanciesPage> {
               .snapshots(),
           builder: (context, snapshot) {
             if (snapshot.hasError) {
-              return Center(child: Text('Error al cargar las vacantes', style: GoogleFonts.inter(color: Colors.white)));
+              return Center(child: Text('Error al cargar las vacantes', style: GoogleFonts.inter(color: AppTheme.textPrimaryLight)));
             }
             if (snapshot.connectionState == ConnectionState.waiting) {
               return _buildShimmerSkeletonList();
@@ -131,21 +131,21 @@ class _ManageVacanciesPageState extends State<ManageVacanciesPage> {
                       Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: AppTheme.primaryColor.withOpacity(0.2),
+                          color: AppTheme.nexusGreen.withOpacity(0.1),
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.post_add_rounded, size: 64, color: AppTheme.accentColor),
+                        child: const Icon(Icons.post_add_rounded, size: 64, color: AppTheme.nexusGreen),
                       ),
                       const SizedBox(height: 20),
                       Text(
                         'No has publicado vacantes aún',
-                        style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                        style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold, color: AppTheme.textPrimaryLight),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         'Publica tu primera oportunidad laboral o de residencias para conectar con los alumnos de TESOEM.',
                         textAlign: TextAlign.center,
-                        style: GoogleFonts.inter(fontSize: 13.5, color: Colors.white70),
+                        style: GoogleFonts.inter(fontSize: 13.5, color: AppTheme.nexusTextMuted),
                       ),
                       const SizedBox(height: 24),
                       ElevatedButton.icon(
@@ -155,10 +155,11 @@ class _ManageVacanciesPageState extends State<ManageVacanciesPage> {
                             MaterialPageRoute(builder: (context) => const CreateVacancyPage()),
                           );
                         },
-                        icon: const Icon(Icons.add_rounded, color: Colors.white),
-                        label: Text('PUBLICAR VACANTE', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white)),
+                        icon: const Icon(Icons.add_rounded, color: Colors.black),
+                        label: Text('PUBLICAR VACANTE', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.black)),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppTheme.primaryColor,
+                          backgroundColor: AppTheme.nexusGreenLight,
+                          foregroundColor: Colors.black,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
                         ),
@@ -197,20 +198,20 @@ class _ManageVacanciesPageState extends State<ManageVacanciesPage> {
                                   style: GoogleFonts.outfit(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.white,
+                                    color: AppTheme.textPrimaryLight,
                                   ),
                                 ),
                                 const SizedBox(height: 4),
                                 Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                   decoration: BoxDecoration(
-                                    color: AppTheme.primaryColor.withOpacity(0.3),
+                                    color: AppTheme.nexusGreenLight.withOpacity(0.45),
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                   child: Text(
                                     tipo,
                                     style: GoogleFonts.inter(
-                                      color: Colors.white,
+                                      color: Colors.black,
                                       fontSize: 12,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -222,7 +223,7 @@ class _ManageVacanciesPageState extends State<ManageVacanciesPage> {
                           Row(
                             children: [
                               IconButton(
-                                icon: const Icon(Icons.edit_outlined, color: Colors.blueAccent),
+                                icon: const Icon(Icons.edit_outlined, color: AppTheme.nexusGreen),
                                 tooltip: 'Editar Vacante',
                                 onPressed: () {
                                   Navigator.push(
@@ -251,21 +252,21 @@ class _ManageVacanciesPageState extends State<ManageVacanciesPage> {
                         v['descripcion'] ?? 'Sin descripción',
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.inter(fontSize: 13, color: Colors.white70),
+                        style: GoogleFonts.inter(fontSize: 13, color: AppTheme.nexusTextMuted),
                       ),
 
-                      const Divider(height: 24, color: Colors.white12),
+                      const Divider(height: 24, color: Color(0xFFE0E5E2)),
 
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Row(
                             children: [
-                              const Icon(Icons.monetization_on_outlined, size: 16, color: Colors.amber),
+                              const Icon(Icons.monetization_on_outlined, size: 16, color: AppTheme.nexusGreen),
                               const SizedBox(width: 4),
                               Text(
                                 '\$$apoyo MXN / mes',
-                                style: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.bold, color: Colors.amber),
+                                style: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.bold, color: AppTheme.nexusGreen),
                               ),
                             ],
                           ),
@@ -281,17 +282,16 @@ class _ManageVacanciesPageState extends State<ManageVacanciesPage> {
                             child: Container(
                               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                               decoration: BoxDecoration(
-                                color: AppTheme.accentColor.withOpacity(0.2),
+                                color: AppTheme.nexusGreenLight,
                                 borderRadius: BorderRadius.circular(10),
-                                border: Border.all(color: AppTheme.accentColor.withOpacity(0.4)),
                               ),
                               child: Row(
                                 children: [
-                                  const Icon(Icons.map_rounded, size: 14, color: AppTheme.accentColor),
+                                  const Icon(Icons.map_rounded, size: 14, color: Colors.black),
                                   const SizedBox(width: 4),
                                   Text(
                                     'Ver Mapa 📍',
-                                    style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: AppTheme.accentColor),
+                                    style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black),
                                   ),
                                 ],
                               ),
@@ -316,8 +316,8 @@ class _ManageVacanciesPageState extends State<ManageVacanciesPage> {
       itemCount: 4,
       itemBuilder: (context, index) {
         return Shimmer.fromColors(
-          baseColor: Colors.white.withOpacity(0.08),
-          highlightColor: Colors.white.withOpacity(0.18),
+          baseColor: const Color(0xFFF6F8F7),
+          highlightColor: const Color(0xFFE0E5E2),
           child: Container(
             height: 110,
             margin: const EdgeInsets.only(bottom: 16),

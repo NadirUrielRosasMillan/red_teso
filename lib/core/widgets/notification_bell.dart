@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:red_teso/core/theme/app_theme.dart';
 import 'package:red_teso/features/notifications/presentation/pages/notifications_page.dart';
 
 class NotificationBell extends StatelessWidget {
@@ -8,13 +9,16 @@ class NotificationBell extends StatelessWidget {
 
   const NotificationBell({
     super.key,
-    this.color = Colors.green,
+    this.color = AppTheme.nexusGreen,
   });
 
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return const SizedBox();
+
+    final effectiveColor =
+        color == Colors.white ? AppTheme.nexusGreen : color;
 
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
@@ -23,16 +27,22 @@ class NotificationBell extends StatelessWidget {
           .where('read', isEqualTo: false)
           .snapshots(),
       builder: (context, snapshot) {
-        final bool hasUnread = snapshot.hasData && snapshot.data!.docs.isNotEmpty;
+        final bool hasUnread =
+            snapshot.hasData && snapshot.data!.docs.isNotEmpty;
 
         return Stack(
           children: [
             IconButton(
-              icon: Icon(Icons.notifications_none_outlined, color: color),
+              icon: Icon(
+                Icons.notifications_none_outlined,
+                color: effectiveColor,
+              ),
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const NotificationsPage()),
+                  MaterialPageRoute(
+                    builder: (context) => const NotificationsPage(),
+                  ),
                 );
               },
             ),
@@ -44,7 +54,7 @@ class NotificationBell extends StatelessWidget {
                   width: 10,
                   height: 10,
                   decoration: BoxDecoration(
-                    color: Colors.red,
+                    color: AppTheme.nexusGreenSecondary,
                     shape: BoxShape.circle,
                     border: Border.all(color: Colors.white, width: 2),
                   ),

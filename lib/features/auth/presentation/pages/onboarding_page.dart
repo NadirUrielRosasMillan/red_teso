@@ -91,8 +91,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.primaryGreen,
-                      foregroundColor: Colors.white,
+                      backgroundColor: AppTheme.nexusGreenLight,
+                      foregroundColor: Colors.black,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),
@@ -101,7 +101,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     ),
                     child: Text(
                       _currentPage == _onboardingData.length - 1 ? "COMENZAR" : "SIGUIENTE",
-                      style: const TextStyle(fontWeight: FontWeight.bold),
+                      style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ],

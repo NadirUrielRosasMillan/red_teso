@@ -236,7 +236,7 @@ class _CreateCoursePageState extends State<CreateCoursePage> {
     final isEditing = widget.courseId != null && widget.courseId!.isNotEmpty;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: Colors.white,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
@@ -245,7 +245,7 @@ class _CreateCoursePageState extends State<CreateCoursePage> {
         ),
         title: Text(isEditing ? 'Editar Curso ✏️' : 'Publicar Nuevo Curso 🎓', style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
         backgroundColor: Colors.white,
-        foregroundColor: const Color(0xFF0F172A),
+        foregroundColor: AppTheme.textPrimaryLight,
         elevation: 0,
       ),
       body: SingleChildScrollView(
@@ -257,11 +257,11 @@ class _CreateCoursePageState extends State<CreateCoursePage> {
             children: [
               Text(
                 isEditing ? 'Actualizar Información del Curso' : 'Capacitación Ejecutiva para Empresas',
-                style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A)),
+                style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textPrimaryLight),
               ),
               Text(
                 'Los cursos y videos publicados aparecerán inmediatamente en el catálogo de las empresas.',
-                style: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFF64748B)),
+                style: GoogleFonts.inter(fontSize: 12.5, color: AppTheme.nexusTextMuted),
               ),
               const SizedBox(height: 20),
 
@@ -445,16 +445,17 @@ class _CreateCoursePageState extends State<CreateCoursePage> {
                 child: ElevatedButton.icon(
                   onPressed: _isLoading ? null : _saveCourse,
                   icon: _isLoading
-                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                      : Icon(isEditing ? Icons.save_rounded : Icons.publish_rounded, color: Colors.white),
+                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.black, strokeWidth: 2))
+                      : Icon(isEditing ? Icons.save_rounded : Icons.publish_rounded, color: Colors.black),
                   label: Text(
                     _isLoading
                         ? 'GUARDANDO...'
                         : (isEditing ? 'GUARDAR CAMBIOS EN EL CURSO' : 'PUBLICAR CURSO EN EL CATÁLOGO'),
-                    style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.white),
+                    style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.black),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.primaryGreen,
+                    backgroundColor: AppTheme.nexusGreenLight,
+                    foregroundColor: Colors.black,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   ),
                 ),
@@ -481,7 +482,7 @@ class _CreateCoursePageState extends State<CreateCoursePage> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: hasFile ? AppTheme.primaryGreen : const Color(0xFFE2E8F0),
+          color: hasFile ? AppTheme.primaryGreen : const Color(0xFFE0E5E2),
           width: hasFile ? 1.5 : 1.0,
         ),
       ),
@@ -490,12 +491,12 @@ class _CreateCoursePageState extends State<CreateCoursePage> {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: hasFile ? AppTheme.primaryGreen.withOpacity(0.12) : const Color(0xFFF1F5F9),
+              color: hasFile ? AppTheme.primaryGreen.withOpacity(0.12) : const Color(0xFFF6F8F7),
               shape: BoxShape.circle,
             ),
             child: Icon(
               icon,
-              color: hasFile ? AppTheme.primaryGreen : const Color(0xFF64748B),
+              color: hasFile ? AppTheme.primaryGreen : AppTheme.nexusTextMuted,
               size: 22,
             ),
           ),
@@ -506,14 +507,14 @@ class _CreateCoursePageState extends State<CreateCoursePage> {
               children: [
                 Text(
                   title,
-                  style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 13.5, color: const Color(0xFF0F172A)),
+                  style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 13.5, color: AppTheme.textPrimaryLight),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   subtitle,
                   style: GoogleFonts.inter(
                     fontSize: 11.5,
-                    color: hasFile ? AppTheme.primaryGreen : const Color(0xFF64748B),
+                    color: hasFile ? AppTheme.primaryGreen : AppTheme.nexusTextMuted,
                     fontWeight: hasFile ? FontWeight.bold : FontWeight.normal,
                   ),
                   maxLines: 1,
@@ -526,8 +527,8 @@ class _CreateCoursePageState extends State<CreateCoursePage> {
           ElevatedButton(
             onPressed: onTap,
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.primaryGreen,
-              foregroundColor: Colors.white,
+              backgroundColor: AppTheme.nexusGreenLight,
+              foregroundColor: Colors.black,
               elevation: 0,
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
               minimumSize: const Size(0, 36),
@@ -536,11 +537,11 @@ class _CreateCoursePageState extends State<CreateCoursePage> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(hasFile ? Icons.check_circle_rounded : Icons.upload_file_rounded, size: 15, color: Colors.white),
+                Icon(hasFile ? Icons.check_circle_rounded : Icons.upload_file_rounded, size: 15, color: Colors.black),
                 const SizedBox(width: 4),
                 Text(
                   hasFile ? 'CAMBIAR' : 'ELEGIR',
-                  style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 11, color: Colors.white),
+                  style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 11, color: Colors.black),
                 ),
               ],
             ),

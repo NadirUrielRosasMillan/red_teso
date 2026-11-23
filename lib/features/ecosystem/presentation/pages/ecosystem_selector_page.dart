@@ -84,10 +84,8 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
           ? const CompanyDashboardPage()
           : const StudentDashboardPage();
     } else if (experience.id == 'aprende') {
-      if (userType == UserType.profesor) {
-        destination = const TeacherCoursesPage();
-      } else if (userType == UserType.alumno) {
-        destination = const StudentCoursesPage();
+      if (userType == UserType.profesor || userType == UserType.alumno) {
+        destination = const LearningHubPage();
       } else {
         destination = const CourseCatalogPage();
       }
@@ -120,11 +118,11 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
 
     if (experiences.isEmpty) {
       return const Scaffold(
-        backgroundColor: _nexusGreen,
+        backgroundColor: Colors.white,
         body: Center(
           child: Text(
             'No tienes experiencias disponibles.',
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(color: Colors.black),
           ),
         ),
       );
@@ -140,20 +138,9 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
     final isWide = MediaQuery.sizeOf(context).width >= 940;
 
     return Scaffold(
-      body: DecoratedBox(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Colors.white,
-              Color(0xFFF5FAF6),
-              Color(0xFFE7F2E9),
-              Color(0xFFFFFFFF),
-            ],
-            stops: [0, .28, .68, 1],
-          ),
-        ),
+      backgroundColor: Colors.white,
+      body: ColoredBox(
+        color: Colors.white,
         child: Stack(
           children: [
             SafeArea(
@@ -189,23 +176,23 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
                               ? Icons.play_arrow_rounded
                               : Icons.lock_outline_rounded,
                           size: 24,
+                          color: Colors.black,
                         ),
                         label: Text(
                           selected.available
                               ? 'ENTRAR A ${selected.title.toUpperCase()}'
                               : 'NEXUS IMPULSA · PRÓXIMAMENTE',
                           style: const TextStyle(
+                            color: Colors.black,
                             fontWeight: FontWeight.w900,
                             letterSpacing: .8,
                           ),
                         ),
                         style: FilledButton.styleFrom(
-                          backgroundColor: _nexusGreenSecondary,
-                          disabledBackgroundColor:
-                              Colors.white.withValues(alpha: .16),
-                          foregroundColor: Colors.white,
-                          disabledForegroundColor:
-                              Colors.white.withValues(alpha: .65),
+                          backgroundColor: _nexusGreenLight,
+                          disabledBackgroundColor: const Color(0xFFE0E5E2),
+                          foregroundColor: Colors.black,
+                          disabledForegroundColor: _nexusTextMuted,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(15),
                           ),

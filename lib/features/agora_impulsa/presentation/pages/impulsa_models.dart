@@ -17,36 +17,31 @@ class ImpulsaPalette {
   final bool isDark;
   const ImpulsaPalette(this.isDark);
 
-  static const Color flagGreen = Color(0xFF0B6B3A);
-  static const Color flagGreenMid = Color(0xFF137B4B);
-  static const Color flagGreenBright = Color(0xFF10B981);
-  static const Color flagGreenSoftDark = Color(0xFF0F2E22);
-  static const Color flagGreenSoftLight = Color(0xFFE8F5EE);
+  static const Color flagGreen = Color(0xFF0B5D3B);
+  static const Color flagGreenMid = Color(0xFF1E8449);
+  static const Color flagGreenBright = Color(0xFF1E8449);
+  static const Color flagGreenSoftDark = Color(0xFFA8D5A2);
+  static const Color flagGreenSoftLight = Color(0xFFA8D5A2);
+  static const Color buttonGreen = Color(0xFFA8D5A2);
 
-  Color get bg => isDark ? const Color(0xFF0B1210) : const Color(0xFFF4F7F5);
-  Color get sidebarBg =>
-      isDark ? const Color(0xFF0E1915) : const Color(0xFF094D2A);
-  Color get card => isDark ? const Color(0xFF121C19) : Colors.white;
-  Color get subCard =>
-      isDark ? const Color(0xFF172420) : const Color(0xFFF8FBF9);
-  Color get codeBg =>
-      isDark ? const Color(0xFF090E0C) : const Color(0xFF101916);
-  Color get border =>
-      isDark ? const Color(0xFF233831) : const Color(0xFFD6E4DC);
-  Color get textPrimary =>
-      isDark ? const Color(0xFFF1F7F4) : const Color(0xFF0F241B);
-  Color get textSecondary =>
-      isDark ? const Color(0xFF9DB5AA) : const Color(0xFF4C665A);
-  Color get primary => isDark ? flagGreenBright : flagGreen;
-  Color get badgeBg => isDark ? flagGreenSoftDark : flagGreenSoftLight;
+  Color get bg => Colors.white;
+  Color get sidebarBg => const Color(0xFFF6F8F7);
+  Color get card => Colors.white;
+  Color get subCard => const Color(0xFFF6F8F7);
+  Color get codeBg => const Color(0xFF111814);
+  Color get border => const Color(0xFFE0E5E2);
+  Color get textPrimary => const Color(0xFF111814);
+  Color get textSecondary => const Color(0xFF66756B);
+  Color get primary => flagGreen;
+  Color get badgeBg => const Color(0xFFF6F8F7);
 
   static const List<Color> memberColors = [
-    Color(0xFF0B6B3A),
-    Color(0xFF0284C7),
+    Color(0xFF0B5D3B),
+    Color(0xFF1E8449),
     Color(0xFFD97706),
     Color(0xFF7C3AED),
     Color(0xFFDB2777),
-    Color(0xFF0D9488),
+    Color(0xFF66756B),
   ];
 }
 
@@ -125,8 +120,8 @@ class ImpulsaApplicantMember {
 }
 
 enum TaskImportance {
-  low('Baja', 1.0, Color(0xFF64748B)),
-  medium('Media', 2.0, Color(0xFF0284C7)),
+  low('Baja', 1.0, Color(0xFF66756B)),
+  medium('Media', 2.0, Color(0xFF1E8449)),
   high('Alta', 3.0, Color(0xFFD97706)),
   critical('Crítica', 4.0, Color(0xFFDC2626));
 

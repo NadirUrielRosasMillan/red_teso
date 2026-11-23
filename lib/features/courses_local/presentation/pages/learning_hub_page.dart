@@ -7,7 +7,7 @@ import '../theme/courses_theme.dart';
 import 'student_catalog_page.dart';
 import 'teacher_courses_page.dart';
 
-/// Punto de entrada de AGORA Aprende. Lee el rol del usuario con sesion
+/// Punto de entrada de NEXUS Aprende. Lee el rol del usuario con sesion
 /// iniciada (AuthProvider) y conecta el modulo con Firebase:
 /// - profesor y admin: panel del profesor (admin ve y edita todos los cursos).
 /// - alumno: catalogo con inscripcion, aula, evaluaciones y certificados.
@@ -27,19 +27,19 @@ class _LearningHubPageState extends State<LearningHubPage> {
     final user = auth.user;
     final role = auth.userType;
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      final store = LocalCourseStore.instance;
-      if (user == null || role == UserType.none) {
+    final store = LocalCourseStore.instance;
+    if (user == null || role == UserType.none) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
         store.detach();
-      } else {
-        store.attach(
-          uid: user.uid,
-          role: role.name,
-          name: user.displayName ?? '',
-        );
-      }
-    });
+      });
+    } else {
+      store.attach(
+        uid: user.uid,
+        role: role.name,
+        name: user.displayName ?? '',
+      );
+    }
   }
 
   @override
@@ -62,7 +62,7 @@ class _LearningHubPageState extends State<LearningHubPage> {
         return Theme(
           data: coursesTheme(),
           child: Scaffold(
-            appBar: AppBar(title: const Text('AGORA Aprende')),
+            appBar: AppBar(title: const Text('NEXUS Aprende')),
             body: const Center(
               child: Padding(
                 padding: EdgeInsets.all(32),

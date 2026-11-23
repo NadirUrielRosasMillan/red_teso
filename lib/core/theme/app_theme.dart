@@ -1,69 +1,82 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// Identidad visual de NEXUS: verde institucional y blanco.
+/// Identidad visual de NEXUS: paleta oficial verde Nexus, blanco, gris y negro.
 class AppTheme {
-  static const Color primaryColor = Color(0xFF0793B8); // Turquesa Principal
-  static const Color secondaryColor = Color(0xFF10BFD0); // Cian
-  static const Color accentColor = Color(0xFF6BE7C8); // Menta
-  static const Color darkGreen = Color(0xFF056C88); // Turquesa Profundo
-  static const Color backgroundColor = Color(0xFFF8FBFF); // Fondo claro limpio
-  static const Color greyColor = Color(0xFF566080); // Gris 600
+  // --- Paleta Oficial NEXUS ---
+  static const Color nexusGreen = Color(0xFF0B5D3B);
+  static const Color nexusGreenSecondary = Color(0xFF1E8449);
+  static const Color nexusGreenLight = Color(0xFFA8D5A2);
+  static const Color nexusTextMuted = Color(0xFF66756B);
 
-  // --- Dark Theme Colors (Turquesa / Slate Teal) ---
-  static const Color bgDark = Color(0xFF0A1922); // Pizarra Turquesa Oscuro
-  static const Color surfaceDark = Color(0xFF112A36); // Superficie Turquesa Oscura
-  static const Color borderDark = Color(0xFF1B4B5F); // Borde Turquesa Oscuro
-  static const Color textPrimaryDark = Color(0xFFFFFFFF); // Blanco
-  static const Color textSecondaryDark = Color(0xFFB8E2EC); // Cian-200 (texto secundario)
+  // --- Neutros (Blanco, Gris, Negro) ---
+  static const Color bgWhite = Color(0xFFFFFFFF);
+  static const Color bgLight = Color(0xFFFFFFFF);
+  static const Color surfaceLight = Color(0xFFF6F8F7);
+  static const Color borderLight = Color(0xFFE0E5E2);
+  static const Color textPrimaryLight = Color(0xFF111814);
+  static const Color textSecondaryLight = nexusTextMuted;
+  static const Color greyColor = nexusTextMuted;
+  static const Color backgroundColor = Color(0xFFFFFFFF);
 
-  // --- Light Theme Colors ---
-  static const Color bgLight = Color(0xFFFFFFFF); // Blanco puro
-  static const Color bgWhite = bgLight; // Alias para fondo blanco
-  static const Color surfaceLight = Color(0xFFF4FAFC); // Turquesa-50 (superficie muy clara)
-  static const Color borderLight = Color(0xFFDCEBF0); // Borde Turquesa-Gris claro
-  static const Color textPrimaryLight = Color(0xFF0D212C); // Pizarra-950
-  static const Color textSecondaryLight = Color(0xFF4A6572); // Pizarra-600
+  // --- Colores Principales del Tema ---
+  static const Color primaryColor = nexusGreen;
+  static const Color secondaryColor = nexusGreenSecondary;
+  static const Color accentColor = nexusGreenLight;
+  static const Color darkGreen = nexusGreen;
 
-  // --- Colores Principales (Brand) ---
-  static const Color primaryTurquoise = Color(0xFF0793B8); // Cian-600 (Turquesa Principal)
-  static const Color darkTurquoise = Color(0xFF056C88); // Cian-800 (Turquesa Oscuro)
-  static const Color accentCyan = Color(0xFF10BFD0); // Cian-400 (Acentos)
-  static const Color primaryBlue = Color(0xFF0793B8); // Redirigido a Turquesa para unificar todo
-  static const Color successMint = Color(0xFF6BE7C8); // Menta (Éxito)
+  // --- Alias de compatibilidad (sin azul/turquesa, redirigidos a paleta Nexus/Blanco) ---
+  static const Color primaryGreen = nexusGreen;
+  static const Color accentGreen = nexusGreenLight;
+  static const Color primaryTurquoise = nexusGreen;
+  static const Color darkTurquoise = nexusGreen;
+  static const Color accentCyan = nexusGreenSecondary;
+  static const Color cyan = nexusGreenSecondary;
+  static const Color primaryBlue = nexusGreen;
+  static const Color successMint = nexusGreenLight;
 
-  // Compatibilidad hacia atrás (alias)
-  static const Color primaryGreen = primaryTurquoise; 
-  static const Color accentGreen = accentCyan;
-  static const Color cyan = accentCyan;
+  // --- Alias de modo oscuro redirigidos a fondo blanco y grises limpios ---
+  static const Color bgDark = Color(0xFFFFFFFF);
+  static const Color surfaceDark = Color(0xFFF6F8F7);
+  static const Color borderDark = Color(0xFFE0E5E2);
+  static const Color textPrimaryDark = Color(0xFF111814);
+  static const Color textSecondaryDark = nexusTextMuted;
 
   static ThemeData get lightTheme {
     final scheme = ColorScheme.fromSeed(
-      seedColor: primaryTurquoise,
+      seedColor: nexusGreen,
       brightness: Brightness.light,
-      primary: primaryTurquoise,
-      secondary: secondaryColor,
-      tertiary: accentColor,
-      surface: surfaceLight,
-      onPrimary: Colors.white,
+      primary: nexusGreen,
+      onPrimary: Colors.black,
+      secondary: nexusGreenSecondary,
+      onSecondary: Colors.black,
+      tertiary: nexusGreenLight,
+      onTertiary: Colors.black,
+      surface: Colors.white,
+      onSurface: textPrimaryLight,
     );
 
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
       colorScheme: scheme,
-      scaffoldBackgroundColor: surfaceLight,
+      scaffoldBackgroundColor: Colors.white,
       textTheme: GoogleFonts.plusJakartaSansTextTheme(
         ThemeData.light().textTheme,
+      ).apply(
+        bodyColor: textPrimaryLight,
+        displayColor: textPrimaryLight,
       ),
       appBarTheme: const AppBarTheme(
         backgroundColor: Colors.white,
         foregroundColor: textPrimaryLight,
+        surfaceTintColor: Colors.transparent,
         elevation: 0,
         centerTitle: false,
       ),
       cardTheme: CardThemeData(
         color: Colors.white,
+        surfaceTintColor: Colors.transparent,
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
@@ -72,13 +85,39 @@ class AppTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: primaryTurquoise,
-          foregroundColor: Colors.white,
+          backgroundColor: nexusGreenLight,
+          foregroundColor: Colors.black,
           minimumSize: const Size(double.infinity, 50),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
           elevation: 0,
+          textStyle: const TextStyle(
+            fontWeight: FontWeight.w700,
+            color: Colors.black,
+          ),
+        ),
+      ),
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          backgroundColor: nexusGreenLight,
+          foregroundColor: Colors.black,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          textStyle: const TextStyle(
+            fontWeight: FontWeight.w700,
+            color: Colors.black,
+          ),
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: Colors.black,
+          side: const BorderSide(color: nexusGreen),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
@@ -94,84 +133,16 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: primaryTurquoise, width: 2),
+          borderSide: const BorderSide(color: nexusGreen, width: 1.8),
         ),
         labelStyle: const TextStyle(color: textSecondaryLight),
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
-        backgroundColor: primaryTurquoise,
-        foregroundColor: Colors.white,
+        backgroundColor: nexusGreenLight,
+        foregroundColor: Colors.black,
       ),
     );
   }
 
-  static ThemeData get darkTheme {
-    final scheme = ColorScheme.fromSeed(
-      seedColor: primaryTurquoise,
-      brightness: Brightness.dark,
-      primary: accentCyan,
-      secondary: primaryTurquoise,
-      tertiary: accentColor,
-      surface: surfaceDark,
-    );
-
-    return ThemeData(
-      useMaterial3: true,
-      brightness: Brightness.dark,
-      colorScheme: scheme,
-      scaffoldBackgroundColor: bgDark,
-      textTheme: GoogleFonts.plusJakartaSansTextTheme(
-        ThemeData.dark().textTheme,
-      ),
-      appBarTheme: const AppBarTheme(
-        backgroundColor: surfaceDark,
-        foregroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: false,
-      ),
-      cardTheme: CardThemeData(
-        color: surfaceDark,
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-          side: const BorderSide(color: borderDark),
-        ),
-      ),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: primaryTurquoise,
-          foregroundColor: Colors.white,
-          minimumSize: const Size(double.infinity, 50),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          elevation: 0,
-        ),
-      ),
-      inputDecorationTheme: InputDecorationTheme(
-        filled: true,
-        fillColor: const Color(0xFF153443),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: borderDark),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: borderDark),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(
-            color: accentCyan,
-            width: 2,
-          ),
-        ),
-        labelStyle: const TextStyle(color: textSecondaryDark),
-      ),
-      floatingActionButtonTheme: const FloatingActionButtonThemeData(
-        backgroundColor: primaryTurquoise,
-        foregroundColor: Colors.white,
-      ),
-    );
-  }
+  static ThemeData get darkTheme => lightTheme;
 }

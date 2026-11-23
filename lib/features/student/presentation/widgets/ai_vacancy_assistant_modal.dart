@@ -275,7 +275,7 @@ class _AiVacancyAssistantModalState extends State<AiVacancyAssistantModal>
       child: Container(
         height: MediaQuery.of(context).size.height * 0.82,
         decoration: const BoxDecoration(
-          color: Color(0xFF0F172A),
+          color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
         ),
         child: ClipRRect(
@@ -288,7 +288,7 @@ class _AiVacancyAssistantModalState extends State<AiVacancyAssistantModal>
                 Container(
                   width: 44,
                   height: 4,
-                  decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(10)),
+                  decoration: BoxDecoration(color: const Color(0xFFE0E5E2), borderRadius: BorderRadius.circular(10)),
                 ),
 
                 // Encabezado
@@ -304,11 +304,11 @@ class _AiVacancyAssistantModalState extends State<AiVacancyAssistantModal>
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               gradient: const LinearGradient(
-                                colors: [AppTheme.primaryGreen, AppTheme.accentColor],
+                                colors: [AppTheme.nexusGreen, AppTheme.nexusGreenSecondary],
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: AppTheme.primaryGreen.withOpacity(0.4 + _glowController.value * 0.3),
+                                  color: AppTheme.nexusGreen.withOpacity(0.25 + _glowController.value * 0.2),
                                   blurRadius: 16,
                                   spreadRadius: 2,
                                 ),
@@ -325,24 +325,24 @@ class _AiVacancyAssistantModalState extends State<AiVacancyAssistantModal>
                           children: [
                             Text(
                               'Asistente IA de Vacantes 🤖✨',
-                              style: GoogleFonts.outfit(color: Colors.white, fontSize: 19, fontWeight: FontWeight.bold),
+                              style: GoogleFonts.outfit(color: AppTheme.textPrimaryLight, fontSize: 19, fontWeight: FontWeight.bold),
                             ),
                             Text(
                               'Chat conversacional e inteligente en español',
-                              style: GoogleFonts.inter(color: Colors.white70, fontSize: 11.5),
+                              style: GoogleFonts.inter(color: AppTheme.nexusTextMuted, fontSize: 11.5),
                             ),
                           ],
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.close_rounded, color: Colors.white70),
+                        icon: const Icon(Icons.close_rounded, color: AppTheme.nexusTextMuted),
                         onPressed: () => Navigator.pop(context),
                       ),
                     ],
                   ),
                 ),
 
-                const Divider(color: Colors.white12, height: 1),
+                const Divider(color: Color(0xFFE0E5E2), height: 1),
 
                 // Área de Mensajes e Historial de Chat
                 Expanded(
@@ -359,7 +359,7 @@ class _AiVacancyAssistantModalState extends State<AiVacancyAssistantModal>
                           children: [
                             Text(
                               'Sugerencias de búsqueda rápida:',
-                              style: GoogleFonts.inter(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold),
+                              style: GoogleFonts.inter(color: AppTheme.nexusTextMuted, fontSize: 12, fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 8),
                             Wrap(
@@ -371,20 +371,20 @@ class _AiVacancyAssistantModalState extends State<AiVacancyAssistantModal>
                                   child: Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFF1E293B),
+                                      color: const Color(0xFFF6F8F7),
                                       borderRadius: BorderRadius.circular(16),
-                                      border: Border.all(color: Colors.white.withOpacity(0.2)),
+                                      border: Border.all(color: const Color(0xFFE0E5E2)),
                                     ),
                                     child: Text(
                                       prompt,
-                                      style: GoogleFonts.inter(fontSize: 12, color: Colors.white, fontWeight: FontWeight.w500),
+                                      style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textPrimaryLight, fontWeight: FontWeight.w500),
                                     ),
                                   ),
                                 );
                               }).toList(),
                             ),
                             const SizedBox(height: 20),
-                            const Divider(color: Colors.white12),
+                            const Divider(color: Color(0xFFE0E5E2)),
                             const SizedBox(height: 12),
                           ],
                         );
@@ -402,18 +402,18 @@ class _AiVacancyAssistantModalState extends State<AiVacancyAssistantModal>
                         margin: const EdgeInsets.only(bottom: 16),
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.06),
+                          color: const Color(0xFFF6F8F7),
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: Colors.white12),
+                          border: Border.all(color: const Color(0xFFE0E5E2)),
                         ),
                         child: Row(
                           children: [
-                            const CircularProgressIndicator(color: AppTheme.primaryGreen, strokeWidth: 2.5),
+                            const CircularProgressIndicator(color: AppTheme.nexusGreen, strokeWidth: 2.5),
                             const SizedBox(width: 16),
                             Expanded(
                               child: Text(
                                 'La IA está redactando la respuesta...',
-                                style: GoogleFonts.inter(color: Colors.white70, fontSize: 13),
+                                style: GoogleFonts.inter(color: AppTheme.nexusTextMuted, fontSize: 13),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -429,8 +429,8 @@ class _AiVacancyAssistantModalState extends State<AiVacancyAssistantModal>
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: const BoxDecoration(
-                    color: Color(0xFF1E293B),
-                    border: Border(top: BorderSide(color: Colors.white12)),
+                    color: Colors.white,
+                    border: Border(top: BorderSide(color: Color(0xFFE0E5E2))),
                   ),
                   child: Row(
                     children: [
@@ -438,19 +438,19 @@ class _AiVacancyAssistantModalState extends State<AiVacancyAssistantModal>
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF334155),
+                            color: const Color(0xFFF6F8F7),
                             borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: Colors.white24),
+                            border: Border.all(color: const Color(0xFFE0E5E2)),
                           ),
                           child: TextField(
                             controller: _queryController,
-                            style: GoogleFonts.inter(color: Colors.white, fontSize: 14.5, fontWeight: FontWeight.bold),
-                            cursorColor: AppTheme.accentColor,
+                            style: GoogleFonts.inter(color: AppTheme.textPrimaryLight, fontSize: 14.5, fontWeight: FontWeight.bold),
+                            cursorColor: AppTheme.nexusGreen,
                             decoration: InputDecoration(
                               filled: false,
                               fillColor: Colors.transparent,
                               hintText: 'Escribe tu duda o consulta...',
-                              hintStyle: GoogleFonts.inter(color: Colors.white60, fontSize: 13),
+                              hintStyle: GoogleFonts.inter(color: AppTheme.nexusTextMuted, fontSize: 13),
                               border: InputBorder.none,
                               enabledBorder: InputBorder.none,
                               focusedBorder: InputBorder.none,
@@ -464,10 +464,10 @@ class _AiVacancyAssistantModalState extends State<AiVacancyAssistantModal>
                         icon: Container(
                           padding: const EdgeInsets.all(10),
                           decoration: const BoxDecoration(
-                            gradient: LinearGradient(colors: [AppTheme.primaryGreen, AppTheme.accentColor]),
+                            color: AppTheme.nexusGreenLight,
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.arrow_upward_rounded, color: Colors.white, size: 20),
+                          child: const Icon(Icons.arrow_upward_rounded, color: Colors.black, size: 20),
                         ),
                         onPressed: () => _processAiQuery(_queryController.text),
                       ),
@@ -489,9 +489,9 @@ class _AiVacancyAssistantModalState extends State<AiVacancyAssistantModal>
         child: Container(
           margin: const EdgeInsets.only(bottom: 14, left: 40),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: BoxDecoration(
-            color: AppTheme.primaryGreen,
-            borderRadius: const BorderRadius.only(
+          decoration: const BoxDecoration(
+            color: AppTheme.nexusGreenLight,
+            borderRadius: BorderRadius.only(
               topLeft: Radius.circular(20),
               topRight: Radius.circular(20),
               bottomLeft: Radius.circular(20),
@@ -499,7 +499,7 @@ class _AiVacancyAssistantModalState extends State<AiVacancyAssistantModal>
           ),
           child: Text(
             msg.text,
-            style: GoogleFonts.inter(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500),
+            style: GoogleFonts.inter(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w600),
           ),
         ),
       );
@@ -515,23 +515,23 @@ class _AiVacancyAssistantModalState extends State<AiVacancyAssistantModal>
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFF1E293B),
+                color: const Color(0xFFF6F8F7),
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(20),
                   topRight: Radius.circular(20),
                   bottomRight: Radius.circular(20),
                 ),
-                border: Border.all(color: Colors.white12),
+                border: Border.all(color: const Color(0xFFE0E5E2)),
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(Icons.auto_awesome_rounded, color: AppTheme.accentColor, size: 20),
+                  const Icon(Icons.auto_awesome_rounded, color: AppTheme.nexusGreen, size: 20),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       msg.text,
-                      style: GoogleFonts.inter(color: Colors.white, fontSize: 13.5, height: 1.4),
+                      style: GoogleFonts.inter(color: AppTheme.textPrimaryLight, fontSize: 13.5, height: 1.4),
                     ),
                   ),
                 ],
@@ -560,9 +560,9 @@ class _AiVacancyAssistantModalState extends State<AiVacancyAssistantModal>
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.08),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.18)),
+        border: Border.all(color: const Color(0xFFE0E5E2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -572,18 +572,18 @@ class _AiVacancyAssistantModalState extends State<AiVacancyAssistantModal>
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: AppTheme.primaryGreen.withOpacity(0.2),
+                  color: AppTheme.nexusGreen.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(Icons.work_outline_rounded, color: Colors.white, size: 22),
+                child: const Icon(Icons.work_outline_rounded, color: AppTheme.nexusGreen, size: 22),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(title, style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
-                    Text('$company • $type', style: GoogleFonts.inter(color: AppTheme.accentColor, fontSize: 12, fontWeight: FontWeight.w600)),
+                    Text(title, style: GoogleFonts.outfit(color: AppTheme.textPrimaryLight, fontWeight: FontWeight.bold, fontSize: 15)),
+                    Text('$company • $type', style: GoogleFonts.inter(color: AppTheme.nexusGreenSecondary, fontSize: 12, fontWeight: FontWeight.w600)),
                   ],
                 ),
               ),
@@ -592,23 +592,23 @@ class _AiVacancyAssistantModalState extends State<AiVacancyAssistantModal>
           const SizedBox(height: 10),
           Row(
             children: [
-              const Icon(Icons.location_on_outlined, color: Colors.white70, size: 14),
+              const Icon(Icons.location_on_outlined, color: AppTheme.nexusTextMuted, size: 14),
               const SizedBox(width: 4),
               Expanded(
                 child: Text(
                   location,
-                  style: GoogleFonts.inter(color: Colors.white70, fontSize: 11.5),
+                  style: GoogleFonts.inter(color: AppTheme.nexusTextMuted, fontSize: 11.5),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
               const SizedBox(width: 8),
-              const Icon(Icons.payments_outlined, color: Colors.amber, size: 14),
+              const Icon(Icons.payments_outlined, color: AppTheme.nexusGreen, size: 14),
               const SizedBox(width: 4),
               Flexible(
                 child: Text(
                   salary,
-                  style: GoogleFonts.inter(color: Colors.amber, fontSize: 11.5, fontWeight: FontWeight.bold),
+                  style: GoogleFonts.inter(color: AppTheme.nexusGreen, fontSize: 11.5, fontWeight: FontWeight.bold),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -626,13 +626,14 @@ class _AiVacancyAssistantModalState extends State<AiVacancyAssistantModal>
                   MaterialPageRoute(builder: (context) => VacancyDetailPage(vacancy: v)),
                 );
               },
-              icon: const Icon(Icons.visibility_rounded, size: 16, color: Colors.white),
+              icon: const Icon(Icons.visibility_rounded, size: 16, color: Colors.black),
               label: FittedBox(
                 fit: BoxFit.scaleDown,
-                child: Text('VER VACANTE Y POSTULARME 📄', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.white)),
+                child: Text('VER VACANTE Y POSTULARME 📄', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.black)),
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.primaryGreen,
+                backgroundColor: AppTheme.nexusGreenLight,
+                foregroundColor: Colors.black,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
               ),

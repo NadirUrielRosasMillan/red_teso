@@ -170,25 +170,26 @@ class _CourseQuoteModalState extends State<CourseQuoteModal> {
             const SizedBox(height: 12),
             Text(
               '¡Solicitud Enviada!',
-              style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 22, color: const Color(0xFF0F172A)),
+              style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 22, color: AppTheme.textPrimaryLight),
             ),
           ],
         ),
         content: Text(
           'Hemos recibido tu solicitud de cotización para "${widget.course.title}". Un representante académico de TESOEM se pondrá en contacto contigo muy pronto.',
           textAlign: TextAlign.center,
-          style: GoogleFonts.inter(fontSize: 13.5, color: const Color(0xFF475569)),
+          style: GoogleFonts.inter(fontSize: 13.5, color: AppTheme.nexusTextMuted),
         ),
         actionsAlignment: MainAxisAlignment.center,
         actions: [
           ElevatedButton(
             onPressed: () => Navigator.pop(context),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.primaryColor,
+              backgroundColor: AppTheme.nexusGreenLight,
+              foregroundColor: Colors.black,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             ),
-            child: Text('ENTENDIDO', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white)),
+            child: Text('ENTENDIDO', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.black)),
           ),
         ],
       ),
@@ -257,11 +258,11 @@ class _CourseQuoteModalState extends State<CourseQuoteModal> {
                         children: [
                           Text(
                             'Cotización Corporativa',
-                            style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A)),
+                            style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold, color: AppTheme.textPrimaryLight),
                           ),
                           Text(
                             widget.course.title,
-                            style: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFF64748B)),
+                            style: GoogleFonts.inter(fontSize: 12.5, color: AppTheme.nexusTextMuted),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -328,9 +329,9 @@ class _CourseQuoteModalState extends State<CourseQuoteModal> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF8FAFC),
+                    color: AppTheme.surfaceLight,
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: const Color(0xFFE2E8F0)),
+                    border: Border.all(color: AppTheme.borderLight),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -363,8 +364,8 @@ class _CourseQuoteModalState extends State<CourseQuoteModal> {
                             onPressed: () => setState(() => _employeeCount++),
                             icon: const Icon(Icons.add_rounded),
                             style: IconButton.styleFrom(
-                              backgroundColor: AppTheme.primaryColor,
-                              foregroundColor: Colors.white,
+                              backgroundColor: AppTheme.nexusGreenLight,
+                              foregroundColor: Colors.black,
                             ),
                           ),
                         ],
@@ -400,9 +401,9 @@ class _CourseQuoteModalState extends State<CourseQuoteModal> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                     decoration: BoxDecoration(
-                      border: Border.all(color: const Color(0xFFCBD5E1)),
+                      border: Border.all(color: AppTheme.borderLight),
                       borderRadius: BorderRadius.circular(16),
-                      color: const Color(0xFFF8FAFC),
+                      color: AppTheme.surfaceLight,
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -417,7 +418,7 @@ class _CourseQuoteModalState extends State<CourseQuoteModal> {
                                 Text('Fecha Tentativa de Inicio', style: GoogleFonts.inter(fontSize: 12, color: Colors.grey[600])),
                                 Text(
                                   DateFormat('dd/MM/yyyy').format(_startDate),
-                                  style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A)),
+                                  style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.bold, color: AppTheme.textPrimaryLight),
                                 ),
                               ],
                             ),
@@ -453,14 +454,14 @@ class _CourseQuoteModalState extends State<CourseQuoteModal> {
                       ? const Center(child: CircularProgressIndicator(color: AppTheme.primaryColor))
                       : ElevatedButton.icon(
                           onPressed: _submitQuoteRequest,
-                          icon: const Icon(Icons.send_rounded, color: Colors.white, size: 18),
+                          icon: const Icon(Icons.send_rounded, color: Colors.black, size: 18),
                           label: Text(
                             'SOLICITAR COTIZACIÓN CORPORATIVA',
-                            style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 14, letterSpacing: 0.8),
+                            style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14, letterSpacing: 0.8),
                           ),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppTheme.primaryColor,
-                            foregroundColor: Colors.white,
+                            backgroundColor: AppTheme.nexusGreenLight,
+                            foregroundColor: Colors.black,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                           ),
                         ),

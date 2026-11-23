@@ -146,7 +146,10 @@ class _ImpulsaProjectDetailPageState extends State<ImpulsaProjectDetailPage> {
             child: const Text('Cancelar'),
           ),
           FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: pal.primary),
+            style: FilledButton.styleFrom(
+              backgroundColor: ImpulsaPalette.buttonGreen,
+              foregroundColor: Colors.black,
+            ),
             onPressed: () => Navigator.pop(ctx, ctrl.text),
             child: const Text('Guardar cambios'),
           ),
@@ -222,7 +225,10 @@ class _ImpulsaProjectDetailPageState extends State<ImpulsaProjectDetailPage> {
             label: const Text('Copiar todo el código'),
           ),
           FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: pal.primary),
+            style: FilledButton.styleFrom(
+              backgroundColor: ImpulsaPalette.buttonGreen,
+              foregroundColor: Colors.black,
+            ),
             onPressed: () => Navigator.pop(ctx),
             child: const Text('Cerrar'),
           ),
@@ -269,7 +275,7 @@ class _ImpulsaProjectDetailPageState extends State<ImpulsaProjectDetailPage> {
                 ),
                 if (project.status == 'solicitado') ...[
                   const SizedBox(width: 10),
-                  _headerBadge('Solicitado', const Color(0xFF0284C7)),
+                  _headerBadge('Solicitado', ImpulsaPalette.flagGreen),
                 ] else if (project.status == 'donado') ...[
                   const SizedBox(width: 10),
                   _headerBadge('Donado', const Color(0xFFD97706)),
@@ -404,18 +410,18 @@ class _ImpulsaProjectDetailPageState extends State<ImpulsaProjectDetailPage> {
   }) {
     return OutlinedButton.icon(
       onPressed: onTap,
-      icon: Icon(icon, size: 18, color: active ? Colors.white : pal.primary),
+      icon: Icon(icon, size: 18, color: active ? Colors.black : pal.primary),
       label: Text(
         label,
         style: TextStyle(
-          color: active ? Colors.white : pal.textPrimary,
+          color: active ? Colors.black : pal.textPrimary,
           fontWeight: FontWeight.w700,
           fontSize: 13,
         ),
       ),
       style: OutlinedButton.styleFrom(
         alignment: Alignment.centerLeft,
-        backgroundColor: active ? pal.primary : pal.subCard,
+        backgroundColor: active ? ImpulsaPalette.buttonGreen : pal.subCard,
         side: BorderSide(color: active ? pal.primary : pal.border),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -739,28 +745,32 @@ class _ImpulsaProjectDetailPageState extends State<ImpulsaProjectDetailPage> {
                     ),
                     const SizedBox(width: 12),
                     FilledButton.icon(
-                      style:
-                      FilledButton.styleFrom(backgroundColor: pal.primary),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: ImpulsaPalette.buttonGreen,
+                        foregroundColor: Colors.black,
+                      ),
                       onPressed: () async {
                         await _updateProject(p,
                             registerMovement: true,
                             feedback: 'Proyecto guardado');
                         if (mounted) Navigator.pop(context);
                       },
-                      icon: const Icon(Icons.save_rounded),
+                      icon: const Icon(Icons.save_rounded, color: Colors.black),
                       label: const Text('Guardar'),
                     ),
                   ] else if (!p.isRequested && !p.isDonated)
                     FilledButton.icon(
-                      style:
-                      FilledButton.styleFrom(backgroundColor: pal.primary),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: ImpulsaPalette.buttonGreen,
+                        foregroundColor: Colors.black,
+                      ),
                       onPressed: () => showImpulsaRequestModal(
                         context: context,
                         project: p,
                         currentEmail: widget.currentEmail,
                         currentName: widget.currentName,
                       ),
-                      icon: const Icon(Icons.send_rounded),
+                      icon: const Icon(Icons.send_rounded, color: Colors.black),
                       label: const Text('Solicitar'),
                     ),
                 ],
@@ -840,9 +850,9 @@ class _ImpulsaProjectDetailPageState extends State<ImpulsaProjectDetailPage> {
                     style: FilledButton.styleFrom(
                       backgroundColor: isDone
                           ? pal.textSecondary.withValues(alpha: 0.25)
-                          : pal.primary,
+                          : ImpulsaPalette.buttonGreen,
                       foregroundColor:
-                      isDone ? pal.textPrimary : Colors.white,
+                      isDone ? pal.textPrimary : Colors.black,
                     ),
                     onPressed: () => showImpulsaRequestReviewModal(
                       context: context,
@@ -850,7 +860,7 @@ class _ImpulsaProjectDetailPageState extends State<ImpulsaProjectDetailPage> {
                       request: req,
                       currentEmail: widget.currentEmail,
                     ),
-                    icon: const Icon(Icons.visibility_rounded, size: 16),
+                    icon: const Icon(Icons.visibility_rounded, size: 16, color: Colors.black),
                     label: const Text('Revisar carta'),
                   ),
                 );

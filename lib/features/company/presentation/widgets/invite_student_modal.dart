@@ -169,11 +169,11 @@ class _InviteStudentModalState extends State<InviteStudentModal> {
                       children: [
                         Text(
                           'Invitar a Vacante Directa 📩',
-                          style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A)),
+                          style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textPrimaryLight),
                         ),
                         Text(
                           'Envía una notificación formal a $studentName',
-                          style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)),
+                          style: GoogleFonts.inter(fontSize: 12, color: AppTheme.nexusTextMuted),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -217,13 +217,13 @@ class _InviteStudentModalState extends State<InviteStudentModal> {
                                   const SizedBox(height: 12),
                                   Text(
                                     'Aún no has publicado vacantes',
-                                    style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A)),
+                                    style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textPrimaryLight),
                                   ),
                                   const SizedBox(height: 6),
                                   Text(
                                     'Para invitar a $studentName, primero debes publicar al menos una vacante u oportunidad.',
                                     textAlign: TextAlign.center,
-                                    style: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFF64748B)),
+                                    style: GoogleFonts.inter(fontSize: 12.5, color: AppTheme.nexusTextMuted),
                                   ),
                                   const SizedBox(height: 20),
                                   ElevatedButton.icon(
@@ -234,10 +234,11 @@ class _InviteStudentModalState extends State<InviteStudentModal> {
                                         MaterialPageRoute(builder: (context) => const CreateVacancyPage()),
                                       );
                                     },
-                                    icon: const Icon(Icons.add_rounded, color: Colors.white),
-                                    label: Text('PUBLICAR VACANTE AHORA', style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
+                                    icon: const Icon(Icons.add_rounded, color: Colors.black),
+                                    label: Text('PUBLICAR VACANTE AHORA', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.black)),
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: AppTheme.primaryColor,
+                                      backgroundColor: AppTheme.nexusGreenLight,
+                                      foregroundColor: Colors.black,
                                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                                     ),
                                   ),
@@ -254,7 +255,7 @@ class _InviteStudentModalState extends State<InviteStudentModal> {
                             children: [
                               Text(
                                 'Selecciona la vacante a la que deseas invitarlo:',
-                                style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A)),
+                                style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.bold, color: AppTheme.textPrimaryLight),
                               ),
                               const SizedBox(height: 12),
 
@@ -311,7 +312,7 @@ class _InviteStudentModalState extends State<InviteStudentModal> {
                                                   style: GoogleFonts.outfit(
                                                     fontSize: 15.5,
                                                     fontWeight: FontWeight.bold,
-                                                    color: const Color(0xFF0F172A),
+                                                    color: AppTheme.textPrimaryLight,
                                                   ),
                                                 ),
                                                 const SizedBox(height: 2),
@@ -337,7 +338,7 @@ class _InviteStudentModalState extends State<InviteStudentModal> {
 
                               Text(
                                 'Mensaje personalizado (opcional):',
-                                style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A)),
+                                style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.bold, color: AppTheme.textPrimaryLight),
                               ),
                               const SizedBox(height: 8),
 
@@ -368,13 +369,14 @@ class _InviteStudentModalState extends State<InviteStudentModal> {
                     ? const Center(child: CircularProgressIndicator(color: AppTheme.primaryColor))
                     : ElevatedButton.icon(
                         onPressed: _sendInvitation,
-                        icon: const Icon(Icons.send_rounded, color: Colors.white, size: 20),
+                        icon: const Icon(Icons.send_rounded, color: Colors.black, size: 20),
                         label: Text(
                           'ENVIAR INVITACIÓN DIRECTA 🚀',
-                          style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14.5),
+                          style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14.5),
                         ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppTheme.primaryColor,
+                          backgroundColor: AppTheme.nexusGreenLight,
+                          foregroundColor: Colors.black,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                         ),
                       ),

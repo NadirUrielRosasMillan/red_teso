@@ -566,7 +566,10 @@ Future<void> showImpulsaRequestModal({
             child: const Text('Cancelar'),
           ),
           FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: pal.primary),
+            style: FilledButton.styleFrom(
+              backgroundColor: ImpulsaPalette.buttonGreen,
+              foregroundColor: Colors.black,
+            ),
             onPressed: () async {
               if (teamCtrl.text.trim().isEmpty ||
                   applicants.isEmpty ||
@@ -849,9 +852,11 @@ Future<void> showImpulsaRequestReviewModal({
             ),
             FilledButton.icon(
               style: FilledButton.styleFrom(
-                  backgroundColor: ImpulsaPalette.flagGreen),
+                backgroundColor: ImpulsaPalette.buttonGreen,
+                foregroundColor: Colors.black,
+              ),
               onPressed: () => submitVote(ctx, 'accept'),
-              icon: const Icon(Icons.check),
+              icon: const Icon(Icons.check, color: Colors.black),
               label: const Text('Aceptar donación'),
             ),
           ],
@@ -884,7 +889,7 @@ Future<void> showImpulsaNotificationsModal({
           side: BorderSide(color: pal.border),
         ),
         title: Text(
-          'Notificaciones · Ágora Impulsa',
+          'Notificaciones · NEXUS Impulsa',
           style: TextStyle(color: pal.textPrimary, fontWeight: FontWeight.w800),
         ),
         content: SizedBox(
@@ -1010,7 +1015,9 @@ Future<void> showImpulsaNotificationsModal({
                         alignment: Alignment.centerRight,
                         child: FilledButton.icon(
                           style: FilledButton.styleFrom(
-                              backgroundColor: pal.primary),
+                            backgroundColor: ImpulsaPalette.buttonGreen,
+                            foregroundColor: Colors.black,
+                          ),
                           onPressed: () async {
                             await db
                                 .collection('agora_impulsa_notifications')
@@ -1154,9 +1161,11 @@ class _RequestVoteBar extends StatelessWidget {
                   const SizedBox(width: 8),
                   FilledButton.icon(
                     style: FilledButton.styleFrom(
-                        backgroundColor: ImpulsaPalette.flagGreen),
+                      backgroundColor: ImpulsaPalette.buttonGreen,
+                      foregroundColor: Colors.black,
+                    ),
                     onPressed: () => _vote(context, 'accept'),
-                    icon: const Icon(Icons.check),
+                    icon: const Icon(Icons.check, color: Colors.black),
                     label: const Text('Aceptar donación'),
                   ),
                 ],

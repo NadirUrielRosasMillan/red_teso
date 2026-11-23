@@ -213,10 +213,13 @@ class _RegisterPageState extends State<RegisterPage>
                                 SegmentedButton<String>(
                                   showSelectedIcon: false,
                                   style: SegmentedButton.styleFrom(
-                                    foregroundColor: _greenPrimary,
-                                    selectedForegroundColor: Colors.white,
-                                    selectedBackgroundColor: _greenPrimary,
-                                    textStyle: const TextStyle(fontSize: 12),
+                                    foregroundColor: Colors.black,
+                                    selectedForegroundColor: Colors.black,
+                                    selectedBackgroundColor: _greenLight,
+                                    textStyle: const TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w700,
+                                    ),
                                     padding: const EdgeInsets.symmetric(
                                       horizontal: 8,
                                       vertical: 10,
@@ -401,17 +404,19 @@ class _RegisterPageState extends State<RegisterPage>
                                               onPressed: _register,
                                               icon: const Icon(
                                                 Icons.arrow_forward_rounded,
+                                                color: Colors.black,
                                               ),
                                               label: const Text(
                                                 'FINALIZAR REGISTRO',
                                                 style: TextStyle(
+                                                  color: Colors.black,
                                                   fontWeight: FontWeight.w800,
                                                   letterSpacing: .5,
                                                 ),
                                               ),
                                               style: FilledButton.styleFrom(
-                                                backgroundColor: _greenPrimary,
-                                                foregroundColor: Colors.white,
+                                                backgroundColor: _greenLight,
+                                                foregroundColor: Colors.black,
                                                 shape: RoundedRectangleBorder(
                                                   borderRadius:
                                                       BorderRadius.circular(14),
@@ -465,9 +470,9 @@ class _RegisterPageState extends State<RegisterPage>
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    Color(0xFFB8E986),
-                    Color(0xFF28A85B),
-                    Color(0xFF075C3B),
+                    _greenLight,
+                    _greenSecondary,
+                    _greenPrimary,
                   ],
                 ).createShader(bounds),
                 child: Text(
@@ -509,7 +514,7 @@ class _RegisterPageState extends State<RegisterPage>
                     height: 30,
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
-                        colors: [Color(0xFF2E9D5C), Color(0xFF075C3B)],
+                        colors: [_greenSecondary, _greenPrimary],
                       ),
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(color: Colors.white, width: 1.7),

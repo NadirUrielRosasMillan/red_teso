@@ -27,14 +27,14 @@ class _ProfessorDashboardPageState extends State<ProfessorDashboardPage> {
     final user = _auth.currentUser;
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('Panel de Docente TESOEM 🎓', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white)),
-        backgroundColor: AppTheme.bgDark.withOpacity(0.85),
-        foregroundColor: Colors.white,
+        title: Text('Panel de Docente TESOEM 🎓', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: AppTheme.textPrimaryLight)),
+        backgroundColor: Colors.white,
+        foregroundColor: AppTheme.textPrimaryLight,
         elevation: 0,
         actions: [
-          const NotificationBell(color: Colors.white),
+          const NotificationBell(color: AppTheme.nexusGreen),
           IconButton(
             icon: const Icon(Icons.logout_rounded, color: Colors.redAccent),
             tooltip: 'Cerrar Sesión',
@@ -48,9 +48,10 @@ class _ProfessorDashboardPageState extends State<ProfessorDashboardPage> {
           context,
           MaterialPageRoute(builder: (context) => const CreateCoursePage()),
         ),
-        backgroundColor: AppTheme.primaryGreen,
-        icon: const Icon(Icons.add_rounded, color: Colors.white),
-        label: Text('NUEVO CURSO', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white)),
+        backgroundColor: AppTheme.nexusGreenLight,
+        foregroundColor: Colors.black,
+        icon: const Icon(Icons.add_rounded, color: Colors.black),
+        label: Text('NUEVO CURSO', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.black)),
       ),
       body: LiquidGlassAmbientBackground(
         child: SingleChildScrollView(
@@ -67,9 +68,9 @@ class _ProfessorDashboardPageState extends State<ProfessorDashboardPage> {
             // Estadísticas rápidas
             Row(
               children: [
-                Expanded(child: _buildStatCard('Cursos Activos', '4', Icons.school_outlined, Colors.blue)),
+                Expanded(child: _buildStatCard('Cursos Activos', '4', Icons.school_outlined, AppTheme.nexusGreen)),
                 const SizedBox(width: 12),
-                Expanded(child: _buildStatCard('Empresas Interesadas', '12', Icons.business_outlined, AppTheme.primaryGreen)),
+                Expanded(child: _buildStatCard('Empresas Interesadas', '12', Icons.business_outlined, AppTheme.nexusGreenSecondary)),
               ],
             ),
 
@@ -80,15 +81,15 @@ class _ProfessorDashboardPageState extends State<ProfessorDashboardPage> {
               children: [
                 Text(
                   'Mis Cursos y Capacitaciones',
-                  style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A)),
+                  style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textPrimaryLight),
                 ),
                 TextButton.icon(
                   onPressed: () => Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const CreateCoursePage()),
                   ),
-                  icon: const Icon(Icons.add_circle_outline, color: AppTheme.primaryGreen, size: 18),
-                  label: Text('Crear', style: GoogleFonts.outfit(color: AppTheme.primaryGreen, fontWeight: FontWeight.bold)),
+                  icon: const Icon(Icons.add_circle_outline, color: AppTheme.nexusGreen, size: 18),
+                  label: Text('Crear', style: GoogleFonts.outfit(color: AppTheme.nexusGreen, fontWeight: FontWeight.bold)),
                 ),
               ],
             ),
@@ -109,8 +110,8 @@ class _ProfessorDashboardPageState extends State<ProfessorDashboardPage> {
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: 3,
                     itemBuilder: (context, index) => Shimmer.fromColors(
-                      baseColor: Colors.grey[200]!,
-                      highlightColor: Colors.grey[50]!,
+                      baseColor: const Color(0xFFF6F8F7),
+                      highlightColor: const Color(0xFFE0E5E2),
                       child: Container(
                         height: 90,
                         margin: const EdgeInsets.only(bottom: 12),
@@ -129,7 +130,7 @@ class _ProfessorDashboardPageState extends State<ProfessorDashboardPage> {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: const Color(0xFFE2E8F0)),
+                      border: Border.all(color: const Color(0xFFE0E5E2)),
                     ),
                     child: Column(
                       children: [
@@ -143,7 +144,7 @@ class _ProfessorDashboardPageState extends State<ProfessorDashboardPage> {
                         Text(
                           'Publica capacitaciones ejecutivas para que las empresas de la Red TESOEM las coticen.',
                           textAlign: TextAlign.center,
-                          style: GoogleFonts.inter(color: const Color(0xFF64748B), fontSize: 13),
+                          style: GoogleFonts.inter(color: AppTheme.nexusTextMuted, fontSize: 13),
                         ),
                         const SizedBox(height: 16),
                         ElevatedButton.icon(
@@ -151,10 +152,11 @@ class _ProfessorDashboardPageState extends State<ProfessorDashboardPage> {
                             context,
                             MaterialPageRoute(builder: (context) => const CreateCoursePage()),
                           ),
-                          icon: const Icon(Icons.add_rounded, color: Colors.white),
-                          label: Text('PUBLICAR PRIMER CURSO', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white)),
+                          icon: const Icon(Icons.add_rounded, color: Colors.black),
+                          label: Text('PUBLICAR PRIMER CURSO', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.black)),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppTheme.primaryGreen,
+                            backgroundColor: AppTheme.nexusGreenLight,
+                            foregroundColor: Colors.black,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                           ),
                         )
@@ -198,14 +200,14 @@ class _ProfessorDashboardPageState extends State<ProfessorDashboardPage> {
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             gradient: const LinearGradient(
-              colors: [AppTheme.primaryTurquoise, AppTheme.darkTurquoise],
+              colors: [AppTheme.nexusGreen, AppTheme.nexusGreenSecondary],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
-                color: AppTheme.primaryColor.withOpacity(0.3),
+                color: AppTheme.nexusGreen.withOpacity(0.25),
                 blurRadius: 12,
                 offset: const Offset(0, 6),
               ),
@@ -239,12 +241,12 @@ class _ProfessorDashboardPageState extends State<ProfessorDashboardPage> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(
-                        color: Colors.white24,
+                        color: AppTheme.nexusGreenLight,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
                         'Docente Verificado 🎓',
-                        style: GoogleFonts.inter(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                        style: GoogleFonts.inter(color: Colors.black, fontSize: 11, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ],
@@ -265,18 +267,18 @@ class _ProfessorDashboardPageState extends State<ProfessorDashboardPage> {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.2),
+              color: color.withOpacity(0.12),
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: Colors.white, size: 22),
+            child: Icon(icon, color: color, size: 22),
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(value, style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white)),
-                Text(title, style: GoogleFonts.inter(fontSize: 11.5, color: Colors.white70)),
+                Text(value, style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 20, color: AppTheme.textPrimaryLight)),
+                Text(title, style: GoogleFonts.inter(fontSize: 11.5, color: AppTheme.nexusTextMuted)),
               ],
             ),
           ),
@@ -298,21 +300,21 @@ class _ProfessorDashboardPageState extends State<ProfessorDashboardPage> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: AppTheme.primaryGreen.withOpacity(0.25),
+              color: AppTheme.nexusGreenLight.withOpacity(0.4),
               borderRadius: BorderRadius.circular(14),
             ),
-            child: const Icon(Icons.school_rounded, color: Colors.white, size: 24),
+            child: const Icon(Icons.school_rounded, color: Colors.black, size: 24),
           ),
           const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.white)),
+                Text(title, style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 15, color: AppTheme.textPrimaryLight)),
                 const SizedBox(height: 2),
-                Text('$category • $duration', style: GoogleFonts.inter(color: Colors.white70, fontSize: 12)),
+                Text('$category • $duration', style: GoogleFonts.inter(color: AppTheme.nexusTextMuted, fontSize: 12)),
                 const SizedBox(height: 4),
-                Text(price, style: GoogleFonts.inter(color: AppTheme.accentColor, fontWeight: FontWeight.bold, fontSize: 13)),
+                Text(price, style: GoogleFonts.inter(color: AppTheme.nexusGreen, fontWeight: FontWeight.bold, fontSize: 13)),
               ],
             ),
           ),
@@ -320,7 +322,7 @@ class _ProfessorDashboardPageState extends State<ProfessorDashboardPage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               IconButton(
-                icon: const Icon(Icons.edit_outlined, color: Colors.blueAccent, size: 20),
+                icon: const Icon(Icons.edit_outlined, color: AppTheme.nexusGreen, size: 20),
                 tooltip: 'Editar Curso',
                 onPressed: () {
                   Navigator.push(

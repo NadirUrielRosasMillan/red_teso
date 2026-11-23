@@ -245,7 +245,7 @@ class _AiTalentAssistantModalState extends State<AiTalentAssistantModal>
       child: Container(
         height: MediaQuery.of(context).size.height * 0.82,
         decoration: const BoxDecoration(
-          color: Color(0xFF0F172A),
+          color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
         ),
         child: ClipRRect(
@@ -258,7 +258,7 @@ class _AiTalentAssistantModalState extends State<AiTalentAssistantModal>
                 Container(
                   width: 44,
                   height: 4,
-                  decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(10)),
+                  decoration: BoxDecoration(color: const Color(0xFFE0E5E2), borderRadius: BorderRadius.circular(10)),
                 ),
 
                 // Encabezado
@@ -274,11 +274,11 @@ class _AiTalentAssistantModalState extends State<AiTalentAssistantModal>
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               gradient: const LinearGradient(
-                                colors: [AppTheme.primaryColor, AppTheme.accentColor],
+                                colors: [AppTheme.nexusGreen, AppTheme.nexusGreenSecondary],
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: AppTheme.accentColor.withOpacity(0.4 + _glowController.value * 0.3),
+                                  color: AppTheme.nexusGreen.withOpacity(0.25 + _glowController.value * 0.2),
                                   blurRadius: 16,
                                   spreadRadius: 2,
                                 ),
@@ -295,24 +295,24 @@ class _AiTalentAssistantModalState extends State<AiTalentAssistantModal>
                           children: [
                             Text(
                               'Asistente IA de Talento 🤖✨',
-                              style: GoogleFonts.outfit(color: Colors.white, fontSize: 19, fontWeight: FontWeight.bold),
+                              style: GoogleFonts.outfit(color: AppTheme.textPrimaryLight, fontSize: 19, fontWeight: FontWeight.bold),
                             ),
                             Text(
                               'Chat conversacional para reclutamiento universitario',
-                              style: GoogleFonts.inter(color: Colors.white70, fontSize: 12),
+                              style: GoogleFonts.inter(color: AppTheme.nexusTextMuted, fontSize: 12),
                             ),
                           ],
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.close_rounded, color: Colors.white70),
+                        icon: const Icon(Icons.close_rounded, color: AppTheme.nexusTextMuted),
                         onPressed: () => Navigator.pop(context),
                       ),
                     ],
                   ),
                 ),
 
-                const Divider(color: Colors.white12, height: 1),
+                const Divider(color: Color(0xFFE0E5E2), height: 1),
 
                 // Historial de Mensajes
                 Expanded(
@@ -328,7 +328,7 @@ class _AiTalentAssistantModalState extends State<AiTalentAssistantModal>
                           children: [
                             Text(
                               'Sugerencias rápidas para consultar:',
-                              style: GoogleFonts.inter(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold),
+                              style: GoogleFonts.inter(color: AppTheme.nexusTextMuted, fontSize: 12, fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 8),
                             Wrap(
@@ -340,20 +340,20 @@ class _AiTalentAssistantModalState extends State<AiTalentAssistantModal>
                                   child: Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFF1E293B),
+                                      color: const Color(0xFFF6F8F7),
                                       borderRadius: BorderRadius.circular(16),
-                                      border: Border.all(color: Colors.white.withOpacity(0.2)),
+                                      border: Border.all(color: const Color(0xFFE0E5E2)),
                                     ),
                                     child: Text(
                                       prompt,
-                                      style: GoogleFonts.inter(fontSize: 12, color: Colors.white, fontWeight: FontWeight.w500),
+                                      style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textPrimaryLight, fontWeight: FontWeight.w500),
                                     ),
                                   ),
                                 );
                               }).toList(),
                             ),
                             const SizedBox(height: 20),
-                            const Divider(color: Colors.white12),
+                            const Divider(color: Color(0xFFE0E5E2)),
                             const SizedBox(height: 12),
                           ],
                         );
@@ -370,18 +370,18 @@ class _AiTalentAssistantModalState extends State<AiTalentAssistantModal>
                         margin: const EdgeInsets.only(bottom: 16),
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.06),
+                          color: const Color(0xFFF6F8F7),
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: Colors.white12),
+                          border: Border.all(color: const Color(0xFFE0E5E2)),
                         ),
                         child: Row(
                           children: [
-                            const CircularProgressIndicator(color: AppTheme.accentColor, strokeWidth: 2.5),
+                            const CircularProgressIndicator(color: AppTheme.nexusGreen, strokeWidth: 2.5),
                             const SizedBox(width: 16),
                             Expanded(
                               child: Text(
                                 'La IA está analizando los perfiles de los alumnos...',
-                                style: GoogleFonts.inter(color: Colors.white70, fontSize: 13),
+                                style: GoogleFonts.inter(color: AppTheme.nexusTextMuted, fontSize: 13),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -397,8 +397,8 @@ class _AiTalentAssistantModalState extends State<AiTalentAssistantModal>
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: const BoxDecoration(
-                    color: Color(0xFF1E293B),
-                    border: Border(top: BorderSide(color: Colors.white12)),
+                    color: Colors.white,
+                    border: Border(top: BorderSide(color: Color(0xFFE0E5E2))),
                   ),
                   child: Row(
                     children: [
@@ -406,19 +406,19 @@ class _AiTalentAssistantModalState extends State<AiTalentAssistantModal>
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF334155),
+                            color: const Color(0xFFF6F8F7),
                             borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: Colors.white24),
+                            border: Border.all(color: const Color(0xFFE0E5E2)),
                           ),
                           child: TextField(
                             controller: _queryController,
-                            style: GoogleFonts.inter(color: Colors.white, fontSize: 14.5, fontWeight: FontWeight.bold),
-                            cursorColor: AppTheme.accentColor,
+                            style: GoogleFonts.inter(color: AppTheme.textPrimaryLight, fontSize: 14.5, fontWeight: FontWeight.bold),
+                            cursorColor: AppTheme.nexusGreen,
                             decoration: InputDecoration(
                               filled: false,
                               fillColor: Colors.transparent,
                               hintText: 'Escribe tu consulta o requisitos...',
-                              hintStyle: GoogleFonts.inter(color: Colors.white60, fontSize: 13),
+                              hintStyle: GoogleFonts.inter(color: AppTheme.nexusTextMuted, fontSize: 13),
                               border: InputBorder.none,
                               enabledBorder: InputBorder.none,
                               focusedBorder: InputBorder.none,
@@ -432,10 +432,10 @@ class _AiTalentAssistantModalState extends State<AiTalentAssistantModal>
                         icon: Container(
                           padding: const EdgeInsets.all(10),
                           decoration: const BoxDecoration(
-                            gradient: LinearGradient(colors: [AppTheme.primaryColor, AppTheme.accentColor]),
+                            color: AppTheme.nexusGreenLight,
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.arrow_upward_rounded, color: Colors.white, size: 20),
+                          child: const Icon(Icons.arrow_upward_rounded, color: Colors.black, size: 20),
                         ),
                         onPressed: () => _processAiQuery(_queryController.text),
                       ),
@@ -457,9 +457,9 @@ class _AiTalentAssistantModalState extends State<AiTalentAssistantModal>
         child: Container(
           margin: const EdgeInsets.only(bottom: 14, left: 40),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: BoxDecoration(
-            color: AppTheme.primaryColor,
-            borderRadius: const BorderRadius.only(
+          decoration: const BoxDecoration(
+            color: AppTheme.nexusGreenLight,
+            borderRadius: BorderRadius.only(
               topLeft: Radius.circular(20),
               topRight: Radius.circular(20),
               bottomLeft: Radius.circular(20),
@@ -467,7 +467,7 @@ class _AiTalentAssistantModalState extends State<AiTalentAssistantModal>
           ),
           child: Text(
             msg.text,
-            style: GoogleFonts.inter(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500),
+            style: GoogleFonts.inter(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w600),
           ),
         ),
       );
@@ -483,23 +483,23 @@ class _AiTalentAssistantModalState extends State<AiTalentAssistantModal>
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFF1E293B),
+                color: const Color(0xFFF6F8F7),
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(20),
                   topRight: Radius.circular(20),
                   bottomRight: Radius.circular(20),
                 ),
-                border: Border.all(color: Colors.white12),
+                border: Border.all(color: const Color(0xFFE0E5E2)),
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(Icons.auto_awesome_rounded, color: AppTheme.accentColor, size: 20),
+                  const Icon(Icons.auto_awesome_rounded, color: AppTheme.nexusGreen, size: 20),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       msg.text,
-                      style: GoogleFonts.inter(color: Colors.white, fontSize: 13.5, height: 1.4),
+                      style: GoogleFonts.inter(color: AppTheme.textPrimaryLight, fontSize: 13.5, height: 1.4),
                     ),
                   ),
                 ],
@@ -527,9 +527,9 @@ class _AiTalentAssistantModalState extends State<AiTalentAssistantModal>
       margin: const EdgeInsets.only(bottom: 14),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.08),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.18)),
+        border: Border.all(color: const Color(0xFFE0E5E2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -538,16 +538,16 @@ class _AiTalentAssistantModalState extends State<AiTalentAssistantModal>
             children: [
               CircleAvatar(
                 radius: 20,
-                backgroundColor: AppTheme.primaryColor,
-                child: Text(name[0], style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold)),
+                backgroundColor: AppTheme.nexusGreenLight,
+                child: Text(name[0], style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.bold)),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(name, style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
-                    Text('Sistemas • $modality • GPA: $gpa', style: GoogleFonts.inter(color: AppTheme.accentColor, fontSize: 11.5)),
+                    Text(name, style: GoogleFonts.outfit(color: AppTheme.textPrimaryLight, fontWeight: FontWeight.bold, fontSize: 15)),
+                    Text('Sistemas • $modality • GPA: $gpa', style: GoogleFonts.inter(color: AppTheme.nexusGreen, fontSize: 11.5, fontWeight: FontWeight.w600)),
                   ],
                 ),
               ),
@@ -559,8 +559,8 @@ class _AiTalentAssistantModalState extends State<AiTalentAssistantModal>
             children: skills.map((skill) {
               return Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(color: Colors.white10, borderRadius: BorderRadius.circular(8)),
-                child: Text(skill, style: GoogleFonts.inter(color: Colors.white70, fontSize: 11)),
+                decoration: BoxDecoration(color: const Color(0xFFF6F8F7), borderRadius: BorderRadius.circular(8), border: Border.all(color: const Color(0xFFE0E5E2))),
+                child: Text(skill, style: GoogleFonts.inter(color: AppTheme.textPrimaryLight, fontSize: 11)),
               );
             }).toList(),
           ),
@@ -573,10 +573,11 @@ class _AiTalentAssistantModalState extends State<AiTalentAssistantModal>
                     InviteStudentModal.show(context, student: student);
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.primaryColor,
+                    backgroundColor: AppTheme.nexusGreenLight,
+                    foregroundColor: Colors.black,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  child: Text('Invitar 📩', style: GoogleFonts.inter(color: Colors.white, fontSize: 11.5, fontWeight: FontWeight.bold)),
+                  child: Text('Invitar 📩', style: GoogleFonts.inter(color: Colors.black, fontSize: 11.5, fontWeight: FontWeight.bold)),
                 ),
               ),
               const SizedBox(width: 6),
@@ -589,10 +590,10 @@ class _AiTalentAssistantModalState extends State<AiTalentAssistantModal>
                     );
                   },
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: Colors.white38),
+                    side: const BorderSide(color: Color(0xFFE0E5E2)),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  child: Text('Perfil 👤', style: GoogleFonts.inter(color: Colors.white, fontSize: 11.5)),
+                  child: Text('Perfil 👤', style: GoogleFonts.inter(color: AppTheme.textPrimaryLight, fontSize: 11.5, fontWeight: FontWeight.w600)),
                 ),
               ),
             ],

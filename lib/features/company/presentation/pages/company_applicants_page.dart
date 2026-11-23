@@ -84,17 +84,17 @@ class _CompanyApplicantsPageState extends State<CompanyApplicantsPage> {
     final user = _auth.currentUser;
     if (user == null) {
       return Scaffold(
-        backgroundColor: AppTheme.bgDark,
-        body: Center(child: Text('Inicia sesión para ver los postulados', style: GoogleFonts.inter(color: Colors.white))),
+        backgroundColor: Colors.white,
+        body: Center(child: Text('Inicia sesión para ver los postulados', style: GoogleFonts.inter(color: AppTheme.textPrimaryLight))),
       );
     }
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('Postulaciones Recibidas', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white)),
-        backgroundColor: AppTheme.bgDark.withOpacity(0.85),
-        foregroundColor: Colors.white,
+        title: Text('Postulaciones Recibidas', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: AppTheme.textPrimaryLight)),
+        backgroundColor: Colors.white,
+        foregroundColor: AppTheme.textPrimaryLight,
         elevation: 0,
       ),
       body: LiquidGlassAmbientBackground(
@@ -102,7 +102,7 @@ class _CompanyApplicantsPageState extends State<CompanyApplicantsPage> {
           stream: _db.collection('applications').snapshots(),
           builder: (context, snapshot) {
             if (snapshot.hasError) {
-              return Center(child: Text('Error al cargar las postulaciones', style: GoogleFonts.inter(color: Colors.white)));
+              return Center(child: Text('Error al cargar las postulaciones', style: GoogleFonts.inter(color: AppTheme.textPrimaryLight)));
             }
             if (snapshot.connectionState == ConnectionState.waiting) {
               return _buildShimmerSkeletonList();
@@ -169,7 +169,7 @@ class _CompanyApplicantsPageState extends State<CompanyApplicantsPage> {
                   ),
                 ),
 
-                const Divider(height: 1, color: Colors.white12),
+                const Divider(height: 1, color: Color(0xFFE0E5E2)),
 
                 Expanded(
                   child: filteredDocs.isEmpty
@@ -217,16 +217,16 @@ class _CompanyApplicantsPageState extends State<CompanyApplicantsPage> {
                                               style: GoogleFonts.outfit(
                                                 fontSize: 18,
                                                 fontWeight: FontWeight.bold,
-                                                color: Colors.white,
+                                                color: AppTheme.textPrimaryLight,
                                               ),
                                             ),
                                             const SizedBox(height: 2),
                                             Text(
                                               'Vacante: $vacancyName',
                                               style: GoogleFonts.inter(
-                                                color: AppTheme.accentColor,
+                                                color: AppTheme.nexusGreen,
                                                 fontSize: 13,
-                                                fontWeight: FontWeight.w500,
+                                                fontWeight: FontWeight.w600,
                                               ),
                                             ),
                                           ],
@@ -236,7 +236,7 @@ class _CompanyApplicantsPageState extends State<CompanyApplicantsPage> {
                                     ],
                                   ),
 
-                                  const Divider(height: 24, color: Colors.white12),
+                                  const Divider(height: 24, color: Color(0xFFE0E5E2)),
 
                                   Row(
                                     children: [
@@ -244,13 +244,14 @@ class _CompanyApplicantsPageState extends State<CompanyApplicantsPage> {
                                         Expanded(
                                           child: ElevatedButton.icon(
                                             onPressed: () => _updateStatus(docId, 'En Entrevista', studentId, vacancyName),
-                                            icon: const Icon(Icons.event_available_rounded, size: 15, color: Colors.white),
+                                            icon: const Icon(Icons.event_available_rounded, size: 15, color: Colors.black),
                                             label: Text(
                                               'ENTREVISTA 🎯',
-                                              style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 11.5, color: Colors.white),
+                                              style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 11.5, color: Colors.black),
                                             ),
                                             style: ElevatedButton.styleFrom(
-                                              backgroundColor: Colors.amber[800],
+                                              backgroundColor: AppTheme.nexusGreenLight,
+                                              foregroundColor: Colors.black,
                                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                               padding: const EdgeInsets.symmetric(vertical: 10),
                                             ),
@@ -260,13 +261,14 @@ class _CompanyApplicantsPageState extends State<CompanyApplicantsPage> {
                                         Expanded(
                                           child: ElevatedButton.icon(
                                             onPressed: () => _updateStatus(docId, 'Aceptado', studentId, vacancyName),
-                                            icon: const Icon(Icons.check_circle_rounded, size: 15, color: Colors.white),
+                                            icon: const Icon(Icons.check_circle_rounded, size: 15, color: Colors.black),
                                             label: Text(
                                               'ACEPTAR ✅',
-                                              style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 11.5, color: Colors.white),
+                                              style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 11.5, color: Colors.black),
                                             ),
                                             style: ElevatedButton.styleFrom(
-                                              backgroundColor: AppTheme.primaryColor,
+                                              backgroundColor: AppTheme.nexusGreenLight,
+                                              foregroundColor: Colors.black,
                                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                               padding: const EdgeInsets.symmetric(vertical: 10),
                                             ),
@@ -282,13 +284,14 @@ class _CompanyApplicantsPageState extends State<CompanyApplicantsPage> {
                                         Expanded(
                                           child: ElevatedButton.icon(
                                             onPressed: () => _updateStatus(docId, 'Aceptado', studentId, vacancyName),
-                                            icon: const Icon(Icons.check_circle_rounded, size: 15, color: Colors.white),
+                                            icon: const Icon(Icons.check_circle_rounded, size: 15, color: Colors.black),
                                             label: Text(
                                               'ACEPTAR CANDIDATO ✅',
-                                              style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.white),
+                                              style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.black),
                                             ),
                                             style: ElevatedButton.styleFrom(
-                                              backgroundColor: AppTheme.primaryColor,
+                                              backgroundColor: AppTheme.nexusGreenLight,
+                                              foregroundColor: Colors.black,
                                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                               padding: const EdgeInsets.symmetric(vertical: 10),
                                             ),
@@ -305,7 +308,7 @@ class _CompanyApplicantsPageState extends State<CompanyApplicantsPage> {
                                       const SizedBox(width: 6),
 
                                       IconButton(
-                                        icon: const Icon(Icons.send_rounded, color: AppTheme.accentColor, size: 20),
+                                        icon: const Icon(Icons.send_rounded, color: AppTheme.nexusGreen, size: 20),
                                         tooltip: 'Contactar Mensaje',
                                         onPressed: () {
                                           ContactStudentModal.show(context, student: app);
@@ -340,8 +343,8 @@ class _CompanyApplicantsPageState extends State<CompanyApplicantsPage> {
       itemCount: 4,
       itemBuilder: (context, index) {
         return Shimmer.fromColors(
-          baseColor: Colors.white.withOpacity(0.08),
-          highlightColor: Colors.white.withOpacity(0.18),
+          baseColor: const Color(0xFFF6F8F7),
+          highlightColor: const Color(0xFFE0E5E2),
           child: Container(
             height: 120,
             margin: const EdgeInsets.only(bottom: 16),
@@ -361,21 +364,21 @@ class _CompanyApplicantsPageState extends State<CompanyApplicantsPage> {
       padding: const EdgeInsets.only(right: 8),
       child: ChoiceChip(
         showCheckmark: false,
-        avatar: Icon(icon, size: 15, color: isSelected ? Colors.white : AppTheme.accentColor),
+        avatar: Icon(icon, size: 15, color: isSelected ? Colors.black : AppTheme.nexusGreen),
         label: Text(
           '$label ($count)',
           style: GoogleFonts.inter(
             fontSize: 12,
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: isSelected ? Colors.black : AppTheme.textPrimaryLight,
           ),
         ),
         selected: isSelected,
-        selectedColor: AppTheme.primaryColor,
-        backgroundColor: AppTheme.surfaceDark,
+        selectedColor: AppTheme.nexusGreenLight,
+        backgroundColor: const Color(0xFFF6F8F7),
         shape: StadiumBorder(
           side: BorderSide(
-            color: isSelected ? AppTheme.primaryColor : Colors.white.withOpacity(0.25),
+            color: isSelected ? AppTheme.nexusGreen : const Color(0xFFE0E5E2),
           ),
         ),
         onSelected: (_) {
@@ -395,21 +398,21 @@ class _CompanyApplicantsPageState extends State<CompanyApplicantsPage> {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: AppTheme.primaryColor.withOpacity(0.2),
+                color: AppTheme.nexusGreen.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.people_outline_rounded, size: 60, color: AppTheme.accentColor),
+              child: const Icon(Icons.people_outline_rounded, size: 60, color: AppTheme.nexusGreen),
             ),
             const SizedBox(height: 18),
             Text(
               'No hay candidatos en esta sección',
-              style: GoogleFonts.outfit(fontSize: 19, fontWeight: FontWeight.bold, color: Colors.white),
+              style: GoogleFonts.outfit(fontSize: 19, fontWeight: FontWeight.bold, color: AppTheme.textPrimaryLight),
             ),
             const SizedBox(height: 6),
             Text(
               'Las postulaciones de los alumnos aparecerán en tiempo real bajo la pestaña correspondiente.',
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(fontSize: 13, color: Colors.white70),
+              style: GoogleFonts.inter(fontSize: 13, color: AppTheme.nexusTextMuted),
             ),
           ],
         ),
@@ -422,30 +425,30 @@ class _CompanyApplicantsPageState extends State<CompanyApplicantsPage> {
     String label = status.toUpperCase();
 
     if (status == 'En Entrevista') {
-      color = Colors.amber;
+      color = AppTheme.nexusGreenSecondary;
       label = '🎯 EN ENTREVISTA';
     } else if (status == 'Aceptado') {
-      color = AppTheme.primaryGreen;
+      color = AppTheme.nexusGreen;
       label = '✅ ACEPTADO';
     } else if (status == 'Descartado' || status == 'Rechazado') {
       color = Colors.redAccent;
       label = '❌ DESCARTADO';
     } else if (status == 'Pendiente' || status == 'Enviado') {
-      color = Colors.orangeAccent;
+      color = AppTheme.nexusTextMuted;
       label = '⏳ PENDIENTE';
     }
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.2),
+        color: color.withOpacity(0.15),
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: color.withOpacity(0.4)),
       ),
       child: Text(
         label,
         style: GoogleFonts.inter(
-          color: Colors.white,
+          color: Colors.black,
           fontWeight: FontWeight.bold,
           fontSize: 10.5,
           letterSpacing: 0.3,

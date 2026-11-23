@@ -123,7 +123,7 @@ class NotificationsPage extends StatelessWidget {
         });
 
         return Scaffold(
-          backgroundColor: const Color(0xFFF8FAFC),
+          backgroundColor: Colors.white,
           appBar: AppBar(
             title: Text('Notificaciones', style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
             foregroundColor: AppTheme.primaryGreen,
@@ -154,13 +154,13 @@ class NotificationsPage extends StatelessWidget {
                                 const SizedBox(height: 16),
                                 Text(
                                   'No tienes avisos nuevos',
-                                  style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A)),
+                                  style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textPrimaryLight),
                                 ),
                                 const SizedBox(height: 6),
                                 Text(
                                   'Las invitaciones y actualizaciones de tu proceso aparecerán aquí.',
                                   textAlign: TextAlign.center,
-                                  style: GoogleFonts.inter(fontSize: 13, color: const Color(0xFF64748B)),
+                                  style: GoogleFonts.inter(fontSize: 13, color: AppTheme.nexusTextMuted),
                                 ),
                               ],
                             ),
@@ -204,13 +204,13 @@ class NotificationsPage extends StatelessWidget {
                                 ),
                                 title: Text(
                                   title,
-                                  style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 15, color: const Color(0xFF0F172A)),
+                                  style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 15, color: AppTheme.textPrimaryLight),
                                 ),
                                 subtitle: Padding(
                                   padding: const EdgeInsets.only(top: 4.0),
                                   child: Text(
                                     message,
-                                    style: GoogleFonts.inter(fontSize: 12.5, height: 1.35, color: const Color(0xFF334155)),
+                                    style: GoogleFonts.inter(fontSize: 12.5, height: 1.35, color: AppTheme.textPrimaryLight),
                                   ),
                                 ),
                                 trailing: Row(

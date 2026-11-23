@@ -155,11 +155,11 @@ class _RateStudentModalState extends State<RateStudentModal> {
                       children: [
                         Text(
                           'Evaluar y Recomendar Alumno ⭐',
-                          style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A)),
+                          style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textPrimaryLight),
                         ),
                         Text(
                           'Reseña oficial de desempeño para $studentName',
-                          style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)),
+                          style: GoogleFonts.inter(fontSize: 12, color: AppTheme.nexusTextMuted),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -178,7 +178,7 @@ class _RateStudentModalState extends State<RateStudentModal> {
               // Selección de Estrellas (1 a 5)
               Text(
                 'Calificación de Desempeño:',
-                style: GoogleFonts.inter(fontSize: 13.5, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A)),
+                style: GoogleFonts.inter(fontSize: 13.5, fontWeight: FontWeight.bold, color: AppTheme.textPrimaryLight),
               ),
               const SizedBox(height: 8),
 
@@ -210,7 +210,7 @@ class _RateStudentModalState extends State<RateStudentModal> {
               // Selección de Modalidad
               Text(
                 'Tipo de Experiencia:',
-                style: GoogleFonts.inter(fontSize: 13.5, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A)),
+                style: GoogleFonts.inter(fontSize: 13.5, fontWeight: FontWeight.bold, color: AppTheme.textPrimaryLight),
               ),
               const SizedBox(height: 8),
 
@@ -231,7 +231,7 @@ class _RateStudentModalState extends State<RateStudentModal> {
               // Campo de Reseña / Comentario de Recomendación
               Text(
                 'Comentario / Recomendación:',
-                style: GoogleFonts.inter(fontSize: 13.5, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A)),
+                style: GoogleFonts.inter(fontSize: 13.5, fontWeight: FontWeight.bold, color: AppTheme.textPrimaryLight),
               ),
               const SizedBox(height: 8),
 
@@ -256,13 +256,14 @@ class _RateStudentModalState extends State<RateStudentModal> {
                     ? const Center(child: CircularProgressIndicator(color: AppTheme.primaryColor))
                     : ElevatedButton.icon(
                         onPressed: _submitEvaluation,
-                        icon: const Icon(Icons.star_rounded, color: Colors.white, size: 22),
+                        icon: const Icon(Icons.star_rounded, color: Colors.black, size: 22),
                         label: Text(
                           'PUBLICAR EVALUACIÓN OFICIAL ⭐',
-                          style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14.5),
+                          style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14.5),
                         ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppTheme.primaryColor,
+                          backgroundColor: AppTheme.nexusGreenLight,
+                          foregroundColor: Colors.black,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                         ),
                       ),

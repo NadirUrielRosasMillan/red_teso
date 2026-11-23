@@ -303,7 +303,7 @@ class LocalCourseStore extends ChangeNotifier {
   /// Devuelve null si se guardo, o el motivo del fallo.
   Future<String?> saveCourse(LocalCourse c) async {
     if (!isAttached) {
-      return 'El modulo no esta conectado a tu sesion. Entra desde AGORA Aprende.';
+      return 'El modulo no esta conectado a tu sesion. Entra desde NEXUS Aprende.';
     }
     if (!canEdit(c)) {
       return 'Tu usuario no puede editar este curso (rol: ${_role.isEmpty ? 'sin rol' : _role}).';
@@ -571,7 +571,7 @@ class LocalCourseStore extends ChangeNotifier {
     final rnd = Random.secure();
     final code =
         List.generate(8, (_) => chars[rnd.nextInt(chars.length)]).join();
-    return 'AGORA-${DateTime.now().year}-$code';
+    return 'NEXUS-${DateTime.now().year}-$code';
   }
 
   static String _id() => DateTime.now().microsecondsSinceEpoch.toString();

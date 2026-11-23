@@ -38,7 +38,7 @@ class CertificatePdf {
 
     final doc = pw.Document(
       title: 'Certificado ${d.folio}',
-      author: 'AGORA Aprende TESOEM',
+      author: 'NEXUS Aprende TESOEM',
     );
 
     doc.addPage(
@@ -70,7 +70,7 @@ class CertificatePdf {
                     pw.Column(
                       children: [
                         pw.Text(
-                          'AGORA APRENDE',
+                          'NEXUS APRENDE',
                           style: pw.TextStyle(
                             font: bold,
                             fontSize: 13,
@@ -152,7 +152,7 @@ class CertificatePdf {
                         ),
                         pw.SizedBox(height: 2),
                         pw.Text(
-                          'Verifica la autenticidad de este certificado con su folio en AGORA Aprende.',
+                          'Verifica la autenticidad de este certificado con su folio en NEXUS Aprende.',
                           style: const pw.TextStyle(fontSize: 9, color: _gray),
                         ),
                       ],

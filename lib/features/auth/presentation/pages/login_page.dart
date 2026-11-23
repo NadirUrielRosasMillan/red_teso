@@ -411,9 +411,9 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                               colors: [
-                                Color(0xFFB8E986),
-                                Color(0xFF28A85B),
-                                Color(0xFF075C3B),
+                                _greenLight,
+                                _greenSecondary,
+                                _greenPrimary,
                               ],
                             ).createShader(bounds),
                             child: Text(
@@ -468,8 +468,8 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
                                     colors: [
-                                      Color(0xFF2E9D5C),
-                                      Color(0xFF075C3B),
+                                      _greenSecondary,
+                                      _greenPrimary,
                                     ],
                                   ),
                                   borderRadius: BorderRadius.circular(12),
@@ -674,16 +674,11 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                             height: 58,
                             child: DecoratedBox(
                               decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  colors: [
-                                    _greenSecondary,
-                                    _greenPrimary,
-                                  ],
-                                ),
+                                color: _greenLight,
                                 borderRadius: BorderRadius.circular(16),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: _greenPrimary.withValues(alpha: 0.35),
+                                    color: _greenPrimary.withValues(alpha: 0.14),
                                     blurRadius: 15,
                                     offset: const Offset(0, 6),
                                   ),
@@ -698,10 +693,10 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                         if (mounted) await _login();
                                       },
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.transparent,
-                                  disabledBackgroundColor: Colors.white24,
+                                  backgroundColor: _greenLight,
+                                  disabledBackgroundColor: const Color(0xFFE0E5E2),
                                   shadowColor: Colors.transparent,
-                                  foregroundColor: Colors.white,
+                                  foregroundColor: Colors.black,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(16),
                                   ),
@@ -712,7 +707,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                         height: 24,
                                         child: CircularProgressIndicator(
                                           strokeWidth: 2.5,
-                                          color: Colors.white,
+                                          color: Colors.black,
                                         ),
                                       )
                                     : Row(
@@ -722,6 +717,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                           Text(
                                             'INICIAR SESIÓN',
                                             style: GoogleFonts.plusJakartaSans(
+                                              color: Colors.black,
                                               fontWeight: FontWeight.w800,
                                               fontSize: 13,
                                               letterSpacing: 1.2,
@@ -730,6 +726,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                           const SizedBox(width: 12),
                                           const Icon(
                                             Icons.arrow_forward_rounded,
+                                            color: Colors.black,
                                             size: 21,
                                           ),
                                         ],

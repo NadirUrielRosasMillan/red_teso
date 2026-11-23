@@ -206,25 +206,26 @@ class _ContactStudentModalState extends State<ContactStudentModal> {
             const SizedBox(height: 12),
             Text(
               '¡Invitación Enviada!',
-              style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 22, color: const Color(0xFF0F172A)),
+              style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 22, color: AppTheme.textPrimaryLight),
             ),
           ],
         ),
         content: Text(
           'Se ha enviado la propuesta de entrevista a $studentName para el $date a las $time. El alumno recibirá la notificación en tiempo real.',
           textAlign: TextAlign.center,
-          style: GoogleFonts.inter(fontSize: 13.5, color: const Color(0xFF475569)),
+          style: GoogleFonts.inter(fontSize: 13.5, color: AppTheme.nexusTextMuted),
         ),
         actionsAlignment: MainAxisAlignment.center,
         actions: [
           ElevatedButton(
             onPressed: () => Navigator.pop(context),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.primaryColor,
+              backgroundColor: AppTheme.nexusGreenLight,
+              foregroundColor: Colors.black,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             ),
-            child: Text('ENTENDIDO', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white)),
+            child: Text('ENTENDIDO', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.black)),
           ),
         ],
       ),
@@ -289,8 +290,8 @@ class _ContactStudentModalState extends State<ContactStudentModal> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Contactar a $studentName', style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A))),
-                          Text('Agendar entrevista laboral o proyecto', style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B))),
+                          Text('Contactar a $studentName', style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textPrimaryLight)),
+                          Text('Agendar entrevista laboral o proyecto', style: GoogleFonts.inter(fontSize: 12, color: AppTheme.nexusTextMuted)),
                         ],
                       ),
                     ),
@@ -443,14 +444,14 @@ class _ContactStudentModalState extends State<ContactStudentModal> {
                       ? const Center(child: CircularProgressIndicator(color: AppTheme.primaryColor))
                       : ElevatedButton.icon(
                           onPressed: _sendContactRequest,
-                          icon: const Icon(Icons.send_rounded, color: Colors.white, size: 18),
+                          icon: const Icon(Icons.send_rounded, color: Colors.black, size: 18),
                           label: Text(
                             'ENVIAR INVITACIÓN DE ENTREVISTA ✉️',
-                            style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 13.5, letterSpacing: 0.5),
+                            style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 13.5, letterSpacing: 0.5, color: Colors.black),
                           ),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppTheme.primaryColor,
-                            foregroundColor: Colors.white,
+                            backgroundColor: AppTheme.nexusGreenLight,
+                            foregroundColor: Colors.black,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                           ),
                         ),

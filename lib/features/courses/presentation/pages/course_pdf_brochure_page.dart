@@ -63,33 +63,33 @@ class _CoursePdfBrochurePageState extends State<CoursePdfBrochurePage> with Sing
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A), // Slate Noche Ejecutivo
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0F172A).withOpacity(0.9),
+        backgroundColor: Colors.white,
         elevation: 0,
-        foregroundColor: Colors.white,
+        foregroundColor: AppTheme.textPrimaryLight,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Ficha_Tecnica_TESOEM_${widget.course.id}.pdf',
-              style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.bold, letterSpacing: 0.5),
+              style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.bold, letterSpacing: 0.5, color: AppTheme.textPrimaryLight),
               overflow: TextOverflow.ellipsis,
             ),
             Text(
               'Documento Oficial para Recursos Humanos • TESOEM',
-              style: GoogleFonts.inter(fontSize: 10.5, color: Colors.white60),
+              style: GoogleFonts.inter(fontSize: 10.5, color: AppTheme.nexusTextMuted),
             ),
           ],
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.download_rounded, color: AppTheme.accentColor),
+            icon: const Icon(Icons.download_rounded, color: AppTheme.nexusGreen),
             tooltip: 'Descargar PDF',
             onPressed: () => _downloadPdf(context),
           ),
           IconButton(
-            icon: const Icon(Icons.share_rounded, color: Colors.white),
+            icon: const Icon(Icons.share_rounded, color: AppTheme.textPrimaryLight),
             tooltip: 'Compartir Documento',
             onPressed: () => _downloadPdf(context),
           ),
@@ -202,7 +202,7 @@ class _CoursePdfBrochurePageState extends State<CoursePdfBrochurePage> with Sing
                                       style: GoogleFonts.outfit(
                                         fontSize: 9.5,
                                         fontWeight: FontWeight.w600,
-                                        color: const Color(0xFF475569),
+                                        color: AppTheme.nexusTextMuted,
                                       ),
                                     ),
                                     const SizedBox(height: 3),
@@ -211,7 +211,7 @@ class _CoursePdfBrochurePageState extends State<CoursePdfBrochurePage> with Sing
                                       style: GoogleFonts.inter(
                                         fontSize: 8.5,
                                         fontWeight: FontWeight.bold,
-                                        color: const Color(0xFF64748B),
+                                        color: AppTheme.nexusTextMuted,
                                       ),
                                     ),
                                   ],
@@ -221,26 +221,15 @@ class _CoursePdfBrochurePageState extends State<CoursePdfBrochurePage> with Sing
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                                 decoration: BoxDecoration(
-                                  gradient: const LinearGradient(
-                                    colors: [
-                                      AppTheme.primaryTurquoise,
-                                      AppTheme.darkTurquoise,
-                                    ],
-                                  ),
+                                  color: AppTheme.nexusGreenLight,
                                   borderRadius: BorderRadius.circular(12),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: AppTheme.primaryColor.withOpacity(0.3),
-                                      blurRadius: 8,
-                                    ),
-                                  ],
                                 ),
                                 child: Text(
                                   'HOJA TÉCNICA 2025',
                                   style: GoogleFonts.inter(
                                     fontSize: 9.5,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.white,
+                                    color: Colors.black,
                                   ),
                                 ),
                               ),
@@ -257,7 +246,7 @@ class _CoursePdfBrochurePageState extends State<CoursePdfBrochurePage> with Sing
                             style: GoogleFonts.outfit(
                               fontSize: 21,
                               fontWeight: FontWeight.bold,
-                              color: const Color(0xFF0F172A),
+                              color: AppTheme.textPrimaryLight,
                               height: 1.25,
                             ),
                           ),
@@ -269,7 +258,7 @@ class _CoursePdfBrochurePageState extends State<CoursePdfBrochurePage> with Sing
                             style: GoogleFonts.inter(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
-                              color: const Color(0xFF64748B),
+                              color: AppTheme.nexusTextMuted,
                             ),
                           ),
 
@@ -279,9 +268,9 @@ class _CoursePdfBrochurePageState extends State<CoursePdfBrochurePage> with Sing
                           Container(
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFF8FAFC),
+                              color: AppTheme.surfaceLight,
                               borderRadius: BorderRadius.circular(16),
-                              border: Border.all(color: const Color(0xFFE2E8F0)),
+                              border: Border.all(color: AppTheme.borderLight),
                             ),
                             child: Row(
                               children: [
@@ -290,7 +279,7 @@ class _CoursePdfBrochurePageState extends State<CoursePdfBrochurePage> with Sing
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text('MODALIDAD', style: GoogleFonts.inter(fontSize: 9.5, color: Colors.grey[600], fontWeight: FontWeight.bold)),
-                                      Text(widget.course.duration, style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A))),
+                                      Text(widget.course.duration, style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.bold, color: AppTheme.textPrimaryLight)),
                                     ],
                                   ),
                                 ),
@@ -302,7 +291,7 @@ class _CoursePdfBrochurePageState extends State<CoursePdfBrochurePage> with Sing
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text('NIVEL TÉCNICO', style: GoogleFonts.inter(fontSize: 9.5, color: Colors.grey[600], fontWeight: FontWeight.bold)),
-                                        Text(widget.course.level, style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A))),
+                                        Text(widget.course.level, style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.bold, color: AppTheme.textPrimaryLight)),
                                       ],
                                     ),
                                   ),
@@ -334,7 +323,7 @@ class _CoursePdfBrochurePageState extends State<CoursePdfBrochurePage> with Sing
                           const SizedBox(height: 6),
                           Text(
                             widget.course.description,
-                            style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF334155), height: 1.5),
+                            style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textPrimaryLight, height: 1.5),
                           ),
 
                           const SizedBox(height: 18),
@@ -370,7 +359,7 @@ class _CoursePdfBrochurePageState extends State<CoursePdfBrochurePage> with Sing
                                       Expanded(
                                         child: Text(
                                           '${s.name} • ${s.roleInCourse}',
-                                          style: GoogleFonts.inter(fontSize: 11.5, color: const Color(0xFF334155)),
+                                          style: GoogleFonts.inter(fontSize: 11.5, color: AppTheme.textPrimaryLight),
                                         ),
                                       ),
                                     ],
@@ -381,7 +370,7 @@ class _CoursePdfBrochurePageState extends State<CoursePdfBrochurePage> with Sing
                           else
                             Text(
                               'Cuerpo docente especializado de la División de Ingeniería en Sistemas Computacionales TESOEM.',
-                              style: GoogleFonts.inter(fontSize: 11.5, color: const Color(0xFF334155)),
+                              style: GoogleFonts.inter(fontSize: 11.5, color: AppTheme.textPrimaryLight),
                             ),
 
                           const SizedBox(height: 24),
@@ -431,10 +420,10 @@ class _CoursePdfBrochurePageState extends State<CoursePdfBrochurePage> with Sing
           filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
           child: Container(
             padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: const Color(0xFF0F172A).withOpacity(0.85),
+            decoration: const BoxDecoration(
+              color: Colors.white,
               border: Border(
-                top: BorderSide(color: Colors.white.withOpacity(0.15), width: 1),
+                top: BorderSide(color: AppTheme.borderLight, width: 1),
               ),
             ),
             child: SafeArea(
@@ -443,16 +432,17 @@ class _CoursePdfBrochurePageState extends State<CoursePdfBrochurePage> with Sing
                   Expanded(
                     child: ElevatedButton.icon(
                       onPressed: () => _downloadPdf(context),
-                      icon: const Icon(Icons.download_rounded, color: Colors.white, size: 16),
+                      icon: const Icon(Icons.download_rounded, color: Colors.black, size: 16),
                       label: FittedBox(
                         fit: BoxFit.scaleDown,
-                        child: Text('DESCARGAR PDF 📥', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 12)),
+                        child: Text('DESCARGAR PDF 📥', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.black, fontSize: 12)),
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.primaryColor,
+                        backgroundColor: AppTheme.nexusGreenLight,
+                        foregroundColor: Colors.black,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
-                        elevation: 4,
+                        elevation: 0,
                       ),
                     ),
                   ),
@@ -462,16 +452,17 @@ class _CoursePdfBrochurePageState extends State<CoursePdfBrochurePage> with Sing
                       onPressed: () {
                         CourseQuoteModal.show(context, course: widget.course);
                       },
-                      icon: const Icon(Icons.request_quote_rounded, color: Colors.white, size: 16),
+                      icon: const Icon(Icons.request_quote_rounded, color: Colors.black, size: 16),
                       label: FittedBox(
                         fit: BoxFit.scaleDown,
-                        child: Text('COTIZAR 💼', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 12)),
+                        child: Text('COTIZAR 💼', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.black, fontSize: 12)),
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.accentColor,
+                        backgroundColor: AppTheme.nexusGreenLight,
+                        foregroundColor: Colors.black,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
-                        elevation: 4,
+                        elevation: 0,
                       ),
                     ),
                   ),
@@ -489,9 +480,9 @@ class _CoursePdfBrochurePageState extends State<CoursePdfBrochurePage> with Sing
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8FAFC),
+        color: AppTheme.surfaceLight,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(color: AppTheme.borderLight),
       ),
       child: Row(
         children: [
@@ -504,7 +495,7 @@ class _CoursePdfBrochurePageState extends State<CoursePdfBrochurePage> with Sing
             child: Text(tag, style: GoogleFonts.outfit(fontSize: 9.5, fontWeight: FontWeight.bold, color: AppTheme.primaryColor)),
           ),
           const SizedBox(width: 8),
-          Expanded(child: Text(title, style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: const Color(0xFF0F172A)))),
+          Expanded(child: Text(title, style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: AppTheme.textPrimaryLight))),
           const SizedBox(width: 4),
           Text(hours, style: GoogleFonts.inter(fontSize: 10.5, color: Colors.grey[600], fontWeight: FontWeight.bold)),
         ],

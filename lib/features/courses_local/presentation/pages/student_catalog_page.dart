@@ -368,7 +368,7 @@ class _StudentCoursesPageState extends State<StudentCoursesPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Aprende con AGORA',
+            'Aprende con NEXUS',
             style: TextStyle(
               color: CoursesColors.white,
               fontSize: 24,

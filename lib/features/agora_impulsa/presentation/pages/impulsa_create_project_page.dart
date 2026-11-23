@@ -238,11 +238,11 @@ class _ImpulsaCreateProjectPageState extends State<ImpulsaCreateProjectPage> {
                   alignment: Alignment.centerRight,
                   child: FilledButton.icon(
                     onPressed: _saveProject,
-                    icon: const Icon(Icons.save_rounded),
+                    icon: const Icon(Icons.save_rounded, color: Colors.black),
                     label: const Text('Guardar'),
                     style: FilledButton.styleFrom(
-                      backgroundColor: ImpulsaPalette.flagGreen,
-                      foregroundColor: Colors.white,
+                      backgroundColor: ImpulsaPalette.buttonGreen,
+                      foregroundColor: Colors.black,
                       padding: const EdgeInsets.symmetric(
                           horizontal: 32, vertical: 16),
                       shape: RoundedRectangleBorder(

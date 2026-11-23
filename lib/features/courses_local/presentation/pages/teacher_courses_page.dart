@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:red_teso/features/auth/presentation/providers/auth_provider.dart';
 import '../../data/local_course_store.dart';
 import '../../models/local_course.dart';
 import '../local_courses_pages.dart';
@@ -9,6 +11,21 @@ import '../widgets/course_widgets.dart';
 /// (editar, vista previa, publicar o dejar en borrador, eliminar).
 class TeacherCoursesPage extends StatelessWidget {
   const TeacherCoursesPage({super.key});
+
+  void _ensureSessionAttached(BuildContext context) {
+    final store = LocalCourseStore.instance;
+    if (store.isAttached) return;
+    final auth = Provider.of<AuthProvider>(context, listen: false);
+    final user = auth.user;
+    final role = auth.userType;
+    if (user != null && role != UserType.none) {
+      store.attach(
+        uid: user.uid,
+        role: role.name,
+        name: user.displayName ?? '',
+      );
+    }
+  }
 
   Future<void> _confirmDelete(BuildContext context, LocalCourse c) async {
     final ok = await showDialog<bool>(
@@ -38,6 +55,7 @@ class TeacherCoursesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    _ensureSessionAttached(context);
     return Theme(
       data: coursesTheme(),
       child: AnimatedBuilder(
