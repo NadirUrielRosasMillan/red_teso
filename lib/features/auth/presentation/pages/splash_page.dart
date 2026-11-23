@@ -88,7 +88,7 @@ class _SplashPageState extends State<SplashPage>
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(32),
                     child: Image.asset(
-                      'assets/images/branding/nexum_icon_1024.png',
+                      'assets/images/branding/nexus_icon_1024.png',
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -100,7 +100,7 @@ class _SplashPageState extends State<SplashPage>
                   child: Column(
                     children: [
                       Text(
-                        'NEXUM',
+                        'NEXUS',
                         style: GoogleFonts.spaceGrotesk(
                           fontSize: 42,
                           fontWeight: FontWeight.w800,

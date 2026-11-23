@@ -1,32 +1,32 @@
 {
-    "name": "NEXUM",
-    "short_name": "NEXUM",
+    "name": "NEXUS",
+    "short_name": "NEXUS",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#FFFFFF",
     "theme_color": "#0B5D3B",
-    "description": "NEXUM: talento, aprendizaje y colaboración para la comunidad TESOEM.",
+    "description": "NEXUS: talento, aprendizaje y colaboración para la comunidad TESOEM.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
         {
-            "src": "icons/nexum_icon_192.png",
+            "src": "icons/nexus_icon_192.png",
             "sizes": "192x192",
             "type": "image/png"
         },
         {
-            "src": "icons/nexum_icon_512.png",
+            "src": "icons/nexus_icon_512.png",
             "sizes": "512x512",
             "type": "image/png"
         },
         {
-            "src": "icons/nexum_icon_192.png",
+            "src": "icons/nexus_icon_192.png",
             "sizes": "192x192",
             "type": "image/png",
             "purpose": "maskable"
         },
         {
-            "src": "icons/nexum_icon_512.png",
+            "src": "icons/nexus_icon_512.png",
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "maskable"

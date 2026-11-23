@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:red_teso/features/auth/presentation/providers/auth_provider.dart';
 import 'package:red_teso/features/courses/presentation/pages/course_catalog_page.dart';
 import 'package:red_teso/features/student/presentation/pages/student_dashboard_page.dart';
-import 'package:red_teso/features/courses_local/presentation/local_courses_pages.dart';
 import 'package:red_teso/features/company/presentation/pages/company_dashboard_page.dart';
 import 'package:red_teso/features/agora_impulsa/presentation/pages/agora_impulsa_page.dart';
 
@@ -14,7 +13,6 @@ class EcosystemSelectorPage extends StatefulWidget {
   @override
   State<EcosystemSelectorPage> createState() => _EcosystemSelectorPageState();
 }
-
 class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
   late final PageController _controller;
   int _selectedIndex = 0;
@@ -22,7 +20,7 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
   final List<_Experience> _experiences = const [
     _Experience(
       id: 'talento',
-      title: 'ÁGORA Talento',
+      title: 'NEXUS Talento',
       eyebrow: 'BOLSA DE TRABAJO',
       subtitle: 'Conecta con tu próxima oportunidad.',
       description:
@@ -34,7 +32,7 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
     ),
     _Experience(
       id: 'aprende',
-      title: 'ÁGORA Aprende',
+      title: 'NEXUS Aprende',
       eyebrow: 'CURSOS Y HABILIDADES',
       subtitle: 'Aprende. Crece. Evoluciona.',
       description:
@@ -46,7 +44,7 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
     ),
     _Experience(
       id: 'impulsa',
-      title: 'ÁGORA Impulsa',
+      title: 'NEXUS Impulsa',
       eyebrow: 'CÓDIGO COLABORATIVO',
       subtitle: 'Comparte código. Impulsa ideas.',
       description:
@@ -54,7 +52,7 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
       icon: Icons.rocket_launch_rounded,
       image: 'assets/images/experiences/impulsa.png',
       colors: [Color(0xFF0B5D3B), Color(0xFFA8D5A2)],
-      available: true,
+      available: false,
     ),
   ];
 
@@ -73,24 +71,16 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
   void _openExperience(_Experience experience, UserType userType) {
     if (!experience.available) return;
 
-    debugPrint('ÁGORA APRENDE -> rol recibido: ${userType.name}');
-
     final Widget destination;
     if (experience.id == 'talento') {
       destination = userType == UserType.empresa
           ? const CompanyDashboardPage()
           : const StudentDashboardPage();
     } else if (experience.id == 'aprende') {
-      if (userType == UserType.profesor) {
-        destination = const TeacherCoursesPage();
-      } else if (userType == UserType.alumno) {
-        destination = const StudentCoursesPage();
-      } else {
-        destination = const CourseCatalogPage();
-      }
+      destination = const CourseCatalogPage();
     } else if (experience.id == 'impulsa') {
       destination = const AgoraImpulsaPage();
-    } else {
+    }else {
       return;
     }
 
@@ -190,7 +180,7 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
                         label: Text(
                           selected.available
                               ? 'ENTRAR A ${selected.title.toUpperCase()}'
-                              : 'ÁGORA IMPULSA · PRÓXIMAMENTE',
+                              : 'NEXUS IMPULSA · PRÓXIMAMENTE',
                           style: const TextStyle(
                             fontWeight: FontWeight.w900,
                             letterSpacing: .8,
@@ -225,7 +215,7 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
       child: Row(
         children: [
           Image.asset(
-            'assets/images/branding/agora_icono_app.png',
+            'assets/images/branding/nexus_icon_1024.png',
             width: 58,
             height: 58,
             fit: BoxFit.contain,
@@ -241,7 +231,7 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'ÁGORA',
+                  'NEXUS',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 23,
@@ -661,6 +651,3 @@ class _ExperienceCard extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}

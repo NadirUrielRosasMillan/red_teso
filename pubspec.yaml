@@ -48,10 +48,10 @@ dev_dependencies:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/images/branding/nexum_icon_1024.png"
+  image_path: "assets/images/branding/nexus_icon_1024.png"
   remove_alpha_ios: true
   adaptive_icon_background: "#FFFFFF"
-  adaptive_icon_foreground: "assets/images/branding/nexum_icon_1024.png"
+  adaptive_icon_foreground: "assets/images/branding/nexus_icon_1024.png"
 
 flutter:
 

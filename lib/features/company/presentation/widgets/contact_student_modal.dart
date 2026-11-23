@@ -151,9 +151,9 @@ class _ContactStudentModalState extends State<ContactStudentModal> {
 
         // 3. Opción de abrir cliente de correo nativo si tiene email registrado
         if (studentEmail.isNotEmpty) {
-          final String subject = 'NEXUM Talento - Invitación de ${_companyNameController.text.trim()}';
+          final String subject = 'NEXUS Talento - Invitación de ${_companyNameController.text.trim()}';
           final String body = 'Hola $studentName,\n\n'
-              'Nos ponemos en contacto contigo a través de la plataforma NEXUM Talento.\n\n'
+              'Nos ponemos en contacto contigo a través de la plataforma NEXUS Talento.\n\n'
               'Motivo: $_contactReason\n'
               'Propuesta de fecha: $formattedDate a las $formattedTime\n\n'
               'Mensaje:\n${_messageController.text.trim()}\n\n'

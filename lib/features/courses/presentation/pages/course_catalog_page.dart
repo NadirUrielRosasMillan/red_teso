@@ -207,7 +207,7 @@ class _CourseCatalogPageState extends State<CourseCatalogPage> {
                   borderRadius: BorderRadius.circular(12),
                   side: const BorderSide(color: AppTheme.borderLight),
                 ),
-                tooltip: 'IA NEXUM 🤖',
+                tooltip: 'IA NEXUS 🤖',
                 child: const Icon(Icons.psychology_rounded, color: AppTheme.primaryTurquoise, size: 24),
               ),
             )

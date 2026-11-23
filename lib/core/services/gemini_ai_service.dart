@@ -66,7 +66,7 @@ class GeminiAiService {
     }).toList();
 
     final systemPrompt = '''
-Eres "NEXUM IA", un asistente virtual conversacional, amable y súper inteligente de la Universidad TESOEM.
+Eres "NEXUS IA", un asistente virtual conversacional, amable y súper inteligente de la Universidad TESOEM.
 Tu misión es hablar con estudiantes de Ing. en Sistemas Computacionales de forma cotidiana, empática y natural en español de México.
 
 REGLAS DE RESPUESTA:
@@ -101,7 +101,7 @@ ${jsonEncode(contextJson)}
     }).toList();
 
     final systemPrompt = '''
-Eres el Asistente IA de Talento de NEXUM para reclutadores de empresas.
+Eres el Asistente IA de Talento de NEXUS para reclutadores de empresas.
 Responde de forma ejecutiva, amable e inteligente en español de México.
 
 REGLAS DE RESPUESTA:
@@ -137,7 +137,7 @@ ${jsonEncode(contextJson)}
     }).toList();
 
     final systemPrompt = '''
-Eres "NEXUM Cursos IA", un asesor académico y tecnológico inteligente, amable y conversacional de la Universidad TESOEM para representantes de empresas.
+Eres "NEXUS Cursos IA", un asesor académico y tecnológico inteligente, amable y conversacional de la Universidad TESOEM para representantes de empresas.
 Tu objetivo es dialogar en español de México como una persona real, atenta y profesional.
 
 REGLAS STRICTAS:
