@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:red_teso/features/auth/presentation/providers/auth_provider.dart';
 import 'package:red_teso/features/courses/presentation/pages/course_catalog_page.dart';
 import 'package:red_teso/features/student/presentation/pages/student_dashboard_page.dart';
+import 'package:red_teso/features/courses_local/presentation/local_courses_pages.dart';
 import 'package:red_teso/features/company/presentation/pages/company_dashboard_page.dart';
 import 'package:red_teso/features/agora_impulsa/presentation/pages/agora_impulsa_page.dart';
 
@@ -18,6 +19,7 @@ class EcosystemSelectorPage extends StatefulWidget {
   @override
   State<EcosystemSelectorPage> createState() => _EcosystemSelectorPageState();
 }
+
 class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
   late final PageController _controller;
   int _selectedIndex = 0;
@@ -57,7 +59,7 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
       icon: Icons.rocket_launch_rounded,
       image: 'assets/images/experiences/impulsa.png',
       colors: [_nexusGreen, _nexusGreenLight],
-      available: false,
+      available: true,
     ),
   ];
 
@@ -82,10 +84,16 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
           ? const CompanyDashboardPage()
           : const StudentDashboardPage();
     } else if (experience.id == 'aprende') {
-      destination = const CourseCatalogPage();
+      if (userType == UserType.profesor) {
+        destination = const TeacherCoursesPage();
+      } else if (userType == UserType.alumno) {
+        destination = const StudentCoursesPage();
+      } else {
+        destination = const CourseCatalogPage();
+      }
     } else if (experience.id == 'impulsa') {
       destination = const AgoraImpulsaPage();
-    }else {
+    } else {
       return;
     }
 
@@ -470,9 +478,8 @@ class _ExperienceCard extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(selected ? 27 : 23),
         border: Border.all(
-          color: selected
-              ? _nexusGreenLight
-              : _nexusGreen.withValues(alpha: .24),
+          color:
+              selected ? _nexusGreenLight : _nexusGreen.withValues(alpha: .24),
           width: selected ? 3 : 1.2,
         ),
         boxShadow: [
@@ -656,3 +663,6 @@ class _ExperienceCard extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
