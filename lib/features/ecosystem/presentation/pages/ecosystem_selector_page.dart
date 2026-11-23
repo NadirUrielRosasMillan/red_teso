@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:red_teso/features/auth/presentation/providers/auth_provider.dart';
 import 'package:red_teso/features/courses/presentation/pages/course_catalog_page.dart';
 import 'package:red_teso/features/student/presentation/pages/student_dashboard_page.dart';
+import 'package:red_teso/features/courses_local/presentation/local_courses_pages.dart';
 import 'package:red_teso/features/company/presentation/pages/company_dashboard_page.dart';
 import 'package:red_teso/features/agora_impulsa/presentation/pages/agora_impulsa_page.dart';
 
@@ -72,13 +73,21 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
   void _openExperience(_Experience experience, UserType userType) {
     if (!experience.available) return;
 
+    debugPrint('ÁGORA APRENDE -> rol recibido: ${userType.name}');
+
     final Widget destination;
     if (experience.id == 'talento') {
       destination = userType == UserType.empresa
           ? const CompanyDashboardPage()
           : const StudentDashboardPage();
     } else if (experience.id == 'aprende') {
-      destination = const CourseCatalogPage();
+      if (userType == UserType.profesor) {
+        destination = const TeacherCoursesPage();
+      } else if (userType == UserType.alumno) {
+        destination = const StudentCoursesPage();
+      } else {
+        destination = const CourseCatalogPage();
+      }
     } else if (experience.id == 'impulsa') {
       destination = const AgoraImpulsaPage();
     } else {
