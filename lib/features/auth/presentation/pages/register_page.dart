@@ -137,7 +137,7 @@ class _RegisterPageState extends State<RegisterPage>
                               _buildAnimatedLogo(),
                               const SizedBox(height: 8),
                               const Text(
-                                'NEXUM',
+                                'NEXUS',
                                 style: TextStyle(
                                   color: _greenPrimary,
                                   fontSize: 25,

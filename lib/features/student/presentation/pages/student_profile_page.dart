@@ -370,7 +370,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                             const SizedBox(height: 16),
                             Center(
                               child: Text(
-                                'NEXUM TALENTO · TU FUTURO PROFESIONAL',
+                                'NEXUS TALENTO · TU FUTURO PROFESIONAL',
                                 style: GoogleFonts.poppins(
                                   color: _mutedColor,
                                   fontSize: 10,
@@ -419,7 +419,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                   ),
                   clipBehavior: Clip.antiAlias,
                   child: Image.asset(
-                    'assets/images/branding/nexum_icon_1024.png',
+                    'assets/images/branding/nexus_icon_1024.png',
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -430,7 +430,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        'NEXUM Talento',
+                        'NEXUS Talento',
                         style: GoogleFonts.poppins(
                           color: Colors.white,
                           fontSize: 20,

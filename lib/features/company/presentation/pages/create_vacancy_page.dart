@@ -134,7 +134,7 @@ class _CreateVacancyPageState extends State<CreateVacancyPage> {
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    widget.vacancyToEdit != null ? '¡Vacante actualizada!' : '¡Vacante publicada exitosamente en NEXUM Talento!',
+                    widget.vacancyToEdit != null ? '¡Vacante actualizada!' : '¡Vacante publicada exitosamente en NEXUS Talento!',
                     style: GoogleFonts.inter(),
                   ),
                 ),
@@ -408,7 +408,7 @@ class _CreateVacancyPageState extends State<CreateVacancyPage> {
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                           ),
                           child: Text(
-                            isEditing ? 'GUARDAR CAMBIOS' : 'PUBLICAR VACANTE EN NEXUM TALENTO',
+                            isEditing ? 'GUARDAR CAMBIOS' : 'PUBLICAR VACANTE EN NEXUS TALENTO',
                             style: GoogleFonts.outfit(fontWeight: FontWeight.bold, letterSpacing: 0.8),
                           ),
                         ),

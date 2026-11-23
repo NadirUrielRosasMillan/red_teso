@@ -435,7 +435,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                           ),
                           Positioned.fill(
                             child: CustomPaint(
-                              painter: _NexumOrbitPainter(
+                              painter: _NexusOrbitPainter(
                                 progress: _orbitController.value,
                               ),
                             ),
@@ -533,7 +533,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'NEXUM',
+                  'NEXUS',
                   style: GoogleFonts.spaceGrotesk(
                     color: _textDark,
                     fontSize: compact ? 42 : 38,
@@ -914,10 +914,10 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   }
 }
 
-class _NexumOrbitPainter extends CustomPainter {
+class _NexusOrbitPainter extends CustomPainter {
   final double progress;
 
-  const _NexumOrbitPainter({required this.progress});
+  const _NexusOrbitPainter({required this.progress});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -954,7 +954,7 @@ class _NexumOrbitPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _NexumOrbitPainter oldDelegate) =>
+  bool shouldRepaint(covariant _NexusOrbitPainter oldDelegate) =>
       oldDelegate.progress != progress;
 }
 
