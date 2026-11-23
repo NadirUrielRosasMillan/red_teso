@@ -53,7 +53,7 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
       icon: Icons.rocket_launch_rounded,
       image: 'assets/images/experiences/impulsa.png',
       colors: [Color(0xFF0B5D3B), Color(0xFFA8D5A2)],
-      available: false,
+      available: true,
     ),
   ];
 
