@@ -7,6 +7,11 @@ import 'package:red_teso/features/student/presentation/pages/student_dashboard_p
 import 'package:red_teso/features/company/presentation/pages/company_dashboard_page.dart';
 import 'package:red_teso/features/agora_impulsa/presentation/pages/agora_impulsa_page.dart';
 
+const _nexusGreen = Color(0xFF0B5D3B);
+const _nexusGreenSecondary = Color(0xFF1E8449);
+const _nexusGreenLight = Color(0xFFA8D5A2);
+const _nexusTextMuted = Color(0xFF66756B);
+
 class EcosystemSelectorPage extends StatefulWidget {
   const EcosystemSelectorPage({super.key});
 
@@ -27,7 +32,7 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
           'Encuentra vacantes, presenta tu perfil y conecta con empresas.',
       icon: Icons.work_rounded,
       image: 'assets/images/experiences/talento.png',
-      colors: [Color(0xFF12366A), Color(0xFF2467B5)],
+      colors: [_nexusGreen, _nexusGreenSecondary],
       available: true,
     ),
     _Experience(
@@ -39,7 +44,7 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
           'Explora cursos prácticos y desarrolla habilidades para tu futuro.',
       icon: Icons.school_rounded,
       image: 'assets/images/experiences/aprende.png',
-      colors: [Color(0xFF147A9D), Color(0xFF61BFEA)],
+      colors: [_nexusGreenSecondary, _nexusGreenLight],
       available: true,
     ),
     _Experience(
@@ -51,7 +56,7 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
           'Dona o adopta código para ayudar a crecer proyectos de la comunidad.',
       icon: Icons.rocket_launch_rounded,
       image: 'assets/images/experiences/impulsa.png',
-      colors: [Color(0xFF0B5D3B), Color(0xFFA8D5A2)],
+      colors: [_nexusGreen, _nexusGreenLight],
       available: false,
     ),
   ];
@@ -107,7 +112,7 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
 
     if (experiences.isEmpty) {
       return const Scaffold(
-        backgroundColor: Color(0xFF071A36),
+        backgroundColor: _nexusGreen,
         body: Center(
           child: Text(
             'No tienes experiencias disponibles.',
@@ -133,9 +138,9 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Color(0xFF092B57),
-              Color(0xFF174E87),
-              Color(0xFFB9D7F3),
+              Colors.white,
+              Color(0xFFF5FAF6),
+              Color(0xFFE7F2E9),
               Color(0xFFFFFFFF),
             ],
             stops: [0, .28, .68, 1],
@@ -187,10 +192,10 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
                           ),
                         ),
                         style: FilledButton.styleFrom(
-                          backgroundColor: const Color(0xFF6AD7FF),
+                          backgroundColor: _nexusGreenSecondary,
                           disabledBackgroundColor:
                               Colors.white.withValues(alpha: .16),
-                          foregroundColor: const Color(0xFF071A36),
+                          foregroundColor: Colors.white,
                           disabledForegroundColor:
                               Colors.white.withValues(alpha: .65),
                           shape: RoundedRectangleBorder(
@@ -221,7 +226,7 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
             fit: BoxFit.contain,
             errorBuilder: (_, __, ___) => const Icon(
               Icons.hub_rounded,
-              color: Color(0xFF6AD7FF),
+              color: _nexusGreenSecondary,
               size: 46,
             ),
           ),
@@ -233,7 +238,7 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
                 Text(
                   'NEXUS',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: _nexusGreen,
                     fontSize: 23,
                     height: 1,
                     fontWeight: FontWeight.w900,
@@ -244,7 +249,7 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
                 Text(
                   'ECOSISTEMA UNIVERSITARIO',
                   style: TextStyle(
-                    color: Color(0xFFB7D8FF),
+                    color: _nexusGreenSecondary,
                     fontSize: 9,
                     letterSpacing: 1.2,
                     fontWeight: FontWeight.w700,
@@ -257,8 +262,8 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
             tooltip: 'Cerrar sesión',
             onPressed: () => context.read<AuthProvider>().logout(),
             style: IconButton.styleFrom(
-              backgroundColor: Colors.white.withValues(alpha: .12),
-              foregroundColor: Colors.white,
+              backgroundColor: _nexusGreen.withValues(alpha: .08),
+              foregroundColor: _nexusGreen,
             ),
             icon: const Icon(Icons.logout_rounded),
           ),
@@ -275,7 +280,7 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
           Text(
             '¡Bienvenido, $greeting!',
             style: const TextStyle(
-              color: Color(0xFFB7D8FF),
+              color: _nexusGreenSecondary,
               fontSize: 14,
               fontWeight: FontWeight.w600,
             ),
@@ -285,7 +290,7 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
             'ELIGE TU SIGUIENTE PASO',
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: Colors.white,
+              color: _nexusGreen,
               fontSize: 27,
               fontWeight: FontWeight.w900,
               letterSpacing: .8,
@@ -296,7 +301,7 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
             'Tres experiencias. Un solo ecosistema.',
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: Colors.white.withValues(alpha: .72),
+              color: _nexusTextMuted,
               fontSize: 13,
             ),
           ),
@@ -404,8 +409,8 @@ class _EcosystemSelectorPageState extends State<EcosystemSelectorPage> {
           height: 7,
           decoration: BoxDecoration(
             color: index == selectedIndex
-                ? const Color(0xFF6AD7FF)
-                : Colors.white.withValues(alpha: .38),
+                ? _nexusGreenSecondary
+                : _nexusGreenLight,
             borderRadius: BorderRadius.circular(8),
           ),
         ),
@@ -466,15 +471,15 @@ class _ExperienceCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(selected ? 27 : 23),
         border: Border.all(
           color: selected
-              ? const Color(0xFF8DE4FF)
-              : Colors.white.withValues(alpha: .46),
+              ? _nexusGreenLight
+              : _nexusGreen.withValues(alpha: .24),
           width: selected ? 3 : 1.2,
         ),
         boxShadow: [
           BoxShadow(
             color: selected
-                ? const Color(0xFF3FC8FF).withValues(alpha: .32)
-                : Colors.black.withValues(alpha: .30),
+                ? _nexusGreenSecondary.withValues(alpha: .22)
+                : _nexusGreen.withValues(alpha: .14),
             blurRadius: selected ? 32 : 18,
             offset: const Offset(0, 15),
           ),
@@ -510,8 +515,8 @@ class _ExperienceCard extends StatelessWidget {
                       colors: [
                         Colors.black.withValues(alpha: .02),
                         Colors.black.withValues(alpha: .08),
-                        const Color(0xFF06162D).withValues(alpha: .58),
-                        const Color(0xFF06162D).withValues(alpha: .97),
+                        _nexusGreen.withValues(alpha: .58),
+                        _nexusGreen.withValues(alpha: .96),
                       ],
                       stops: const [0, .38, .68, 1],
                     ),
@@ -625,7 +630,7 @@ class _ExperienceCard extends StatelessWidget {
                               experience.available
                                   ? Icons.touch_app_rounded
                                   : Icons.schedule_rounded,
-                              color: const Color(0xFF8DE4FF),
+                              color: _nexusGreenLight,
                               size: 16,
                             ),
                             const SizedBox(width: 6),
@@ -634,7 +639,7 @@ class _ExperienceCard extends StatelessWidget {
                                   ? 'SELECCIONAR EXPERIENCIA'
                                   : 'PRÓXIMAMENTE',
                               style: const TextStyle(
-                                color: Color(0xFF8DE4FF),
+                                color: _nexusGreenLight,
                                 fontSize: 9,
                                 fontWeight: FontWeight.w900,
                                 letterSpacing: .7,
