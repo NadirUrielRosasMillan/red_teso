@@ -11,7 +11,7 @@ import 'package:red_teso/core/widgets/liquid_glass_ambient_background.dart';
 import 'package:red_teso/features/auth/presentation/pages/login_page.dart';
 import 'package:red_teso/features/auth/presentation/providers/auth_provider.dart'
     as app_auth;
-
+import 'package:red_teso/features/agora_impulsa/presentation/pages/impulsa_admin_section.dart';
 class AdminDashboardPage extends StatefulWidget {
   const AdminDashboardPage({super.key});
 
@@ -26,7 +26,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 5, vsync: this);
   }
 
   @override
@@ -238,6 +238,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
             Tab(icon: Icon(Icons.analytics_rounded, size: 19), text: 'Actividad'),
             Tab(icon: Icon(Icons.people_alt_rounded, size: 19), text: 'Alumnos'),
             Tab(icon: Icon(Icons.gavel_rounded, size: 19), text: 'Moderación'),
+            Tab(icon: Icon(Icons.volunteer_activism_rounded, size: 19), text: 'Donaciones'),
           ],
         ),
       ),
@@ -265,6 +266,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> with SingleTick
                   _buildActivityLogTab(),
                   _buildRealTimeList('alumno'),
                   _buildModerationTab(),
+                  const ImpulsaAdminProjectsSection(),
                 ],
               ),
             ),
