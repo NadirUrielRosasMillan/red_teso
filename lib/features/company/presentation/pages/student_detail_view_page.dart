@@ -51,7 +51,7 @@ class StudentDetailViewPage extends StatelessWidget {
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      'Documento verificado y autenticado por el alumno en NEXUM Talento.',
+                      'Documento verificado y autenticado por el alumno en NEXUS Talento.',
                       style: GoogleFonts.inter(fontSize: 12, color: Colors.white, fontWeight: FontWeight.w600),
                     ),
                   ),

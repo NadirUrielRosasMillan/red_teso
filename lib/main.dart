@@ -33,25 +33,25 @@ Future<void> main() async {
           create: (_) => ThemeProvider(),
         ),
       ],
-      child: const NexumApp(),
+      child: const NexusApp(),
     ),
   );
 }
 
-class NexumApp extends StatefulWidget {
-  const NexumApp({super.key});
+class NexusApp extends StatefulWidget {
+  const NexusApp({super.key});
 
   @override
-  State<NexumApp> createState() => _NexumAppState();
+  State<NexusApp> createState() => _NexusAppState();
 }
 
-class _NexumAppState extends State<NexumApp> {
+class _NexusAppState extends State<NexusApp> {
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, child) {
         return MaterialApp(
-          title: 'NEXUM',
+          title: 'NEXUS',
           debugShowCheckedModeBanner: false,
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
@@ -83,7 +83,7 @@ class _NexumAppState extends State<NexumApp> {
           return const AuthWrapper();
         }
 
-        // La única entrada para usuarios sin sesión es el login de NEXUM.
+        // La única entrada para usuarios sin sesión es el login de NEXUS.
         return const LoginPage();
       },
     );
@@ -117,7 +117,7 @@ class AuthWrapper extends StatelessWidget {
           case UserType.profesor:
           case UserType.empresa:
             // El selector filtra las experiencias según el rol.
-            // Las empresas únicamente verán NEXUM Talento.
+            // Las empresas únicamente verán NEXUS Talento.
             return const EcosystemSelectorPage();
           case UserType.admin:
             return const AdminDashboardPage();

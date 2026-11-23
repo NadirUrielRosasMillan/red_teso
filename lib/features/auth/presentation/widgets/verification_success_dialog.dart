@@ -264,7 +264,7 @@ class _VerificationSuccessDialogState extends State<VerificationSuccessDialog>
                             const SizedBox(height: 20),
 
                             Text(
-                              'Te enviamos un enlace de activación a tu correo. Por favor verifícalo para ingresar a NEXUM.',
+                              'Te enviamos un enlace de activación a tu correo. Por favor verifícalo para ingresar a NEXUS.',
                               textAlign: TextAlign.center,
                               style: GoogleFonts.inter(
                                 fontSize: 13.5,

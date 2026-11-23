@@ -66,7 +66,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: Image.asset(
-                'assets/images/branding/nexum_icon_1024.png',
+                'assets/images/branding/nexus_icon_1024.png',
                 width: 39,
                 height: 39,
                 fit: BoxFit.cover,
@@ -77,7 +77,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'NEXUM',
+                  'NEXUS',
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 21,
                     fontWeight: FontWeight.w800,
